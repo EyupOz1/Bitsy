@@ -2,6 +2,8 @@
 #include "rcamera.h"
 #include "raymath.h"
 
+#include "string.h"
+
 #include "Block.h"
 #include "Player.h"
 #include "Chunk.h"
@@ -30,7 +32,11 @@ int main(void)
 
     test_world(&Chnk);
 
-    Model model = LoadModelFromMesh(Block_Draw());
+    unsigned char blockface = 0;
+    blockface |= FRONT_BIT;
+    blockface |= TOP_BIT;
+
+    Model model = LoadModelFromMesh(Block_Draw(blockface));
 
     while (!WindowShouldClose())
     {
@@ -65,6 +71,33 @@ int main(void)
         DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", playerptr->player_camera.position.x, playerptr->player_camera.position.y, playerptr->player_camera.position.z), 610, 60, 10, BLACK);
         DrawText(TextFormat("- Target: (%06.3f, %06.3f, %06.3f)", playerptr->player_camera.target.x, playerptr->player_camera.target.y, playerptr->player_camera.target.z), 610, 75, 10, BLACK);
         DrawText(TextFormat("- Up: (%06.3f, %06.3f, %06.3f)", playerptr->player_camera.up.x, playerptr->player_camera.up.y, playerptr->player_camera.up.z), 610, 90, 10, BLACK);
+
+        int facing_count = 10;
+        char facing[facing_count];
+
+        float facing_X = playerptr->player_camera.position.x - playerptr->player_camera.target.x;
+        float facing_Z = playerptr->player_camera.position.z - playerptr->player_camera.target.z;
+
+        DrawText(TextFormat("- Facing: (%06.3f, %06.3f)", facing_X, facing_Z), 610, 105, 10, BLACK);
+
+        if (facing_X > 0 && facing_Z > 0)
+        {
+            strncpy(facing, "a", facing_count);
+        }
+        else if (facing_X < 0 && facing_Z < 0)
+        {
+            strncpy(facing, "b", facing_count);
+        }
+        else if (facing_X < 0 && facing_Z > 0)
+        {
+            strncpy(facing, "c", facing_count);
+        }
+        else if (facing_X > 0 && facing_Z < 0)
+        {
+            strncpy(facing, "d", facing_count);
+        }
+
+        DrawText(TextFormat("- Facing: %s", facing), 610, 120, 10, BLACK);
 
         EndDrawing();
     }
