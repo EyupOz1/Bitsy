@@ -11,7 +11,10 @@ void test_world(Chunk *Chnk)
     {
         for (int j = 0; j < CHUNK_SIZE; j++)
         {
-            Chnk->Blocks[i][HighestValue][j] = (Block){.BlockID = 1};
+            for (int k = 0; k < CHUNK_SIZE; k++)
+            {
+                Chnk->Blocks[i][j][k] = (Block){.BlockID = 1};
+            }
         }
     }
 }

@@ -36,6 +36,12 @@ int main(void)
     blockface |= FRONT_BIT;
     blockface |= TOP_BIT;
 
+    blockface |= LEFT_BIT;
+    blockface |= RIGHT_BIT;
+
+    blockface |= BACK_BIT;
+    blockface |= BOTTOM_BIT;
+
     Model model = LoadModelFromMesh(Block_Draw(blockface));
 
     while (!WindowShouldClose())

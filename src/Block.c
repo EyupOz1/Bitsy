@@ -24,14 +24,14 @@ Mesh block_mesh_create(short Face_Mask)
 
     return mesh;
 } */
-void printBits(unsigned char value) {
-    for (int i = 7; i >= 0; i--) {
+void printBits(unsigned char value)
+{
+    for (int i = 7; i >= 0; i--)
+    {
         printf("%d", (value >> i) & 1);
     }
     printf("\n");
 }
-
-
 
 Mesh Block_Draw(unsigned char bitmask)
 {
@@ -46,7 +46,7 @@ Mesh Block_Draw(unsigned char bitmask)
         bitcpy &= bitcpy - 1;
     }
 
-    printf("%i\n\n\n%i", total, bitmask);
+    printf("%i\n\n\n", total);
 
     printBits(bitmask);
 
@@ -67,7 +67,7 @@ Mesh Block_Draw(unsigned char bitmask)
 
     };
 
-    unsigned short indices[total];
+    unsigned short indices[total * 6];
     int index = 0;
 
     if (bitmask & FRONT_BIT)
@@ -87,6 +87,42 @@ Mesh Block_Draw(unsigned char bitmask)
         indices[index++] = 2;
         indices[index++] = 4;
         indices[index++] = 5;
+    }
+    if (bitmask & RIGHT_BIT)
+    {
+        indices[index++] = 1;
+        indices[index++] = 2;
+        indices[index++] = 5;
+        indices[index++] = 1;
+        indices[index++] = 5;
+        indices[index++] = 6;
+    }
+    if (bitmask & LEFT_BIT)
+    {
+        indices[index++] = 0;
+        indices[index++] = 7;
+        indices[index++] = 4;
+        indices[index++] = 0;
+        indices[index++] = 4;
+        indices[index++] = 3;
+    }
+    if (bitmask & BACK_BIT)
+    {
+        indices[index++] = 5;
+        indices[index++] = 4;
+        indices[index++] = 7;
+        indices[index++] = 5;
+        indices[index++] = 7;
+        indices[index++] = 6;
+    }
+    if (bitmask & BOTTOM_BIT)
+    {
+        indices[index++] = 0;
+        indices[index++] = 6;
+        indices[index++] = 7;
+        indices[index++] = 0;
+        indices[index++] = 1;
+        indices[index++] = 6;
     }
 
     /*
