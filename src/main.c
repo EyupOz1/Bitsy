@@ -12,12 +12,9 @@
 
 #include "Test.h"
 
-Chunk Chnk = {0};
 Player *playerptr;
 
 World world = {0};
-
-
 
 int main(void)
 {
@@ -25,10 +22,17 @@ int main(void)
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 
-    test_world(&Chnk);
+    for (int i = 0; i < 5; i++)
+    {
+        test_world(&world.loadedChunks[i]);
+        world.loadedChunks[i].pos = (Vector3){i * 16, 0, i * 16};
+        chunk_mesh_create(&world.loadedChunks[i]);
+        world.loadedChunks[i].dirty = 1;
+        printf("%f, %f, %f\n", world.loadedChunks[i].pos.x, world.loadedChunks[i].pos.y, world.loadedChunks[i].pos.z);
+    }
 
-    chunk_mesh_create(&Chnk);
-    Model ChnkMdl = LoadModelFromMesh(Chnk.currentMesh);
+    Model models[5];
+
     while (!WindowShouldClose())
     {
 
@@ -41,7 +45,20 @@ int main(void)
 
             DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 
-            DrawModelWires(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
+            for (int i = 0; i < 5; i++)
+            {
+                if (world.loadedChunks[i].dirty == 1)
+                {
+                    world.loadedChunks[i].dirty = 0;
+                    models[i] = LoadModelFromMesh(world.loadedChunks[i].currentMesh);
+                    DrawModelWires(models[i], world.loadedChunks[i].pos, 1.0f, DARKGRAY);
+                }
+                else
+                {
+                    DrawModelWires(models[i], world.loadedChunks[i].pos, 1.0f, DARKGRAY);
+                }
+            }
+
 
             EndMode3D();
         }

@@ -25,7 +25,6 @@ void chunk_mesh_create(Chunk *Chnk)
                 {
                     continue;
                 }
-                printf("Found Block: %i\n", Chnk->Blocks[i][j][k].BlockID);
 
                 float localVertices[] = {
 
