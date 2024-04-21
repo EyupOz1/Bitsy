@@ -36,7 +36,16 @@ int main(void)
 
             DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 
-            DrawModel(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
+            DrawModelWires(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
+
+            DrawPoint3D((Vector3){0, 1, 1}, RED);
+            DrawPoint3D((Vector3){1, 1, 1}, BLUE);
+            DrawPoint3D((Vector3){2, 1, 1}, BLUE);
+            DrawPoint3D((Vector3){3, 1, 1}, BLUE);
+
+            DrawPoint3D((Vector3){1, 0, 1}, PINK);
+            DrawPoint3D((Vector3){0, 0, 0}, PINK);
+
 
             EndMode3D();
         }

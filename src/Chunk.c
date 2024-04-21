@@ -2,6 +2,18 @@
 Mesh chunk_mesh_create(Chunk *Chnk)
 {
 
+    Mesh mesh = {0};
+    mesh.triangleCount = 0;
+    mesh.vertexCount = 0;
+
+    float vertices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3] = {0};
+    unsigned short indices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3] = {0};
+
+    int BlockCount = 0;
+
+    int indices_index = 0;
+    int vertex_index = 0;
+
     for (int i = 0; i < CHUNK_SIZE; i++)
     {
         for (int j = 0; j < CHUNK_SIZE; j++)
@@ -10,98 +22,125 @@ Mesh chunk_mesh_create(Chunk *Chnk)
             {
                 if (Chnk->Blocks[i][j][k].BlockID > 0)
                 {
-                    
+                    printf("Found Block: %i\n", Chnk->Blocks[i][j][k].BlockID);
+
+                    float localVertices[] = {
+
+                        1 + i, 1 + j, 1 + k,
+                        0 + i, 1 + j, 1 + k,
+                        0 + i, 0 + j, 1 + k,
+                        1 + i, 0 + j, 1 + k,
+
+                        1 + i, 1 + j, 0 + k,
+                        0 + i, 1 + j, 0 + k,
+                        0 + i, 0 + j, 0 + k,
+                        1 + i, 0 + j, 0 + k
+
+                    };
+
+                    unsigned short localIndices[] = {
+                        //+X
+                        4 + 8 * BlockCount,
+                        0 + 8 * BlockCount,
+                        7 + 8 * BlockCount,
+                        7 + 8 * BlockCount,
+                        0 + 8 * BlockCount,
+                        3 + 8 * BlockCount,
+
+                        //-X
+                        1 + 8 * BlockCount,
+                        5 + 8 * BlockCount,
+                        2 + 8 * BlockCount,
+                        2 + 8 * BlockCount,
+                        5 + 8 * BlockCount,
+                        6 + 8 * BlockCount,
+
+                        //+Y
+                        4 + 8 * BlockCount,
+                        5 + 8 * BlockCount,
+                        0 + 8 * BlockCount,
+                        0 + 8 * BlockCount,
+                        5 + 8 * BlockCount,
+                        1 + 8 * BlockCount,
+
+                        //-Y
+                        3 + 8 * BlockCount,
+                        2 + 8 * BlockCount,
+                        7 + 8 * BlockCount,
+                        7 + 8 * BlockCount,
+                        2 + 8 * BlockCount,
+                        6 + 8 * BlockCount,
+
+                        //+Z
+                        0 + 8 * BlockCount,
+                        1 + 8 * BlockCount,
+                        3 + 8 * BlockCount,
+                        3 + 8 * BlockCount,
+                        1 + 8 * BlockCount,
+                        2 + 8 * BlockCount,
+
+                        //-Z
+                        5 + 8 * BlockCount,
+                        4 + 8 * BlockCount,
+                        6 + 8 * BlockCount,
+                        6 + 8 * BlockCount,
+                        4 + 8 * BlockCount,
+                        7 + 8 * BlockCount,
+                    };
+
+                    for (int index = 0; index < 24; index++)
+                    {
+                        vertices[vertex_index++] = localVertices[index];
+                    }
+
+                    if (Chnk->Blocks[i + 1][j][k].BlockID == 0 || 1)
+                    {
+                        for (int l = 0; l < 6; l++)
+                        {
+                            indices[indices_index++] = localIndices[l];
+                            mesh.triangleCount += 2;
+                        }
+                    }
+                    BlockCount++;
                 }
             }
         }
     }
 
-    Mesh mesh = {0};
-    mesh.triangleCount = 12;
-    mesh.vertexCount = 8;
+    for (int i = 0; i < indices_index; i++)
+    {
+        if (i % 6 == 0)
+        {
+            printf("\n");
+        }
 
-    float vertices[] = {
+        printf("%u, ", indices[i]);
+    }
+    printf("\n");
 
-        1, 1, 1,
-        0, 1, 1,
-        0, 0, 1,
-        1, 0, 1,
+    for (int i = 0; i < vertex_index; i++)
+    {
+        if (i % 3 == 0)
+        {
 
-        1, 1, 0,
-        0, 1, 0,
-        0, 0, 0,
-        1, 0, 0
+            if (i % 24 == 0)
+            {
+                printf("\n");
+            }
 
-    };
+            printf("\n");
+        }
+        printf("%.2f, ", vertices[i]);
+    }
+    printf("\n");
 
-    float normals[] = {
+    mesh.vertexCount = vertex_index / 3;
 
-        0, 0, 1,
-        1, 0, 0,
-        0, 0, -1,
-        -1, 0, 0,
-        0, 1, 0,
-        0, -1, 0
+    mesh.vertices = (float *)RL_MALLOC(vertex_index * sizeof(float));
+    mesh.indices = (unsigned short *)RL_MALLOC(indices_index * sizeof(unsigned short));
 
-    };
-
-    unsigned short indices[] = {
-        //+X
-        4,
-        0,
-        7,
-        7,
-        0,
-        3,
-
-        //-X
-        1,
-        5,
-        2,
-        2,
-        5,
-        6,
-
-        //+Y
-        4,
-        5,
-        0,
-        0,
-        5,
-        1,
-
-        //-Y
-        3,
-        2,
-        7,
-        7,
-        2,
-        6,
-
-        //+Z
-        0,
-        1,
-        3,
-        3,
-        1,
-        2,
-
-        //-Z
-        5,
-        4,
-        6,
-        6,
-        4,
-        7,
-    };
-
-    mesh.vertices = (float *)RL_MALLOC(8 * 3 * sizeof(float));
-    mesh.indices = (unsigned short *)RL_MALLOC(mesh.triangleCount * 3 * sizeof(unsigned short));
-    mesh.normals = (float *)RL_MALLOC(6 * 3 * sizeof(float));
-
-    memcpy(mesh.vertices, vertices, 8 * 3 * sizeof(float));
-    memcpy(mesh.indices, indices, mesh.triangleCount * 3 * sizeof(unsigned short));
-    memcpy(mesh.normals, normals, 6 * 3 * sizeof(float));
+    memcpy(mesh.vertices, vertices, vertex_index * sizeof(float));
+    memcpy(mesh.indices, indices, indices_index * sizeof(unsigned short));
 
     UploadMesh(&mesh, false);
 

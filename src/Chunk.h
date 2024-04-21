@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "Block.h"
 #include "Chunk.h"
+#include "stdio.h"
 
 
 typedef struct Chunk
