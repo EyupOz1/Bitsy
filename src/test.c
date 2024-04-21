@@ -4,11 +4,9 @@
 void test_world(Chunk *Chnk)
 {
 
-    const int HighestValue = (CHUNK_SIZE)-1;
-
-    for (int i = 0; i < CHUNK_SIZE; i++)
+    for (int i = 0; i < CHUNK_SIZE / 2; i++)
     {
-        for (int j = 0; j < CHUNK_SIZE; j++)
+        for (int j = 0; j < CHUNK_SIZE / 2; j++)
         {
             for (int k = 0; k < CHUNK_SIZE; k++)
             {
@@ -35,7 +33,7 @@ void test_world2(Chunk *Chnk)
 void test_world3(Chunk *Chnk)
 {
 
-    //Chnk->Blocks[0][0][0] = (Block){.BlockID = 1};
+    Chnk->Blocks[0][0][0] = (Block){.BlockID = 1};
     Chnk->Blocks[1][0][0] = (Block){.BlockID = 2};
     Chnk->Blocks[2][0][0] = (Block){.BlockID = 2};
 

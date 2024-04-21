@@ -9,10 +9,10 @@ Mesh chunk_mesh_create(Chunk *Chnk)
     float vertices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3] = {0};
     unsigned short indices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3] = {0};
 
-    int BlockCount = 0;
+    long int BlockCount = 0;
 
-    int indices_index = 0;
-    int vertex_index = 0;
+    long int indices_index = 0;
+    long int vertex_index = 0;
 
     for (int i = 0; i < CHUNK_SIZE; i++)
     {
@@ -39,6 +39,7 @@ Mesh chunk_mesh_create(Chunk *Chnk)
                     };
 
                     unsigned short localIndices[] = {
+
                         //+X
                         4 + 8 * BlockCount,
                         0 + 8 * BlockCount,
@@ -93,14 +94,60 @@ Mesh chunk_mesh_create(Chunk *Chnk)
                         vertices[vertex_index++] = localVertices[index];
                     }
 
-                    if (Chnk->Blocks[i + 1][j][k].BlockID == 0 || 1)
+                    if (i + 1 >= CHUNK_SIZE || Chnk->Blocks[i + 1][j][k].BlockID == 0)
                     {
                         for (int l = 0; l < 6; l++)
                         {
                             indices[indices_index++] = localIndices[l];
-                            mesh.triangleCount += 2;
                         }
+                        mesh.triangleCount += 2;
                     }
+
+                    if (i - 1 >= CHUNK_SIZE || Chnk->Blocks[i + -1][j][k].BlockID == 0)
+                    {
+                        for (int l = 6; l < 12; l++)
+                        {
+                            indices[indices_index++] = localIndices[l];
+                        }
+                        mesh.triangleCount += 2;
+                    }
+
+                    if (j + 1 >= CHUNK_SIZE || Chnk->Blocks[i][j + 1][k].BlockID == 0)
+                    {
+                        for (int l = 12; l < 18; l++)
+                        {
+                            indices[indices_index++] = localIndices[l];
+                        }
+                        mesh.triangleCount += 2;
+                    }
+
+                    if (j - 1 >= CHUNK_SIZE || Chnk->Blocks[i][j - 1][k].BlockID == 0)
+                    {
+                        for (int l = 18; l < 24; l++)
+                        {
+                            indices[indices_index++] = localIndices[l];
+                        }
+                        mesh.triangleCount += 2;
+                    }
+
+                    if (k + 1 >= CHUNK_SIZE || Chnk->Blocks[i][j][k + 1].BlockID == 0)
+                    {
+                        for (int l = 24; l < 30; l++)
+                        {
+                            indices[indices_index++] = localIndices[l];
+                        }
+                        mesh.triangleCount += 2;
+                    }
+
+                    if (k - 1 >= CHUNK_SIZE || Chnk->Blocks[i][j][k - 1].BlockID == 0)
+                    {
+                        for (int l = 30; l < 36; l++)
+                        {
+                            indices[indices_index++] = localIndices[l];
+                        }
+                        mesh.triangleCount += 2;
+                    }
+
                     BlockCount++;
                 }
             }

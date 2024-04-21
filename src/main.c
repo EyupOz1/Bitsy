@@ -20,9 +20,23 @@ int main(void)
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 
-    test_world3(&Chnk);
+    test_world2(&Chnk);
 
     Model ChnkMdl = LoadModelFromMesh(chunk_mesh_create(&Chnk));
+    int i = 0, j = 0, k = 0;
+    float localVertices[] = {
+
+        1 + i, 1 + j, 1 + k,
+        0 + i, 1 + j, 1 + k,
+        0 + i, 0 + j, 1 + k,
+        1 + i, 0 + j, 1 + k,
+
+        1 + i, 1 + j, 0 + k,
+        0 + i, 1 + j, 0 + k,
+        0 + i, 0 + j, 0 + k,
+        1 + i, 0 + j, 0 + k
+
+    };
 
     while (!WindowShouldClose())
     {
@@ -38,14 +52,14 @@ int main(void)
 
             DrawModelWires(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
 
-            DrawPoint3D((Vector3){0, 1, 1}, RED);
-            DrawPoint3D((Vector3){1, 1, 1}, BLUE);
-            DrawPoint3D((Vector3){2, 1, 1}, BLUE);
-            DrawPoint3D((Vector3){3, 1, 1}, BLUE);
 
-            DrawPoint3D((Vector3){1, 0, 1}, PINK);
-            DrawPoint3D((Vector3){0, 0, 0}, PINK);
-
+            Color clo[] = {GREEN, RED, MAGENTA, PINK, PURPLE, ORANGE, BLUE, MAROON};
+            int ix = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                DrawPoint3D((Vector3){localVertices[i * 3], localVertices[i * 3 + 1], localVertices[i * 3 + 2]}, clo[ix++]);
+            }
+            
 
             EndMode3D();
         }
