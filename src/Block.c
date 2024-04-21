@@ -66,7 +66,7 @@ Mesh Block_Draw(unsigned char bitmask)
         0, 0, 1
 
     };
-
+/* 
     unsigned short indices[total * 6];
     int index = 0;
 
@@ -79,7 +79,7 @@ Mesh Block_Draw(unsigned char bitmask)
         indices[index++] = 3;
         indices[index++] = 2;
     }
-    if (bitmask & TOP_BIT)
+    if (bitmask & DIR_POS_Y)
     {
         indices[index++] = 2;
         indices[index++] = 3;
@@ -115,7 +115,7 @@ Mesh Block_Draw(unsigned char bitmask)
         indices[index++] = 7;
         indices[index++] = 6;
     }
-    if (bitmask & BOTTOM_BIT)
+    if (bitmask & DIR_NEG_Y)
     {
         indices[index++] = 0;
         indices[index++] = 6;
@@ -123,9 +123,9 @@ Mesh Block_Draw(unsigned char bitmask)
         indices[index++] = 0;
         indices[index++] = 1;
         indices[index++] = 6;
-    }
+    } */
 
-    /*
+    
     unsigned short indices[] = {
         0, 2, 1, // face front
         0, 3, 2,
@@ -141,7 +141,7 @@ Mesh Block_Draw(unsigned char bitmask)
         0, 1, 6
 
     };
-    */
+    
     mesh.vertices = (float *)RL_MALLOC(8 * 3 * sizeof(float));
     mesh.indices = (unsigned short *)RL_MALLOC(mesh.triangleCount * 3 * sizeof(unsigned short));
 

@@ -30,19 +30,21 @@ int main(void)
 
     // test world
 
-    test_world(&Chnk);
+    test_world3(&Chnk);
 
     unsigned char blockface = 0;
     blockface |= FRONT_BIT;
-    blockface |= TOP_BIT;
+    blockface |= DIR_POS_Y;
 
     blockface |= LEFT_BIT;
     blockface |= RIGHT_BIT;
 
     blockface |= BACK_BIT;
-    blockface |= BOTTOM_BIT;
+    blockface |= DIR_NEG_Y;
 
     Model model = LoadModelFromMesh(Block_Draw(blockface));
+
+    Model chnk = LoadModelFromMesh(chunk_mesh_create(&Chnk));
 
     while (!WindowShouldClose())
     {
@@ -57,19 +59,21 @@ int main(void)
 
             DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN);
 
-            for (int i = 0; i < CHUNK_SIZE; i++)
+            for (int i = 20; i < CHUNK_SIZE; i++)
             {
-                for (int j = 0; j < CHUNK_SIZE; j++)
+                for (int j = 20; j < CHUNK_SIZE; j++)
                 {
-                    for (int k = 0; k < CHUNK_SIZE; k++)
+                    for (int k = 20; k < CHUNK_SIZE; k++)
                     {
                         if (Chnk.Blocks[i][j][k].BlockID > 0)
                         {
-                            DrawModel(model, (Vector3){i, j, k}, 1.0f, YELLOW);
+                            DrawModel(model, (Vector3){i, j, k}, 1.0f, BLACK);
                         }
                     }
                 }
             }
+
+            DrawModel(chnk, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
 
             EndMode3D();
         }

@@ -56,7 +56,8 @@
 			"functional": "c",
 			"block.h": "c",
 			"string.h": "c",
-			"player.h": "c"
+			"player.h": "c",
+			"main.h": "c"
 		},
 		"git.autoRepositoryDetection": false,
 		"git.enabled": true
