@@ -22,8 +22,8 @@ int main(void)
 
     test_world(&Chnk);
 
-    Model ChnkMdl = LoadModelFromMesh(chunk_mesh_create(&Chnk));
-
+    chunk_mesh_create(&Chnk);
+    Model ChnkMdl = LoadModelFromMesh(Chnk.currentMesh);
     while (!WindowShouldClose())
     {
 
@@ -37,7 +37,6 @@ int main(void)
             DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 
             DrawModel(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
-
 
             EndMode3D();
         }
