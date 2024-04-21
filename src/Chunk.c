@@ -6,8 +6,8 @@ Mesh chunk_mesh_create(Chunk *Chnk)
     mesh.triangleCount = 0;
     mesh.vertexCount = 0;
 
-    float vertices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3] = {0};
-    unsigned short indices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3] = {0};
+    float vertices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3 * 8] = {0};
+    unsigned short indices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3 * 24] = {0};
 
     long int BlockCount = 0;
 
@@ -103,7 +103,7 @@ Mesh chunk_mesh_create(Chunk *Chnk)
                         mesh.triangleCount += 2;
                     }
 
-                    if (i - 1 >= CHUNK_SIZE || Chnk->Blocks[i + -1][j][k].BlockID == 0)
+                    if (i - 1 <= 0 || Chnk->Blocks[i + -1][j][k].BlockID == 0)
                     {
                         for (int l = 6; l < 12; l++)
                         {
@@ -121,7 +121,7 @@ Mesh chunk_mesh_create(Chunk *Chnk)
                         mesh.triangleCount += 2;
                     }
 
-                    if (j - 1 >= CHUNK_SIZE || Chnk->Blocks[i][j - 1][k].BlockID == 0)
+                    if (j - 1 <= 0 || Chnk->Blocks[i][j - 1][k].BlockID == 0)
                     {
                         for (int l = 18; l < 24; l++)
                         {
@@ -139,7 +139,7 @@ Mesh chunk_mesh_create(Chunk *Chnk)
                         mesh.triangleCount += 2;
                     }
 
-                    if (k - 1 >= CHUNK_SIZE || Chnk->Blocks[i][j][k - 1].BlockID == 0)
+                    if (k - 1 < 0 || Chnk->Blocks[i][j][k - 1].BlockID == 0)
                     {
                         for (int l = 30; l < 36; l++)
                         {
@@ -153,33 +153,6 @@ Mesh chunk_mesh_create(Chunk *Chnk)
             }
         }
     }
-
-    for (int i = 0; i < indices_index; i++)
-    {
-        if (i % 6 == 0)
-        {
-            printf("\n");
-        }
-
-        printf("%u, ", indices[i]);
-    }
-    printf("\n");
-
-    for (int i = 0; i < vertex_index; i++)
-    {
-        if (i % 3 == 0)
-        {
-
-            if (i % 24 == 0)
-            {
-                printf("\n");
-            }
-
-            printf("\n");
-        }
-        printf("%.2f, ", vertices[i]);
-    }
-    printf("\n");
 
     mesh.vertexCount = vertex_index / 3;
 

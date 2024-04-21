@@ -20,23 +20,9 @@ int main(void)
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 
-    test_world2(&Chnk);
+    test_world(&Chnk);
 
     Model ChnkMdl = LoadModelFromMesh(chunk_mesh_create(&Chnk));
-    int i = 0, j = 0, k = 0;
-    float localVertices[] = {
-
-        1 + i, 1 + j, 1 + k,
-        0 + i, 1 + j, 1 + k,
-        0 + i, 0 + j, 1 + k,
-        1 + i, 0 + j, 1 + k,
-
-        1 + i, 1 + j, 0 + k,
-        0 + i, 1 + j, 0 + k,
-        0 + i, 0 + j, 0 + k,
-        1 + i, 0 + j, 0 + k
-
-    };
 
     while (!WindowShouldClose())
     {
@@ -50,16 +36,8 @@ int main(void)
 
             DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 
-            DrawModelWires(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
+            DrawModel(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
 
-
-            Color clo[] = {GREEN, RED, MAGENTA, PINK, PURPLE, ORANGE, BLUE, MAROON};
-            int ix = 0;
-            for (int i = 0; i < 8; i++)
-            {
-                DrawPoint3D((Vector3){localVertices[i * 3], localVertices[i * 3 + 1], localVertices[i * 3 + 2]}, clo[ix++]);
-            }
-            
 
             EndMode3D();
         }

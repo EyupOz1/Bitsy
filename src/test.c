@@ -4,9 +4,9 @@
 void test_world(Chunk *Chnk)
 {
 
-    for (int i = 0; i < CHUNK_SIZE / 2; i++)
+    for (int i = 0; i < CHUNK_SIZE; i++)
     {
-        for (int j = 0; j < CHUNK_SIZE / 2; j++)
+        for (int j = 0; j < CHUNK_SIZE; j++)
         {
             for (int k = 0; k < CHUNK_SIZE; k++)
             {
