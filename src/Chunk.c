@@ -106,7 +106,7 @@ void chunk_mesh_create(Chunk *Chnk)
                     mesh.triangleCount += 2;
                 }
 
-                if (i - 1 <= 0 || Chnk->Blocks[i + -1][j][k].BlockID <= 0)
+                if (i - 1 < 0 || Chnk->Blocks[i + -1][j][k].BlockID <= 0)
                 {
                     for (int l = 6; l < 12; l++)
                     {
@@ -124,7 +124,7 @@ void chunk_mesh_create(Chunk *Chnk)
                     mesh.triangleCount += 2;
                 }
 
-                if (j - 1 <= 0 || Chnk->Blocks[i][j - 1][k].BlockID <= 0)
+                if (j - 1 < 0 || Chnk->Blocks[i][j - 1][k].BlockID <= 0)
                 {
                     for (int l = 18; l < 24; l++)
                     {

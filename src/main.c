@@ -5,6 +5,7 @@
 #include "string.h"
 
 #include "Block.h"
+#include "World.h"
 #include "Player.h"
 #include "Chunk.h"
 #include "Core.h"
@@ -13,6 +14,10 @@
 
 Chunk Chnk = {0};
 Player *playerptr;
+
+World world = {0};
+
+
 
 int main(void)
 {
@@ -36,7 +41,7 @@ int main(void)
 
             DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 
-            DrawModel(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
+            DrawModelWires(ChnkMdl, (Vector3){0, 0, 0}, 1.0f, DARKGRAY);
 
             EndMode3D();
         }
