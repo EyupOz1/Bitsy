@@ -33,125 +33,73 @@ void printBits(unsigned char value)
     printf("\n");
 }
 
-Mesh Block_Draw(unsigned char bitmask)
+Mesh Block_Draw()
 {
 
-    unsigned char bitcpy = bitmask;
-
-    // Count positive bits
-    int total = 0;
-
-    for (total = 0; bitcpy; total++)
-    {
-        bitcpy &= bitcpy - 1;
-    }
-
-    printf("%i\n\n\n", total);
-
-    printBits(bitmask);
-
     Mesh mesh = {0};
-    mesh.triangleCount = total * 2;
+    mesh.triangleCount = 12;
     mesh.vertexCount = 8;
 
     float vertices[] = {
 
-        0, 0, 0,
-        1, 0, 0,
+        1, 1, 1,
+        0, 1, 1,
+        0, 0, 1,
+        1, 0, 1,
+
         1, 1, 0,
         0, 1, 0,
-        0, 1, 1,
-        1, 1, 1,
-        1, 0, 1,
-        0, 0, 1
+        0, 0, 0,
+        1, 0, 0
 
     };
-/* 
-    unsigned short indices[total * 6];
-    int index = 0;
 
-    if (bitmask & FRONT_BIT)
-    {
-        indices[index++] = 0;
-        indices[index++] = 2;
-        indices[index++] = 1;
-        indices[index++] = 0;
-        indices[index++] = 3;
-        indices[index++] = 2;
-    }
-    if (bitmask & DIR_POS_Y)
-    {
-        indices[index++] = 2;
-        indices[index++] = 3;
-        indices[index++] = 4;
-        indices[index++] = 2;
-        indices[index++] = 4;
-        indices[index++] = 5;
-    }
-    if (bitmask & RIGHT_BIT)
-    {
-        indices[index++] = 1;
-        indices[index++] = 2;
-        indices[index++] = 5;
-        indices[index++] = 1;
-        indices[index++] = 5;
-        indices[index++] = 6;
-    }
-    if (bitmask & LEFT_BIT)
-    {
-        indices[index++] = 0;
-        indices[index++] = 7;
-        indices[index++] = 4;
-        indices[index++] = 0;
-        indices[index++] = 4;
-        indices[index++] = 3;
-    }
-    if (bitmask & BACK_BIT)
-    {
-        indices[index++] = 5;
-        indices[index++] = 4;
-        indices[index++] = 7;
-        indices[index++] = 5;
-        indices[index++] = 7;
-        indices[index++] = 6;
-    }
-    if (bitmask & DIR_NEG_Y)
-    {
-        indices[index++] = 0;
-        indices[index++] = 6;
-        indices[index++] = 7;
-        indices[index++] = 0;
-        indices[index++] = 1;
-        indices[index++] = 6;
-    } */
+    float normals[] = {
 
-    
+        0, 0, 1,
+        1, 0, 0,
+        0, 0, -1,
+        -1, 0, 0,
+        0, 1, 0,
+        0, -1, 0
+
+    };
+
     unsigned short indices[] = {
-        0, 2, 1, // face front
-        0, 3, 2,
-        2, 3, 4, // face top
-        2, 4, 5,
-        1, 2, 5, // face right
-        1, 5, 6,
-        0, 7, 4, // face left
-        0, 4, 3,
-        5, 4, 7, // face back
-        5, 7, 6,
-        0, 6, 7, // face bottom
-        0, 1, 6
+
+        0, 1, 3,
+        3, 1, 2,
+
+        1, 5, 2,
+        2, 5, 6,
+
+        5, 4, 6,
+        6, 4, 7,
+
+        4, 0, 7,
+        7, 0, 3,
+
+        3, 2, 7,
+        7, 2, 6,
+
+        4, 5, 0,
+        0, 5, 1
 
     };
-    
+
     mesh.vertices = (float *)RL_MALLOC(8 * 3 * sizeof(float));
     mesh.indices = (unsigned short *)RL_MALLOC(mesh.triangleCount * 3 * sizeof(unsigned short));
+    mesh.normals = (float *)RL_MALLOC(6 * 3 * sizeof(float));
 
     memcpy(mesh.vertices, vertices, 8 * 3 * sizeof(float));
     memcpy(mesh.indices, indices, mesh.triangleCount * 3 * sizeof(unsigned short));
+    memcpy(mesh.normals, normals, 6 * 3 * sizeof(float));
 
     UploadMesh(&mesh, false);
 
     return mesh;
 }
+
 
 Texture2D block_texture_create()
 {

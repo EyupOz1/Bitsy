@@ -1,6 +1,5 @@
 #include "Chunk.h"
 #include "Block.h"
-#include "main.h"
 
 void test_world(Chunk *Chnk)
 {

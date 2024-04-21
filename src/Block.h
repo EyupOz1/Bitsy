@@ -7,6 +7,11 @@
 #define LEFT_BIT    (1 << 4) // Bit 4 represents the left side
 #define RIGHT_BIT   (1 << 5) // Bit 5 represents the right side
 
+
+#define CHUNK_SIZE 6
+
+
+
 #include "raylib.h"
 
 typedef struct
@@ -17,5 +22,5 @@ typedef struct
 
 } Block;
 
-Mesh Block_Draw(unsigned char bitmask);
+Mesh Block_Draw();
 Texture2D block_texture_create();

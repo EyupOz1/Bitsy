@@ -1,6 +1,9 @@
 #pragma once
 #include "Block.h"
-#include "main.h"
+#include "raylib.h"
+#include "Block.h"
+#include "Chunk.h"
+
 
 typedef struct Chunk
 {

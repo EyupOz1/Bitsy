@@ -1,17 +1,6 @@
-#include "raylib.h"
-#include "Block.h"
 #include "Chunk.h"
-#include "main.h"
-
 Mesh chunk_mesh_create(Chunk *Chnk)
 {
-
-    int vert_i = 0;
-    int ind_i = 0;
-    int vertices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
-    unsigned short indices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE];
-
-    Mesh chnk_mesh = {0};
 
     for (int i = 0; i < CHUNK_SIZE; i++)
     {
@@ -19,86 +8,102 @@ Mesh chunk_mesh_create(Chunk *Chnk)
         {
             for (int k = 0; k < CHUNK_SIZE; k++)
             {
-                if (Chnk->Blocks[i][j][k].BlockID < 1)
+                if (Chnk->Blocks[i][j][k].BlockID > 0)
                 {
-                    continue;
-                }
-
-                if (j > 0 && Chnk->Blocks[i][j - 1][k].BlockID < 1) // FIXME: What if unassigned stack coincedently is 0?
-                {
-                    chnk_mesh.triangleCount += 2;
-                    int cpy = vert_i;
-
-                    // 0
-                    vertices[vert_i++] = 0 + i;
-                    vertices[vert_i++] = 0 + j;
-                    vertices[vert_i++] = 0 + k;
-                    // 6
-                    vertices[vert_i++] = 1 + i;
-                    vertices[vert_i++] = 0 + j;
-                    vertices[vert_i++] = 1 + k;
-                    // 7
-                    vertices[vert_i++] = 0 + i;
-                    vertices[vert_i++] = 0 + j;
-                    vertices[vert_i++] = 1 + k;
-                    // 1
-                    vertices[vert_i++] = 1 + i;
-                    vertices[vert_i++] = 0 + j;
-                    vertices[vert_i++] = 0 + k;
-
-                    int null = cpy;
-                    int six = null + 3 ;
-                    int seven = six + 3;
-                    int one = seven + 3;
-
-                    indices[ind_i++] = null;
-                    indices[ind_i++] = six;
-                    indices[ind_i++] = seven;
-                    indices[ind_i++] = null;
-                    indices[ind_i++] = one;
-                    indices[ind_i++] = six;
+                    
                 }
             }
         }
     }
 
-int ve = 0;
-    for (int i = 0; i < vert_i; i++)
-    {
+    Mesh mesh = {0};
+    mesh.triangleCount = 12;
+    mesh.vertexCount = 8;
 
-        printf("%i,", vertices[i]);
-        ve++;
-        if (ve==3)
-        {
-            ve = 0;
-            printf("\n");
-        }
-        
-    }
+    float vertices[] = {
 
-    int ze = 0;
-    for (int i = 0; i < ind_i; i++)
-    {
+        1, 1, 1,
+        0, 1, 1,
+        0, 0, 1,
+        1, 0, 1,
 
-        printf("%i,", indices[i]);
-        ze++;
-        if (ze==3)
-        {
-            ze = 0;
-            printf("\n");
-        }
-        
-    }
-    
+        1, 1, 0,
+        0, 1, 0,
+        0, 0, 0,
+        1, 0, 0
 
-    chnk_mesh.vertexCount = vert_i / 3;
+    };
 
-    chnk_mesh.vertices = (float *)RL_MALLOC((vert_i) * sizeof(int));
-    chnk_mesh.indices = (unsigned short *)RL_MALLOC((ind_i ) * sizeof(unsigned short));
+    float normals[] = {
 
-    memcpy(chnk_mesh.vertices, vertices, (vert_i) * sizeof(int));
-    memcpy(chnk_mesh.indices, indices, (ind_i ) * sizeof(unsigned short));
+        0, 0, 1,
+        1, 0, 0,
+        0, 0, -1,
+        -1, 0, 0,
+        0, 1, 0,
+        0, -1, 0
 
-    UploadMesh(&chnk_mesh, false);
-    return chnk_mesh;
+    };
+
+    unsigned short indices[] = {
+        //+X
+        4,
+        0,
+        7,
+        7,
+        0,
+        3,
+
+        //-X
+        1,
+        5,
+        2,
+        2,
+        5,
+        6,
+
+        //+Y
+        4,
+        5,
+        0,
+        0,
+        5,
+        1,
+
+        //-Y
+        3,
+        2,
+        7,
+        7,
+        2,
+        6,
+
+        //+Z
+        0,
+        1,
+        3,
+        3,
+        1,
+        2,
+
+        //-Z
+        5,
+        4,
+        6,
+        6,
+        4,
+        7,
+    };
+
+    mesh.vertices = (float *)RL_MALLOC(8 * 3 * sizeof(float));
+    mesh.indices = (unsigned short *)RL_MALLOC(mesh.triangleCount * 3 * sizeof(unsigned short));
+    mesh.normals = (float *)RL_MALLOC(6 * 3 * sizeof(float));
+
+    memcpy(mesh.vertices, vertices, 8 * 3 * sizeof(float));
+    memcpy(mesh.indices, indices, mesh.triangleCount * 3 * sizeof(unsigned short));
+    memcpy(mesh.normals, normals, 6 * 3 * sizeof(float));
+
+    UploadMesh(&mesh, false);
+
+    return mesh;
 }
