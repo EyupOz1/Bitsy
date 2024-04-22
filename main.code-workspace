@@ -58,7 +58,8 @@
 			"string.h": "c",
 			"player.h": "c",
 			"main.h": "c",
-			"chunk.h": "c"
+			"chunk.h": "c",
+			"world.h": "c"
 		},
 		"git.autoRepositoryDetection": false,
 		"git.enabled": true

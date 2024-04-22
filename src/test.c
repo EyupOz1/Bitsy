@@ -30,11 +30,12 @@ void test_world2(Chunk *Chnk)
     Chnk->Blocks[3][3][3] = (Block){.BlockID = 1};
 }
 
+
 void test_world3(Chunk *Chnk)
 {
 
     Chnk->Blocks[0][0][0] = (Block){.BlockID = 1};
-    Chnk->Blocks[1][0][0] = (Block){.BlockID = 2};
-    Chnk->Blocks[2][0][0] = (Block){.BlockID = 2};
+    Chnk->Blocks[CHUNK_SIZE - 1][CHUNK_SIZE - 1][CHUNK_SIZE - 1] = (Block){.BlockID = 1};
+
 
 }

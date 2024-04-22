@@ -7,7 +7,7 @@
 
 #include "Block.h"
 
-#define CHUNK_SIZE 16
+#define CHUNK_SIZE 2
 
 
 

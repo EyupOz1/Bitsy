@@ -1,5 +1,12 @@
 #include "Chunk.h"
 
+
+
+void chunk_create(Chunk* Chnk)
+{
+    
+}
+
 void chunk_mesh_create(Chunk *Chnk)
 {
 

@@ -14,21 +14,21 @@
 
 Player *playerptr;
 
-World world = {0};
+World* world;
 
 int main(void)
 {
+    world = RL_MALLOC(sizeof(World));
 
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 
     for (int i = 0; i < 5; i++)
     {
-        test_world(&world.loadedChunks[i]);
-        world.loadedChunks[i].pos = (Vector3){i * 16, 0, i * 16};
-        chunk_mesh_create(&world.loadedChunks[i]);
-        world.loadedChunks[i].dirty = 1;
-        printf("%f, %f, %f\n", world.loadedChunks[i].pos.x, world.loadedChunks[i].pos.y, world.loadedChunks[i].pos.z);
+        test_world3(&world->loadedChunks[i]);
+        world->loadedChunks[i].pos = (Vector3){-i * CHUNK_SIZE, 0, -i * CHUNK_SIZE};
+        chunk_mesh_create(&world->loadedChunks[i]);
+        world->loadedChunks[i].dirty = 1;
     }
 
     Model models[5];
@@ -36,6 +36,7 @@ int main(void)
     while (!WindowShouldClose())
     {
 
+        //World_getChunkFromPlayer(playerptr, &world);
         BeginDrawing();
         {
             ClearBackground(RAYWHITE);
@@ -47,18 +48,17 @@ int main(void)
 
             for (int i = 0; i < 5; i++)
             {
-                if (world.loadedChunks[i].dirty == 1)
+                if (world->loadedChunks[i].dirty == 1)
                 {
-                    world.loadedChunks[i].dirty = 0;
-                    models[i] = LoadModelFromMesh(world.loadedChunks[i].currentMesh);
-                    DrawModelWires(models[i], world.loadedChunks[i].pos, 1.0f, DARKGRAY);
+                    world->loadedChunks[i].dirty = 0;
+                    models[i] = LoadModelFromMesh(world->loadedChunks[i].currentMesh);
+                    DrawModelWires(models[i], world->loadedChunks[i].pos, 1.0f, DARKGRAY);
                 }
                 else
                 {
-                    DrawModelWires(models[i], world.loadedChunks[i].pos, 1.0f, DARKGRAY);
+                    DrawModelWires(models[i], world->loadedChunks[i].pos, 1.0f, DARKGRAY);
                 }
             }
-
 
             EndMode3D();
         }
