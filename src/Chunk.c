@@ -34,143 +34,140 @@ void chunk_mesh_create(Chunk *Chnk)
 
     long int BlockCount = 0;
 
-    for (int i = 0; i < CHUNK_SIZE; i++)
+    for (int i = 0; i < Chnk->BlockPosIndex; i++)
     {
-        for (int j = 0; j < CHUNK_SIZE; j++)
+        Vector3 currPos = Chnk->BlocksPos[i];
+        Block currBlock = Chnk->Blocks[(int)currPos.x][(int)currPos.y][(int)currPos.z];
+
+        if (currBlock.BlockID <= 0)
         {
-            for (int k = 0; k < CHUNK_SIZE; k++)
-            {
-                if (Chnk->Blocks[i][j][k].BlockID <= 0)
-                {
-                    continue;
-                }
-
-                float localVertices[] = {
-
-                    1 + i, 1 + j, 1 + k,
-                    0 + i, 1 + j, 1 + k,
-                    0 + i, 0 + j, 1 + k,
-                    1 + i, 0 + j, 1 + k,
-
-                    1 + i, 1 + j, 0 + k,
-                    0 + i, 1 + j, 0 + k,
-                    0 + i, 0 + j, 0 + k,
-                    1 + i, 0 + j, 0 + k
-
-                };
-
-                unsigned short localIndices[] = {
-
-                    //+X
-                    4 + 8 * BlockCount,
-                    0 + 8 * BlockCount,
-                    7 + 8 * BlockCount,
-                    7 + 8 * BlockCount,
-                    0 + 8 * BlockCount,
-                    3 + 8 * BlockCount,
-
-                    //-X
-                    1 + 8 * BlockCount,
-                    5 + 8 * BlockCount,
-                    2 + 8 * BlockCount,
-                    2 + 8 * BlockCount,
-                    5 + 8 * BlockCount,
-                    6 + 8 * BlockCount,
-
-                    //+Y
-                    4 + 8 * BlockCount,
-                    5 + 8 * BlockCount,
-                    0 + 8 * BlockCount,
-                    0 + 8 * BlockCount,
-                    5 + 8 * BlockCount,
-                    1 + 8 * BlockCount,
-
-                    //-Y
-                    3 + 8 * BlockCount,
-                    2 + 8 * BlockCount,
-                    7 + 8 * BlockCount,
-                    7 + 8 * BlockCount,
-                    2 + 8 * BlockCount,
-                    6 + 8 * BlockCount,
-
-                    //+Z
-                    0 + 8 * BlockCount,
-                    1 + 8 * BlockCount,
-                    3 + 8 * BlockCount,
-                    3 + 8 * BlockCount,
-                    1 + 8 * BlockCount,
-                    2 + 8 * BlockCount,
-
-                    //-Z
-                    5 + 8 * BlockCount,
-                    4 + 8 * BlockCount,
-                    6 + 8 * BlockCount,
-                    6 + 8 * BlockCount,
-                    4 + 8 * BlockCount,
-                    7 + 8 * BlockCount,
-                };
-
-                memcpy(&vertices[vertex_index], localVertices, BLOCK_INDICES_COUNT * sizeof(float));
-                vertex_index += BLOCK_INDICES_COUNT;
-
-                // TODO: Test if block in adjacent chunk is set
-                if (i + 1 >= CHUNK_SIZE || Chnk->Blocks[i + 1][j][k].BlockID <= 0)
-                {
-                    for (int l = 0; l < 6; l++)
-                    {
-                        indices[indices_index++] = localIndices[l];
-                    }
-                    mesh.triangleCount += 2;
-                }
-
-                if (i - 1 <= 0 || Chnk->Blocks[i + -1][j][k].BlockID <= 0)
-                {
-                    for (int l = 6; l < 12; l++)
-                    {
-                        indices[indices_index++] = localIndices[l];
-                    }
-                    mesh.triangleCount += 2;
-                }
-
-                if (j + 1 >= CHUNK_SIZE || Chnk->Blocks[i][j + 1][k].BlockID <= 0)
-                {
-                    for (int l = 12; l < 18; l++)
-                    {
-                        indices[indices_index++] = localIndices[l];
-                    }
-                    mesh.triangleCount += 2;
-                }
-
-                if (j - 1 <= 0 || Chnk->Blocks[i][j - 1][k].BlockID <= 0)
-                {
-                    for (int l = 18; l < 24; l++)
-                    {
-                        indices[indices_index++] = localIndices[l];
-                    }
-                    mesh.triangleCount += 2;
-                }
-
-                if (k + 1 >= CHUNK_SIZE || Chnk->Blocks[i][j][k + 1].BlockID <= 0)
-                {
-                    for (int l = 24; l < 30; l++)
-                    {
-                        indices[indices_index++] = localIndices[l];
-                    }
-                    mesh.triangleCount += 2;
-                }
-
-                if (k - 1 < 0 || Chnk->Blocks[i][j][k - 1].BlockID <= 0)
-                {
-                    for (int l = 30; l < 36; l++)
-                    {
-                        indices[indices_index++] = localIndices[l];
-                    }
-                    mesh.triangleCount += 2;
-                }
-
-                BlockCount++;
-            }
+            continue;
         }
+
+        float localVertices[] = {
+
+            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+
+            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 0 + currPos.y, 0 + currPos.z
+
+        };
+
+        unsigned short localIndices[] = {
+
+            //+X
+            4 + 8 * BlockCount,
+            0 + 8 * BlockCount,
+            7 + 8 * BlockCount,
+            7 + 8 * BlockCount,
+            0 + 8 * BlockCount,
+            3 + 8 * BlockCount,
+
+            //-X
+            1 + 8 * BlockCount,
+            5 + 8 * BlockCount,
+            2 + 8 * BlockCount,
+            2 + 8 * BlockCount,
+            5 + 8 * BlockCount,
+            6 + 8 * BlockCount,
+
+            //+Y
+            4 + 8 * BlockCount,
+            5 + 8 * BlockCount,
+            0 + 8 * BlockCount,
+            0 + 8 * BlockCount,
+            5 + 8 * BlockCount,
+            1 + 8 * BlockCount,
+
+            //-Y
+            3 + 8 * BlockCount,
+            2 + 8 * BlockCount,
+            7 + 8 * BlockCount,
+            7 + 8 * BlockCount,
+            2 + 8 * BlockCount,
+            6 + 8 * BlockCount,
+
+            //+Z
+            0 + 8 * BlockCount,
+            1 + 8 * BlockCount,
+            3 + 8 * BlockCount,
+            3 + 8 * BlockCount,
+            1 + 8 * BlockCount,
+            2 + 8 * BlockCount,
+
+            //-Z
+            5 + 8 * BlockCount,
+            4 + 8 * BlockCount,
+            6 + 8 * BlockCount,
+            6 + 8 * BlockCount,
+            4 + 8 * BlockCount,
+            7 + 8 * BlockCount,
+        };
+
+        memcpy(&vertices[vertex_index], localVertices, BLOCK_INDICES_COUNT * sizeof(float));
+        vertex_index += BLOCK_INDICES_COUNT;
+
+        // TODO: Test if block in adjacent chunk is set
+        if (currPos.x + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x + 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
+        {
+            for (int l = 0; l < 6; l++)
+            {
+                indices[indices_index++] = localIndices[l];
+            }
+            mesh.triangleCount += 2;
+        }
+
+        if (currPos.x - 1 <= 0 || Chnk->Blocks[(int)(currPos.x - 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
+        {
+            for (int l = 6; l < 12; l++)
+            {
+                indices[indices_index++] = localIndices[l];
+            }
+            mesh.triangleCount += 2;
+        }
+
+        if (currPos.y + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y + 1)][(int)(currPos.z)].BlockID <= 0)
+        {
+            for (int l = 12; l < 18; l++)
+            {
+                indices[indices_index++] = localIndices[l];
+            }
+            mesh.triangleCount += 2;
+        }
+
+        if (currPos.y - 1 <= 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y - 1)][(int)(currPos.z)].BlockID <= 0)
+        {
+            for (int l = 18; l < 24; l++)
+            {
+                indices[indices_index++] = localIndices[l];
+            }
+            mesh.triangleCount += 2;
+        }
+
+        if (currPos.z + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z + 1)].BlockID <= 0)
+        {
+            for (int l = 24; l < 30; l++)
+            {
+                indices[indices_index++] = localIndices[l];
+            }
+            mesh.triangleCount += 2;
+        }
+
+        if (currPos.z - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z - 1)].BlockID <= 0)
+        {
+            for (int l = 30; l < 36; l++)
+            {
+                indices[indices_index++] = localIndices[l];
+            }
+            mesh.triangleCount += 2;
+        }
+
+        BlockCount++;
     }
 
     mesh.vertexCount = vertex_index / 3;

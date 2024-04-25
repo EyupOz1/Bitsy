@@ -10,7 +10,7 @@ void test_world(Chunk *Chnk)
         {
             for (int k = 0; k < CHUNK_SIZE; k++)
             {
-                Chnk->Blocks[i][j][k] = (Block){.BlockID = 1};
+                chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){i, j, k});
             }
         }
     }

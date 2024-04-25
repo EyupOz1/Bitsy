@@ -18,8 +18,8 @@ World *world;
 int main(void)
 {
     Chunk ch = chunk_create((Vector3){0, 0, 0});
-
-    chunk_block_add(&ch, (Block){.BlockID = 1}, (Vector3){0, 1, 1});
+    test_world(&ch);
+    // chunk_block_add(&ch, (Block){.BlockID = 1}, (Vector3){0, 1, 1});
 
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
