@@ -122,7 +122,7 @@ void chunk_mesh_create(Chunk *Chnk)
             mesh.triangleCount += 2;
         }
 
-        if (currPos.x - 1 <= 0 || Chnk->Blocks[(int)(currPos.x - 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
+        if (currPos.x - 1 < 0 || Chnk->Blocks[(int)(currPos.x - 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
         {
             for (int l = 6; l < 12; l++)
             {
@@ -140,7 +140,7 @@ void chunk_mesh_create(Chunk *Chnk)
             mesh.triangleCount += 2;
         }
 
-        if (currPos.y - 1 <= 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y - 1)][(int)(currPos.z)].BlockID <= 0)
+        if (currPos.y - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y - 1)][(int)(currPos.z)].BlockID <= 0)
         {
             for (int l = 18; l < 24; l++)
             {
