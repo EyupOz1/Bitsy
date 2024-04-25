@@ -5,12 +5,13 @@
 #include "raymath.h"
 #include "stdio.h"
 
-#define CHUNK_BUFFER 125
+#define WORLD_RENDER_DISTANCE 5
 
 
 typedef struct World
 {
-    Chunk loadedChunks[5];
+    Chunk loadedChunks[12];
+    int chunkCount;
 
 } World;
 

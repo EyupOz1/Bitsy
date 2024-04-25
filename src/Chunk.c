@@ -1,10 +1,22 @@
 #include "Chunk.h"
 
-
-
-void chunk_create(Chunk* Chnk)
+Chunk chunk_create(Vector3 pos)
 {
-    
+    Chunk chnk;
+    chnk.pos = pos;
+    chnk.dirty = 1;
+
+    Vector3 newPos = (Vector3){(pos.x / CHUNK_SIZE) * CHUNK_SIZE, (pos.y / CHUNK_SIZE) * CHUNK_SIZE, (pos.z / CHUNK_SIZE) * CHUNK_SIZE};
+    chnk.pos = newPos;
+
+    chnk.BlockPosIndex = 0;
+    return chnk;
+}
+
+void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
+{
+    Chnk->Blocks[(int)pos.x][(int)pos.y][(int)pos.z] = Blck;
+    Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
 }
 
 void chunk_mesh_create(Chunk *Chnk)
@@ -98,7 +110,6 @@ void chunk_mesh_create(Chunk *Chnk)
                     7 + 8 * BlockCount,
                 };
 
-
                 memcpy(&vertices[vertex_index], localVertices, BLOCK_INDICES_COUNT * sizeof(float));
                 vertex_index += BLOCK_INDICES_COUNT;
 
@@ -112,7 +123,7 @@ void chunk_mesh_create(Chunk *Chnk)
                     mesh.triangleCount += 2;
                 }
 
-                if (i - 1 < 0 || Chnk->Blocks[i + -1][j][k].BlockID <= 0)
+                if (i - 1 <= 0 || Chnk->Blocks[i + -1][j][k].BlockID <= 0)
                 {
                     for (int l = 6; l < 12; l++)
                     {
@@ -130,7 +141,7 @@ void chunk_mesh_create(Chunk *Chnk)
                     mesh.triangleCount += 2;
                 }
 
-                if (j - 1 < 0 || Chnk->Blocks[i][j - 1][k].BlockID <= 0)
+                if (j - 1 <= 0 || Chnk->Blocks[i][j - 1][k].BlockID <= 0)
                 {
                     for (int l = 18; l < 24; l++)
                     {
@@ -172,5 +183,4 @@ void chunk_mesh_create(Chunk *Chnk)
 
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
-
 }

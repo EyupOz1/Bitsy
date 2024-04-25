@@ -4,7 +4,6 @@
 
 #include "string.h"
 
-#include "Block.h"
 #include "World.h"
 #include "Player.h"
 #include "Chunk.h"
@@ -14,29 +13,23 @@
 
 Player *playerptr;
 
-World* world;
+World *world;
 
 int main(void)
 {
-    world = RL_MALLOC(sizeof(World));
+    Chunk ch = chunk_create((Vector3){0, 0, 0});
+
+    chunk_block_add(&ch, (Block){.BlockID = 1}, (Vector3){0, 1, 1});
 
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 
-    for (int i = 0; i < 5; i++)
-    {
-        test_world3(&world->loadedChunks[i]);
-        world->loadedChunks[i].pos = (Vector3){-i * CHUNK_SIZE, 0, -i * CHUNK_SIZE};
-        chunk_mesh_create(&world->loadedChunks[i]);
-        world->loadedChunks[i].dirty = 1;
-    }
-
-    Model models[5];
+    chunk_mesh_create(&ch);
+    Model mdl = LoadModelFromMesh(ch.currentMesh);
 
     while (!WindowShouldClose())
     {
 
-        //World_getChunkFromPlayer(playerptr, &world);
         BeginDrawing();
         {
             ClearBackground(RAYWHITE);
@@ -44,21 +37,9 @@ int main(void)
             BeginMode3D(playerptr->player_camera);
             UpdateCamera(&(playerptr->player_camera), CAMERA_FREE);
 
-            DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
+            DrawModel(mdl, ch.pos, 1.0f, YELLOW);
 
-            for (int i = 0; i < 5; i++)
-            {
-                if (world->loadedChunks[i].dirty == 1)
-                {
-                    world->loadedChunks[i].dirty = 0;
-                    models[i] = LoadModelFromMesh(world->loadedChunks[i].currentMesh);
-                    DrawModelWires(models[i], world->loadedChunks[i].pos, 1.0f, DARKGRAY);
-                }
-                else
-                {
-                    DrawModelWires(models[i], world->loadedChunks[i].pos, 1.0f, DARKGRAY);
-                }
-            }
+            DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 
             EndMode3D();
         }
