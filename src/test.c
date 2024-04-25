@@ -26,7 +26,7 @@ void test_world2(Chunk *Chnk)
             {
                 if (j == 0)
                 {
-                    Chnk->Blocks[i][j][k] = (Block){.BlockID = 1};
+                    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){i, j, k});
                 }
             }
         }
@@ -35,7 +35,6 @@ void test_world2(Chunk *Chnk)
 
 void test_world3(Chunk *Chnk)
 {
-
-    Chnk->Blocks[0][0][0] = (Block){.BlockID = 1};
-    Chnk->Blocks[CHUNK_SIZE - 1][CHUNK_SIZE - 1][CHUNK_SIZE - 1] = (Block){.BlockID = 1};
+    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){0, 0, 0});
+    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){CHUNK_SIZE - 1, CHUNK_SIZE - 1, CHUNK_SIZE - 1});
 }

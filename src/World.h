@@ -10,9 +10,10 @@
 
 typedef struct World
 {
-    Chunk loadedChunks[12];
+    Chunk loadedChunks;
     int chunkCount;
 
 } World;
 
 void World_getChunkFromPlayer(Player *player, World *world);
+Vector3 getChunkPos(Vector3 pos);

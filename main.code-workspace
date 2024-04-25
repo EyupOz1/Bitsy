@@ -10,7 +10,12 @@
 			"math.h": "c",
 			"blocks.h": "c",
 			"stdio.h": "c",
-			"*.m": "c"
+			"*.m": "c",
+			"player.h": "c",
+			"rcamera.h": "c",
+			"world.h": "c",
+			"chunk.h": "c",
+			"raymath.h": "c"
 		}
 	}
 }
