@@ -20,7 +20,6 @@ int main(void)
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 
-
     while (!WindowShouldClose())
     {
 
@@ -49,9 +48,13 @@ int main(void)
                 loadedChunk[i]->shouldLoad = 0;
             }
         }
-
         DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 
+        Ray ray = {.direction = GetCameraForward(&playerptr->player_camera), .position = playerptr->player_camera.position};
+
+        DrawRay(ray, BLACK);
+
+        DrawCube((Vector3){-16.0f, 2.5f, 0.0f}, 1.0f, 5.0f, 32.0f, BLUE); 
         EndMode3D();
 
         DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", playerptr->player_camera.position.x, playerptr->player_camera.position.y, playerptr->player_camera.position.z), 610, 60, 10, BLACK);
