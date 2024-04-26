@@ -5,7 +5,7 @@
 
 #include "raylib.h"
 
-#define CHUNK_SIZE 4
+#define CHUNK_SIZE 16
 
 #define BLOCK_VERTICES_COUNT 8
 #define BLOCK_INDICES_COUNT 24
@@ -30,6 +30,6 @@ typedef struct Chunk
 } Chunk;
 
 void chunk_mesh_create(Chunk *Chnk);
-Chunk chunk_create(Vector3 pos);
+Chunk chunk_create(Chunk* chnk, Vector3 pos);
 void chunk_block_add(Chunk* Chnk, Block Blck, Vector3 pos);
 void GenChunk(Chunk *Chnk);

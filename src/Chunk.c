@@ -1,16 +1,14 @@
 #include "Chunk.h"
 
-Chunk chunk_create(Vector3 pos)
+Chunk chunk_create(Chunk* chnk, Vector3 pos)
 {
-    Chunk chnk = {0};
-    chnk.pos = pos;
-    chnk.dirty = 1;
+    chnk->pos = pos;
+    chnk->dirty = 1;
 
     Vector3 newPos = (Vector3){(pos.x / CHUNK_SIZE) * CHUNK_SIZE, (pos.y / CHUNK_SIZE) * CHUNK_SIZE, (pos.z / CHUNK_SIZE) * CHUNK_SIZE};
-    chnk.pos = newPos;
+    chnk->pos = newPos;
 
-    chnk.BlockPosIndex = 0;
-    return chnk;
+    chnk->BlockPosIndex = 0;
 }
 
 void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)

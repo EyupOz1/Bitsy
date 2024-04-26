@@ -15,7 +15,8 @@
 			"rcamera.h": "c",
 			"world.h": "c",
 			"chunk.h": "c",
-			"raymath.h": "c"
+			"raymath.h": "c",
+			"test.h": "c"
 		}
 	}
 }

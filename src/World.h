@@ -19,4 +19,4 @@ typedef struct World
 void world_init(World *wrld);
  */
 Vector3 getChunkPos(Vector3 pos);
-void world_chunk_update(Player *player, Chunk** loadedChunks, int loadedChunksCount);
+void world_chunk_update(Player *player, Chunk **loadedChunks, int* loadedChunksCount);

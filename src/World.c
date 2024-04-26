@@ -13,7 +13,7 @@ void world_init(World *wrld)
 }
  */
 
-void world_chunk_update(Player *player, Chunk** loadedChunks, int loadedChunksCount)
+void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
     Vector3 pos = getChunkPos(player->player_camera.position);
     Vector3 positions[] = {
@@ -26,22 +26,24 @@ void world_chunk_update(Player *player, Chunk** loadedChunks, int loadedChunksCo
         Vector3Add(pos, (Vector3){0, 0, -CHUNK_SIZE}),
     };
 
-    int index = 0;
-    for (int i = 0; i < loadedChunksCount; i++)
+    for (int i = 0; i < 7; i++)
     {
-        unsigned char shouldLoad = 0;
-        for (int j = 0; j < 7; j++)
+        unsigned char chunkExists = 0;
+        for (int j = 0; j < *loadedChunksCount; j++)
         {
-            if (positions[j].x == (*loadedChunks[i]).pos.x && positions[j].y == (*loadedChunks[i]).pos.y && positions[j].z == (*loadedChunks[i]).pos.z)
+            if (positions[i].x == (*loadedChunks[j]).pos.x && positions[i].y == (*loadedChunks[j]).pos.y && positions[i].z == (*loadedChunks[j]).pos.z)
             {
-                shouldLoad = 1;
+                chunkExists = 1;
+                (*loadedChunks[i]).shouldLoad = 1;
             }
         }
-
-        if (shouldLoad)
+        if (!chunkExists)
         {
-            (*loadedChunks[i]).shouldLoad = 1;
+            Chunk *ch = RL_MALLOC(sizeof(Chunk));
+            chunk_create(ch, positions[i]);
+            ch->shouldLoad = 1;
+            chunk_block_add(ch, (Block){.BlockID = 1}, (Vector3){0, 0, 0});
+            loadedChunks[(*loadedChunksCount)++] = ch;
         }
-        
     }
 }
