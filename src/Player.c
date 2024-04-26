@@ -103,3 +103,8 @@ void player_update(Camera *camera, int mode)
             CameraMoveToTarget(camera, -2.0f);
     }
 }
+
+Ray Player_keys(Player *player)
+{
+
+}

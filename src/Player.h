@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "rcamera.h"
 #include "raymath.h"
+#include "stdio.h"
 
 
 #define CAMERA_MOVE_SPEED 0.09f
@@ -33,3 +34,4 @@ typedef struct Player
 
 Player* player_create() ;
 void player_update(Camera *camera, int mode);
+Ray Player_keys(Player* player);

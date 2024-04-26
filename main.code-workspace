@@ -16,7 +16,8 @@
 			"world.h": "c",
 			"chunk.h": "c",
 			"raymath.h": "c",
-			"test.h": "c"
+			"test.h": "c",
+			"string.h": "c"
 		}
 	}
 }

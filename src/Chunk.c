@@ -1,6 +1,6 @@
 #include "Chunk.h"
 
-Chunk chunk_create(Chunk* chnk, Vector3 pos)
+Chunk chunk_create(Chunk *chnk, Vector3 pos)
 {
     chnk->pos = pos;
     chnk->dirty = 1;
@@ -107,10 +107,12 @@ void chunk_mesh_create(Chunk *Chnk)
             7 + 8 * BlockCount,
         };
 
-        memcpy(&vertices[vertex_index], localVertices, BLOCK_INDICES_COUNT * sizeof(float));
-        vertex_index += BLOCK_INDICES_COUNT;
-
         // TODO: Test if block in adjacent chunk is set
+
+        unsigned char blockUnderground = 1;
+
+        
+
         if (currPos.x + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x + 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
         {
             for (int l = 0; l < 6; l++)
@@ -118,6 +120,7 @@ void chunk_mesh_create(Chunk *Chnk)
                 indices[indices_index++] = localIndices[l];
             }
             mesh.triangleCount += 2;
+            blockUnderground = 0;
         }
 
         if (currPos.x - 1 < 0 || Chnk->Blocks[(int)(currPos.x - 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
@@ -127,6 +130,7 @@ void chunk_mesh_create(Chunk *Chnk)
                 indices[indices_index++] = localIndices[l];
             }
             mesh.triangleCount += 2;
+            blockUnderground = 0;
         }
 
         if (currPos.y + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y + 1)][(int)(currPos.z)].BlockID <= 0)
@@ -136,6 +140,7 @@ void chunk_mesh_create(Chunk *Chnk)
                 indices[indices_index++] = localIndices[l];
             }
             mesh.triangleCount += 2;
+            blockUnderground = 0;
         }
 
         if (currPos.y - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y - 1)][(int)(currPos.z)].BlockID <= 0)
@@ -145,6 +150,7 @@ void chunk_mesh_create(Chunk *Chnk)
                 indices[indices_index++] = localIndices[l];
             }
             mesh.triangleCount += 2;
+            blockUnderground = 0;
         }
 
         if (currPos.z + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z + 1)].BlockID <= 0)
@@ -154,6 +160,7 @@ void chunk_mesh_create(Chunk *Chnk)
                 indices[indices_index++] = localIndices[l];
             }
             mesh.triangleCount += 2;
+            blockUnderground = 0;
         }
 
         if (currPos.z - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z - 1)].BlockID <= 0)
@@ -163,6 +170,13 @@ void chunk_mesh_create(Chunk *Chnk)
                 indices[indices_index++] = localIndices[l];
             }
             mesh.triangleCount += 2;
+            blockUnderground = 0;
+        }
+
+        if (!blockUnderground)
+        {
+            memcpy(&vertices[vertex_index], localVertices, BLOCK_INDICES_COUNT * sizeof(float));
+            vertex_index += BLOCK_INDICES_COUNT;
         }
 
         BlockCount++;
@@ -178,12 +192,4 @@ void chunk_mesh_create(Chunk *Chnk)
 
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
-}
-
-void GenChunk(Chunk *Chnk)
-{
-    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1)});
-    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1)});
-    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1)});
-    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){5, 5, 5});
 }

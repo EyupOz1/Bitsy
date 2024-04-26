@@ -8,7 +8,7 @@ void test_world(Chunk *Chnk)
     {
         for (int j = 0; j < CHUNK_SIZE; j++)
         {
-            for (int k = 0; k < CHUNK_SIZE; k++)
+            for (int k = 0; k < CHUNK_SIZE-1; k++)
             {
                 chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){i, j, k});
             }
