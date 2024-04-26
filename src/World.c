@@ -34,11 +34,13 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
             if (positions[i].x == (*loadedChunks[j]).pos.x && positions[i].y == (*loadedChunks[j]).pos.y && positions[i].z == (*loadedChunks[j]).pos.z)
             {
                 chunkExists = 1;
-                (*loadedChunks[i]).shouldLoad = 1;
+                (*loadedChunks[j]).shouldLoad = 1;
+                break;
             }
         }
         if (!chunkExists)
         {
+            
             Chunk *ch = RL_MALLOC(sizeof(Chunk));
             chunk_create(ch, positions[i]);
             ch->shouldLoad = 1;
