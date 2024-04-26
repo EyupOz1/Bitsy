@@ -12,20 +12,22 @@
 #include "Test.h"
 
 Player *playerptr;
-
-World *world;
+int loadedChunkCount = 0;
+Chunk *loadedChunk[30];
 
 int main(void)
 {
-    Chunk ch = chunk_create((Vector3){0, 0, 0});
-    test_world3(&ch);
-    // chunk_block_add(&ch, (Block){.BlockID = 1}, (Vector3){0, 1, 1});
-
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 
-    chunk_mesh_create(&ch);
-    Model mdl = LoadModelFromMesh(ch.currentMesh);
+    Chunk ch = chunk_create((Vector3){0, 0, 0});
+    Chunk ch1 = chunk_create((Vector3){0, CHUNK_SIZE, 0});
+    loadedChunk[loadedChunkCount++] = &ch;
+    loadedChunk[loadedChunkCount++] = &ch1;
+
+    test_world2(loadedChunk[0]);
+    test_world2(loadedChunk[1]);
+
 
     while (!WindowShouldClose())
     {
@@ -39,7 +41,22 @@ int main(void)
 
         Vector3 pos1 = getChunkPos(playerptr->player_camera.position);
 
-        DrawModel(mdl, pos1, 1.0f, YELLOW);
+        world_chunk_update(playerptr, loadedChunk, loadedChunkCount);
+
+        for (int i = 0; i < loadedChunkCount; i++)
+        {
+            if (loadedChunk[i]->dirty && loadedChunk[i]->shouldLoad)
+            {
+                chunk_mesh_create(loadedChunk[i]);
+                loadedChunk[i]->currentModel = LoadModelFromMesh(loadedChunk[i]->currentMesh);
+                loadedChunk[i]->dirty = 0;
+            }
+            if (loadedChunk[i]->shouldLoad)
+            {
+                DrawModel(loadedChunk[i]->currentModel, loadedChunk[i]->pos, 1.0f, PURPLE);
+                loadedChunk[i]->shouldLoad = 0;
+            }
+        }
 
         DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 

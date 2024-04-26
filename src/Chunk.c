@@ -2,7 +2,7 @@
 
 Chunk chunk_create(Vector3 pos)
 {
-    Chunk chnk;
+    Chunk chnk = {0};
     chnk.pos = pos;
     chnk.dirty = 1;
 
@@ -180,4 +180,12 @@ void chunk_mesh_create(Chunk *Chnk)
 
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
+}
+
+void GenChunk(Chunk *Chnk)
+{
+    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1)});
+    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1)});
+    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1), GetRandomValue(0, CHUNK_SIZE - 1)});
+    chunk_block_add(Chnk, (Block){.BlockID = 1}, (Vector3){5, 5, 5});
 }
