@@ -10,6 +10,7 @@
 #include "Core.h"
 
 #include "Test.h"
+#include <stdio.h>
 
 Player *playerptr;
 int loadedChunkCount = 0;
@@ -17,7 +18,6 @@ Chunk *loadedChunk[2000];
 
 int main(void)
 {
-
     init(1080, 720, "Bitsy", 120);
     playerptr = player_create();
 

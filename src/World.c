@@ -57,7 +57,7 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
             Chunk *ch = RL_MALLOC(sizeof(Chunk));
             chunk_create(ch, positions[i]);
             ch->shouldLoad = 1;
-            test_world(ch);
+            test_world3(ch);
             chunk_block_add(ch, (Block){.BlockID = 1}, (Vector3){0, 1, 0});
             loadedChunks[(*loadedChunksCount)++] = ch;
         }
