@@ -19,7 +19,7 @@
                     "RAYLIB_PATH=C:/raylib/raylib",
                     "PROJECT_NAME=Bitsy",
                     "OBJS=src/*.c",
-                    "BUILD_MODE=RELEASE"
+                    "BUILD_MODE=DEBUG"
                 ],
             },
             "osx": {

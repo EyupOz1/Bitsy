@@ -111,8 +111,6 @@ void chunk_mesh_create(Chunk *Chnk)
 
         unsigned char blockUnderground = 1;
 
-        
-
         if (currPos.x + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x + 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
         {
             for (int l = 0; l < 6; l++)
@@ -192,4 +190,18 @@ void chunk_mesh_create(Chunk *Chnk)
 
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
+}
+
+void chunk_perlin_generate(Chunk *chunk)
+{
+    Image noise = GenImagePerlinNoise(CHUNK_SIZE - 1, CHUNK_SIZE - 1, 0, 0, 1);
+    for (int i = 0; i < CHUNK_SIZE - 1; i++)
+    {
+        for (int j = 0; j < CHUNK_SIZE - 1; j++)
+        {
+            unsigned char height = GetImageColor(noise, i, j).a;
+            float x = (height/255.0f) * (CHUNK_SIZE - 1);
+            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
+        }
+    }
 }

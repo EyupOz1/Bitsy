@@ -9,42 +9,49 @@ Vector3 world_PosToChunk(Vector3 pos)
 
 void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
-    Vector3 pos = world_PosToChunk(player->player_camera.position);
-    Vector3 positions[] = {
-        Vector3Add(pos, (Vector3){0, 0, 0}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, 0, 0}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, 0, 0}),
-        Vector3Add(pos, (Vector3){0, CHUNK_SIZE, 0}),
-        Vector3Add(pos, (Vector3){0, -CHUNK_SIZE, 0}),
-        Vector3Add(pos, (Vector3){0, 0, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){0, 0, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, CHUNK_SIZE, 0}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, 0}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, 0}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, 0}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, 0, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, 0, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, 0, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, 0, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){0, CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){0, CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){0, -CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){0, -CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(pos, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, -CHUNK_SIZE})};
+    Vector3 chunkPosPlayerIsIn = world_PosToChunk(player->camera.position);
+    int chunksToLoadCount = 27;
+    Vector3 chunksToLoad[] = {
 
-    for (int i = 0; i < 27; i++)
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, 0, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, 0, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, 0, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, CHUNK_SIZE, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, -CHUNK_SIZE, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, 0, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, 0, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, CHUNK_SIZE, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, 0}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, 0, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, 0, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, 0, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, 0, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, CHUNK_SIZE, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, CHUNK_SIZE, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, -CHUNK_SIZE, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, -CHUNK_SIZE, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, CHUNK_SIZE, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, -CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, CHUNK_SIZE}),
+        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, -CHUNK_SIZE})
+
+    };
+
+    for (int i = 0; i < chunksToLoadCount; i++)
     {
         unsigned char chunkExists = 0;
         for (int j = 0; j < *loadedChunksCount; j++)
         {
-            if (positions[i].x == (*loadedChunks[j]).pos.x && positions[i].y == (*loadedChunks[j]).pos.y && positions[i].z == (*loadedChunks[j]).pos.z)
+            if (
+                chunksToLoad[i].x == (*loadedChunks[j]).pos.x &&
+                chunksToLoad[i].y == (*loadedChunks[j]).pos.y &&
+                chunksToLoad[i].z == (*loadedChunks[j]).pos.z)
             {
                 chunkExists = 1;
                 (*loadedChunks[j]).shouldLoad = 1;
@@ -54,12 +61,32 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
         if (!chunkExists)
         {
 
-            Chunk *ch = RL_MALLOC(sizeof(Chunk));
-            chunk_create(ch, positions[i]);
-            ch->shouldLoad = 1;
-            test_world3(ch);
-            chunk_block_add(ch, (Block){.BlockID = 1}, (Vector3){0, 1, 0});
-            loadedChunks[(*loadedChunksCount)++] = ch;
+            Chunk *newChunk = RL_MALLOC(sizeof(Chunk));
+            chunk_create(newChunk, chunksToLoad[i]);
+            newChunk->shouldLoad = 1;
+
+            chunk_perlin_generate(newChunk);
+
+            loadedChunks[(*loadedChunksCount)++] = newChunk;
+        }
+    }
+}
+
+
+void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount)
+{
+        for (int i = 0; i < *loadedChunksCount; i++)
+    {
+        if (loadedChunks[i]->dirty && loadedChunks[i]->shouldLoad)
+        {
+            chunk_mesh_create(loadedChunks[i]);
+            loadedChunks[i]->currentModel = LoadModelFromMesh(loadedChunks[i]->currentMesh);
+            loadedChunks[i]->dirty = 0;
+        }
+        if (loadedChunks[i]->shouldLoad)
+        {
+            DrawModelWires(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, PURPLE);
+            loadedChunks[i]->shouldLoad = 0;
         }
     }
 }
