@@ -2,6 +2,7 @@
 #include "rcamera.h"
 #include "raymath.h"
 
+
 #include "string.h"
 
 #include "World.h"
@@ -21,8 +22,6 @@ void setup()
 {
     player = RL_MALLOC(sizeof(Player));
     player_create(player);
-
-    
 
 }
 void update()

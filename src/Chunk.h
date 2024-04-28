@@ -6,7 +6,7 @@
 #include "raylib.h"
 #include "raymath.h"
 
-#define CHUNK_SIZE 8
+#define CHUNK_SIZE 16
 
 #define BLOCK_VERTICES_COUNT 8
 #define BLOCK_INDICES_COUNT 24

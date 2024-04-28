@@ -110,8 +110,14 @@ void chunk_mesh_create(Chunk *Chnk)
         // TODO: Test if block in adjacent chunk is set
 
         unsigned char blockUnderground = 1;
+        unsigned char pos_x = currPos.x + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x + 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0;
+        unsigned char neg_x = currPos.x - 1 < 0 || Chnk->Blocks[(int)(currPos.x - 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0;
+        unsigned char pos_y = currPos.y + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y + 1)][(int)(currPos.z)].BlockID <= 0;
+        unsigned char neg_y = currPos.y - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y - 1)][(int)(currPos.z)].BlockID <= 0;
+        unsigned char pos_z = currPos.z + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z + 1)].BlockID <= 0;
+        unsigned char neg_z = currPos.z - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z - 1)].BlockID <= 0;
 
-        if (currPos.x + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x + 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
+        if (pos_x)
         {
             for (int l = 0; l < 6; l++)
             {
@@ -121,7 +127,7 @@ void chunk_mesh_create(Chunk *Chnk)
             blockUnderground = 0;
         }
 
-        if (currPos.x - 1 < 0 || Chnk->Blocks[(int)(currPos.x - 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0)
+        if (neg_x)
         {
             for (int l = 6; l < 12; l++)
             {
@@ -131,7 +137,7 @@ void chunk_mesh_create(Chunk *Chnk)
             blockUnderground = 0;
         }
 
-        if (currPos.y + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y + 1)][(int)(currPos.z)].BlockID <= 0)
+        if (pos_y)
         {
             for (int l = 12; l < 18; l++)
             {
@@ -141,7 +147,7 @@ void chunk_mesh_create(Chunk *Chnk)
             blockUnderground = 0;
         }
 
-        if (currPos.y - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y - 1)][(int)(currPos.z)].BlockID <= 0)
+        if (neg_y)
         {
             for (int l = 18; l < 24; l++)
             {
@@ -151,7 +157,7 @@ void chunk_mesh_create(Chunk *Chnk)
             blockUnderground = 0;
         }
 
-        if (currPos.z + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z + 1)].BlockID <= 0)
+        if (pos_z)
         {
             for (int l = 24; l < 30; l++)
             {
@@ -161,7 +167,7 @@ void chunk_mesh_create(Chunk *Chnk)
             blockUnderground = 0;
         }
 
-        if (currPos.z - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z - 1)].BlockID <= 0)
+        if (neg_z)
         {
             for (int l = 30; l < 36; l++)
             {
@@ -198,7 +204,7 @@ int map(int input, int in_min, int in_max, int out_min, int out_max) {
 }
 void chunk_perlin_generate(Chunk *chunk)
 {
-    Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, 0, 0, 1);
+    Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, chunk->pos.x, chunk->pos.y, 1);
     for (int i = 0; i < CHUNK_SIZE; i++)
     {
         for (int j = 0; j < CHUNK_SIZE; j++)
@@ -209,4 +215,5 @@ void chunk_perlin_generate(Chunk *chunk)
             chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
         }
     }
+    UnloadImage(noise);
 }
