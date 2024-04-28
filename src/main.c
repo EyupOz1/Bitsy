@@ -22,6 +22,8 @@ void setup()
     player = RL_MALLOC(sizeof(Player));
     player_create(player);
 
+    
+
 }
 void update()
 {

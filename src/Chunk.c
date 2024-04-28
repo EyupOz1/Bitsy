@@ -1,6 +1,6 @@
 #include "Chunk.h"
 
-Chunk chunk_create(Chunk *chnk, Vector3 pos)
+void chunk_create(Chunk *chnk, Vector3 pos)
 {
     chnk->pos = pos;
     chnk->dirty = 1;
@@ -191,6 +191,8 @@ void chunk_mesh_create(Chunk *Chnk)
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
 }
+
+
 int map(int input, int in_min, int in_max, int out_min, int out_max) {
     return (input - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }

@@ -4,6 +4,7 @@
 #include "string.h"
 
 #include "raylib.h"
+#include "raymath.h"
 
 #define CHUNK_SIZE 8
 
@@ -30,6 +31,6 @@ typedef struct Chunk
 } Chunk;
 
 void chunk_mesh_create(Chunk *Chnk);
-Chunk chunk_create(Chunk* chnk, Vector3 pos);
+void chunk_create(Chunk *chnk, Vector3 pos);
 void chunk_block_add(Chunk* Chnk, Block Blck, Vector3 pos);
 void chunk_perlin_generate(Chunk *chunk);
