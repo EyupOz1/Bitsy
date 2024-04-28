@@ -85,7 +85,7 @@ void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount)
         }
         if (loadedChunks[i]->shouldLoad)
         {
-            DrawModelWires(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, PURPLE);
+            DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, PURPLE);
             loadedChunks[i]->shouldLoad = 0;
         }
     }

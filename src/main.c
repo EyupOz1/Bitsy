@@ -21,10 +21,11 @@ void setup()
 {
     player = RL_MALLOC(sizeof(Player));
     player_create(player);
+
 }
 void update()
 {
-    player_update(&(player->camera));
+    player_update(player);
 
     // FIXME: Combine both so they dont go through the loaded Chunks twice
     world_chunk_update(player, loadedChunks, &loadedChunksCount);

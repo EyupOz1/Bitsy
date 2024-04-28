@@ -191,16 +191,19 @@ void chunk_mesh_create(Chunk *Chnk)
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
 }
-
+int map(int input, int in_min, int in_max, int out_min, int out_max) {
+    return (input - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 void chunk_perlin_generate(Chunk *chunk)
 {
-    Image noise = GenImagePerlinNoise(CHUNK_SIZE - 1, CHUNK_SIZE - 1, 0, 0, 1);
-    for (int i = 0; i < CHUNK_SIZE - 1; i++)
+    Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, 0, 0, 1);
+    for (int i = 0; i < CHUNK_SIZE; i++)
     {
-        for (int j = 0; j < CHUNK_SIZE - 1; j++)
+        for (int j = 0; j < CHUNK_SIZE; j++)
         {
-            unsigned char height = GetImageColor(noise, i, j).a;
-            float x = (height/255.0f) * (CHUNK_SIZE - 1);
+            unsigned char height = GetImageColor(noise, i, j).g;
+            
+            float x = map(height, 0, 255, 0, CHUNK_SIZE-1);
             chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
         }
     }
