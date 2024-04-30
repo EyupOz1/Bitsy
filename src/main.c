@@ -1,18 +1,12 @@
 #include "raylib.h"
 #include "rcamera.h"
-#include "raymath.h"
-
-
-#include "string.h"
 
 #include "World.h"
 #include "Player.h"
 #include "Chunk.h"
 
-#include "Test.h"
 #include "Debug.h"
 
-#include <stdio.h>
 
 Player *player;
 int loadedChunksCount = 0;

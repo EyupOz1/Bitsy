@@ -55,7 +55,6 @@ void chunk_mesh_create(Chunk *Chnk)
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z
 
         };
-
         unsigned short localIndices[] = {
 
             //+X
