@@ -1,15 +1,10 @@
 #include "World.h"
 
-Vector3 world_PosToChunk(Vector3 pos)
-{
-    Vector3 res = (Vector3){(int)(pos.x / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.y / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.z / CHUNK_SIZE) * CHUNK_SIZE};
 
-    return res;
-}
 
 void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
-    Vector3 chunkPosPlayerIsIn = world_PosToChunk(player->camera.position);
+    Vector3 chunkPosPlayerIsIn = worldPositionToChunk(player->camera.position);
     int chunksToLoadCount = 27;
     Vector3 chunksToLoad[] = {
 

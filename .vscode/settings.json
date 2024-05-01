@@ -3,6 +3,8 @@
         "player.h": "c",
         "world.h": "c",
         "chunk.h": "c",
-        "raymath.h": "c"
+        "raymath.h": "c",
+        "utils.h": "c",
+        "raylib.h": "c"
     }
 }

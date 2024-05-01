@@ -22,13 +22,10 @@ void update()
 {
     player_update(player);
 
-    // FIXME: Combine both so they dont go through the loaded Chunks twice
     world_chunk_update(player, loadedChunks, &loadedChunksCount);
     world_chunk_draw(loadedChunks, &loadedChunksCount);
 
     debug_chunk_show(&(Chunk){.pos = {0, 0, 0}});
-
-    // DrawPlane((Vector3){0.0f, -10.0f, 0.0f}, (Vector2){32.0f, 32.0f}, GREEN); // Stop losing reference frame
 }
 
 void ui()
@@ -37,7 +34,7 @@ void ui()
     DrawText(TextFormat("- Target: (%06.3f, %06.3f, %06.3f)", player->camera.target.x, player->camera.target.y, player->camera.target.z), 610, 75, 10, BLACK);
     DrawText(TextFormat("- Up: (%06.3f, %06.3f, %06.3f)", player->camera.up.x, player->camera.up.y, player->camera.up.z), 610, 90, 10, BLACK);
 
-    Vector3 pos1 = world_PosToChunk(player->camera.position);
+    Vector3 pos1 = worldPositionToChunk(player->camera.position);
     DrawText(TextFormat("%f, %f, %f", pos1.x, pos1.y, pos1.z), 0, 0, 10, BLACK);
 }
 
@@ -46,6 +43,7 @@ int main(void)
     InitWindow(1080, 720, "Bitsy");
     DisableCursor();
     SetTargetFPS(120);
+    SetTraceLogLevel(LOG_ALL);
 
     setup();
 
