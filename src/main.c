@@ -17,15 +17,29 @@ void setup()
     player = RL_MALLOC(sizeof(Player));
     player_create(player);
 
+    Chunk* ch = RL_MALLOC(sizeof(Chunk));
+    chunk_create(ch, (Vector3){0, 0, 0});
+    loadedChunks[0] = ch;
+    chunk_block_add(loadedChunks[0], (Block){.BlockID = 1}, (Vector3){1, 3, 1});
+    chunk_block_add(loadedChunks[0], (Block){.BlockID = 1}, (Vector3){1, 4, 1});
+    chunk_block_add(loadedChunks[0], (Block){.BlockID = 1}, (Vector3){1, 5, 1});
+    chunk_mesh_create(ch);
+    ch->currentModel = LoadModelFromMesh(ch->currentMesh);
+
 }
 void update()
 {
     player_update(player);
+    DrawModel(loadedChunks[0]->currentModel, (Vector3){0, 0, 0}, 1.0, GREEN);
 
+
+/*
     world_chunk_update(player, loadedChunks, &loadedChunksCount);
     world_chunk_draw(loadedChunks, &loadedChunksCount);
 
     debug_chunk_show(&(Chunk){.pos = {0, 0, 0}});
+
+    */
 }
 
 void ui()

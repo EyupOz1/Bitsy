@@ -24,13 +24,44 @@ void chunk_mesh_create(Chunk *Chnk)
     mesh.triangleCount = 0;
     mesh.vertexCount = 0;
 
-    float vertices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3 * BLOCK_VERTICES_COUNT] = {0};
-    unsigned short indices[CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE * 3 * BLOCK_INDICES_COUNT] = {0};
+    float vertices[Chnk->BlockPosIndex * 72];
+    float normals[Chnk->BlockPosIndex * 72];
+    unsigned short indices[Chnk->BlockPosIndex * 72];
 
     long int indices_index = 0;
     long int vertex_index = 0;
+    long int normals_index = 0;
+
+    long int k = 0;
+    long int j = 0;
 
     long int BlockCount = 0;
+
+    float localNormals[] = {
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, 1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        0.0f, -1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f,
+        -1.0f, 0.0f, 0.0f};
 
     for (int i = 0; i < Chnk->BlockPosIndex; i++)
     {
@@ -41,74 +72,41 @@ void chunk_mesh_create(Chunk *Chnk)
         {
             continue;
         }
-
         float localVertices[] = {
-
-            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            // Pos Z
             0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-
-            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            // Neg Z
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 0 + currPos.z
-
-        };
-        unsigned short localIndices[] = {
-
-            //+X
-            4 + 8 * BlockCount,
-            0 + 8 * BlockCount,
-            7 + 8 * BlockCount,
-            7 + 8 * BlockCount,
-            0 + 8 * BlockCount,
-            3 + 8 * BlockCount,
-
-            //-X
-            1 + 8 * BlockCount,
-            5 + 8 * BlockCount,
-            2 + 8 * BlockCount,
-            2 + 8 * BlockCount,
-            5 + 8 * BlockCount,
-            6 + 8 * BlockCount,
-
-            //+Y
-            4 + 8 * BlockCount,
-            5 + 8 * BlockCount,
-            0 + 8 * BlockCount,
-            0 + 8 * BlockCount,
-            5 + 8 * BlockCount,
-            1 + 8 * BlockCount,
-
-            //-Y
-            3 + 8 * BlockCount,
-            2 + 8 * BlockCount,
-            7 + 8 * BlockCount,
-            7 + 8 * BlockCount,
-            2 + 8 * BlockCount,
-            6 + 8 * BlockCount,
-
-            //+Z
-            0 + 8 * BlockCount,
-            1 + 8 * BlockCount,
-            3 + 8 * BlockCount,
-            3 + 8 * BlockCount,
-            1 + 8 * BlockCount,
-            2 + 8 * BlockCount,
-
-            //-Z
-            5 + 8 * BlockCount,
-            4 + 8 * BlockCount,
-            6 + 8 * BlockCount,
-            6 + 8 * BlockCount,
-            4 + 8 * BlockCount,
-            7 + 8 * BlockCount,
-        };
+            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
+            // Pos Y
+            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            // Neg Y
+            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+            // Pos X
+            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+            // Neg Z
+            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
+            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            0 + currPos.x, 1 + currPos.y, 0 + currPos.z};
 
         // TODO: Test if block in adjacent chunk is set
 
-        unsigned char blockUnderground = 1;
+        unsigned char sideCount = 0;
         unsigned char pos_x = currPos.x + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x + 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0;
         unsigned char neg_x = currPos.x - 1 < 0 || Chnk->Blocks[(int)(currPos.x - 1)][(int)(currPos.y)][(int)(currPos.z)].BlockID <= 0;
         unsigned char pos_y = currPos.y + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y + 1)][(int)(currPos.z)].BlockID <= 0;
@@ -116,89 +114,107 @@ void chunk_mesh_create(Chunk *Chnk)
         unsigned char pos_z = currPos.z + 1 >= CHUNK_SIZE || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z + 1)].BlockID <= 0;
         unsigned char neg_z = currPos.z - 1 < 0 || Chnk->Blocks[(int)(currPos.x)][(int)(currPos.y)][(int)(currPos.z - 1)].BlockID <= 0;
 
+        int x = 12;
         if (pos_x)
         {
-            for (int l = 0; l < 6; l++)
+            for (int l = x * 0; l < x * 1; l++)
             {
-                indices[indices_index++] = localIndices[l];
+                vertices[vertex_index++] = localVertices[l];
+                normals[normals_index++] = localNormals[l];
             }
             mesh.triangleCount += 2;
-            blockUnderground = 0;
+            sideCount++;
         }
 
         if (neg_x)
         {
-            for (int l = 6; l < 12; l++)
+            for (int l = x * 1; l < x * 2; l++)
             {
-                indices[indices_index++] = localIndices[l];
+                vertices[vertex_index++] = localVertices[l];
+                normals[normals_index++] = localNormals[l];
             }
             mesh.triangleCount += 2;
-            blockUnderground = 0;
+            sideCount++;
         }
 
         if (pos_y)
         {
-            for (int l = 12; l < 18; l++)
+            for (int l = x * 2; l < x * 3; l++)
             {
-                indices[indices_index++] = localIndices[l];
+                vertices[vertex_index++] = localVertices[l];
+                normals[normals_index++] = localNormals[l];
             }
             mesh.triangleCount += 2;
-            blockUnderground = 0;
+            sideCount++;
         }
 
         if (neg_y)
         {
-            for (int l = 18; l < 24; l++)
+            for (int l = x * 3; l < x * 4; l++)
             {
-                indices[indices_index++] = localIndices[l];
+                vertices[vertex_index++] = localVertices[l];
+                normals[normals_index++] = localNormals[l];
             }
             mesh.triangleCount += 2;
-            blockUnderground = 0;
+            sideCount++;
         }
 
         if (pos_z)
         {
-            for (int l = 24; l < 30; l++)
+            for (int l = x * 4; l < x * 5; l++)
             {
-                indices[indices_index++] = localIndices[l];
+                vertices[vertex_index++] = localVertices[l];
+                normals[normals_index++] = localNormals[l];
             }
             mesh.triangleCount += 2;
-            blockUnderground = 0;
+            sideCount++;
         }
 
         if (neg_z)
         {
-            for (int l = 30; l < 36; l++)
+            for (int l = x * 5; l < x * 6; l++)
             {
-                indices[indices_index++] = localIndices[l];
+                vertices[vertex_index++] = localVertices[l];
+                normals[normals_index++] = localNormals[l];
             }
             mesh.triangleCount += 2;
-            blockUnderground = 0;
+            sideCount++;
         }
 
-        if (!blockUnderground)
+        int old_j = j;
+        // Indices can be initialized right now
+        for (; j - old_j < sideCount * 6; j += 6)
         {
-            memcpy(&vertices[vertex_index], localVertices, BLOCK_INDICES_COUNT * sizeof(float));
-            vertex_index += BLOCK_INDICES_COUNT;
+            indices[j] = 4 * k;
+            indices[j + 1] = 4 * k + 1;
+            indices[j + 2] = 4 * k + 2;
+            indices[j + 3] = 4 * k;
+            indices[j + 4] = 4 * k + 2;
+            indices[j + 5] = 4 * k + 3;
+
+            indices_index += 6;
+
+            k++;
         }
 
         BlockCount++;
+        mesh.vertexCount += sideCount * 4;
     }
 
-    mesh.vertexCount = vertex_index / 3;
-
     mesh.vertices = (float *)RL_MALLOC(vertex_index * sizeof(float));
+    mesh.normals = (float *)RL_MALLOC(normals_index * sizeof(float));
     mesh.indices = (unsigned short *)RL_MALLOC(indices_index * sizeof(unsigned short));
 
     memcpy(mesh.vertices, vertices, vertex_index * sizeof(float));
+    memcpy(mesh.normals, normals, normals_index * sizeof(float));
     memcpy(mesh.indices, indices, indices_index * sizeof(unsigned short));
 
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
 }
 
-
-int map(int input, int in_min, int in_max, int out_min, int out_max) {
+int map(int input, int in_min, int in_max, int out_min, int out_max)
+{
     return (input - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 void chunk_perlin_generate(Chunk *chunk)
@@ -209,8 +225,8 @@ void chunk_perlin_generate(Chunk *chunk)
         for (int j = 0; j < CHUNK_SIZE; j++)
         {
             unsigned char height = GetImageColor(noise, i, j).g;
-            
-            float x = map(height, 0, 255, 0, CHUNK_SIZE-1);
+
+            float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
             chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
         }
     }

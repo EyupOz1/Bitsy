@@ -5,6 +5,7 @@
         "chunk.h": "c",
         "raymath.h": "c",
         "utils.h": "c",
-        "raylib.h": "c"
+        "raylib.h": "c",
+        "random": "c"
     }
 }
