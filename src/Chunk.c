@@ -24,9 +24,9 @@ void chunk_mesh_create(Chunk *Chnk)
     mesh.triangleCount = 0;
     mesh.vertexCount = 0;
 
-    float vertices[Chnk->BlockPosIndex * 72];
-    float normals[Chnk->BlockPosIndex * 72];
-    unsigned short indices[Chnk->BlockPosIndex * 72];
+    float *vertices = RL_MALLOC(sizeof(float) * Chnk->BlockPosIndex * 72);
+    float *normals = RL_MALLOC(sizeof(float) * Chnk->BlockPosIndex * 72);
+    unsigned short *indices = RL_MALLOC(sizeof(unsigned short) * Chnk->BlockPosIndex * 72);
 
     long int indices_index = 0;
     long int vertex_index = 0;
@@ -211,6 +211,10 @@ void chunk_mesh_create(Chunk *Chnk)
 
     UploadMesh(&mesh, false);
     Chnk->currentMesh = mesh;
+
+    RL_FREE(vertices);
+    RL_FREE(indices);
+    RL_FREE(normals);
 }
 
 int map(int input, int in_min, int in_max, int out_min, int out_max)

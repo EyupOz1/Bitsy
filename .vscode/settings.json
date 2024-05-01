@@ -6,6 +6,7 @@
         "raymath.h": "c",
         "utils.h": "c",
         "raylib.h": "c",
-        "random": "c"
+        "random": "c",
+        "stdio.h": "c"
     }
 }
