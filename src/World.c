@@ -68,7 +68,7 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
 }
 
 
-void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader)
+void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader, Texture2D tex)
 {
         for (int i = 0; i < *loadedChunksCount; i++)
     {
@@ -83,6 +83,7 @@ void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shade
         {
             DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, PURPLE);
             loadedChunks[i]->shouldLoad = 0;
+            loadedChunks[i]->currentModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = tex;
             loadedChunks[i]->currentModel.materials[0].shader = shader;
         }
     }

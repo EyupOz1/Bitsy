@@ -16,7 +16,7 @@ Chunk *loadedChunks[2000];
 
 Shader shader;
 Light light;
-
+Texture2D tex;
 void setup()
 {
     player = RL_MALLOC(sizeof(Player));
@@ -30,9 +30,12 @@ void setup()
     SetShaderValue(shader, ambientLoc, (float[4]){0.1f, 0.1f, 0.1f, 1.0f}, SHADER_UNIFORM_VEC4);
 
     light = CreateLight(LIGHT_POINT, (Vector3){-2, 1, -2}, Vector3Zero(), YELLOW, shader);
+
+    tex = LoadTexture("Test.png");
 }
 void update()
 {
+    light.position = player->camera.position;
     float cameraPos[3] = {player->camera.position.x, player->camera.position.y, player->camera.position.z};
     SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
     UpdateLightValues(shader, light);
@@ -40,7 +43,7 @@ void update()
     player_update(player);
 
     world_chunk_update(player, loadedChunks, &loadedChunksCount);
-    world_chunk_draw(loadedChunks, &loadedChunksCount, shader);
+    world_chunk_draw(loadedChunks, &loadedChunksCount, shader, tex);
 
     debug_chunk_show(&(Chunk){.pos = {0, 0, 0}});
 }
