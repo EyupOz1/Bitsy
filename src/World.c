@@ -68,7 +68,7 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
 }
 
 
-void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount)
+void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader)
 {
         for (int i = 0; i < *loadedChunksCount; i++)
     {
@@ -77,11 +77,13 @@ void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount)
             chunk_mesh_create(loadedChunks[i]);
             loadedChunks[i]->currentModel = LoadModelFromMesh(loadedChunks[i]->currentMesh);
             loadedChunks[i]->dirty = 0;
+            
         }
         if (loadedChunks[i]->shouldLoad)
         {
             DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, PURPLE);
             loadedChunks[i]->shouldLoad = 0;
+            loadedChunks[i]->currentModel.materials[0].shader = shader;
         }
     }
 }

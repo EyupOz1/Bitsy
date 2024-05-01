@@ -7,46 +7,42 @@
 
 #include "Debug.h"
 
+#define RLIGHTS_IMPLEMENTATION
+#include "rlights.h"
 
 Player *player;
 int loadedChunksCount = 0;
 Chunk *loadedChunks[2000];
+
+Shader shader;
+Light light;
 
 void setup()
 {
     player = RL_MALLOC(sizeof(Player));
     player_create(player);
 
-    Chunk* ch = RL_MALLOC(sizeof(Chunk));
-    chunk_create(ch, (Vector3){0, 0, 0});
-    loadedChunks[0] = ch;
-    for (int i = 0; i < CHUNK_SIZE; i++)
-    {
-        for (int j = 0; j < CHUNK_SIZE; j++)
-        {
-            for (int k = 0; k < CHUNK_SIZE; k++)
-            {
-                    chunk_block_add(ch, (Block){.BlockID = 1}, (Vector3){i, j, k});
-            }
-        }
-    }
-    chunk_mesh_create(ch);
-    ch->currentModel = LoadModelFromMesh(ch->currentMesh);
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
+    shader = LoadShader("src/lighting.vs", "src/lighting.fs");
+    shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
 
+    int ambientLoc = GetShaderLocation(shader, "ambient");
+    SetShaderValue(shader, ambientLoc, (float[4]){0.1f, 0.1f, 0.1f, 1.0f}, SHADER_UNIFORM_VEC4);
+
+    light = CreateLight(LIGHT_POINT, (Vector3){-2, 1, -2}, Vector3Zero(), YELLOW, shader);
 }
 void update()
 {
+    float cameraPos[3] = {player->camera.position.x, player->camera.position.y, player->camera.position.z};
+    SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
+    UpdateLightValues(shader, light);
+
     player_update(player);
-    DrawModel(loadedChunks[0]->currentModel, (Vector3){0, 0, 0}, 1.0, GREEN);
 
-
-/*
     world_chunk_update(player, loadedChunks, &loadedChunksCount);
-    world_chunk_draw(loadedChunks, &loadedChunksCount);
+    world_chunk_draw(loadedChunks, &loadedChunksCount, shader);
 
     debug_chunk_show(&(Chunk){.pos = {0, 0, 0}});
-
-    */
 }
 
 void ui()
