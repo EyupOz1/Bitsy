@@ -8,6 +8,9 @@
         "raylib.h": "c",
         "random": "c",
         "stdio.h": "c",
-        "rlights.h": "c"
-    }
+        "rlights.h": "c",
+        "string.h": "c",
+        "shader.h": "c",
+        "rcamera.h": "c"
+    },
 }

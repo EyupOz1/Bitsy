@@ -4,17 +4,21 @@ void chunk_create(Chunk *chnk, Vector3 pos)
 {
     chnk->pos = pos;
     chnk->dirty = 1;
+    chnk->currentMesh.vaoId = 0;
 
-    Vector3 newPos = (Vector3){(pos.x / CHUNK_SIZE) * CHUNK_SIZE, (pos.y / CHUNK_SIZE) * CHUNK_SIZE, (pos.z / CHUNK_SIZE) * CHUNK_SIZE};
+    Vector3 newPos = worldPositionToChunk(pos);
     chnk->pos = newPos;
 
     chnk->BlockPosIndex = 0;
+
+    TraceLog(LOG_DEBUG, "New Chunk: \nPos: %f, %f, %f", newPos.x, newPos.y, newPos.z);
 }
 
 void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
 {
     Chnk->Blocks[(int)pos.x][(int)pos.y][(int)pos.z] = Blck;
     Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
+    Chnk->dirty = 1;
 }
 
 void chunk_mesh_create(Chunk *Chnk)
@@ -291,7 +295,7 @@ void chunk_perlin_generate(Chunk *chunk)
             unsigned char height = GetImageColor(noise, i, j).g;
 
             float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
+            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, 1, j});
         }
     }
     UnloadImage(noise);
