@@ -20,9 +20,16 @@ void setup()
     Chunk* ch = RL_MALLOC(sizeof(Chunk));
     chunk_create(ch, (Vector3){0, 0, 0});
     loadedChunks[0] = ch;
-    chunk_block_add(loadedChunks[0], (Block){.BlockID = 1}, (Vector3){1, 3, 1});
-    chunk_block_add(loadedChunks[0], (Block){.BlockID = 1}, (Vector3){1, 4, 1});
-    chunk_block_add(loadedChunks[0], (Block){.BlockID = 1}, (Vector3){1, 5, 1});
+    for (int i = 0; i < CHUNK_SIZE; i++)
+    {
+        for (int j = 0; j < CHUNK_SIZE; j++)
+        {
+            for (int k = 0; k < CHUNK_SIZE; k++)
+            {
+                    chunk_block_add(ch, (Block){.BlockID = 1}, (Vector3){i, j, k});
+            }
+        }
+    }
     chunk_mesh_create(ch);
     ch->currentModel = LoadModelFromMesh(ch->currentMesh);
 

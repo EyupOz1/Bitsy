@@ -6,7 +6,7 @@
 #include "raylib.h"
 #include "raymath.h"
 
-#define CHUNK_SIZE 16
+#define CHUNK_SIZE 8
 
 
 typedef struct

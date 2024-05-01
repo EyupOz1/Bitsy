@@ -74,35 +74,35 @@ void chunk_mesh_create(Chunk *Chnk)
         }
         float localVertices[] = {
             // Pos Z
-            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
+            0 + currPos.z, 0 + currPos.y, 1 + currPos.x,
+            1 + currPos.z, 0 + currPos.y, 1 + currPos.x,
+            1 + currPos.z, 1 + currPos.y, 1 + currPos.x,
+            0 + currPos.z, 1 + currPos.y, 1 + currPos.x,
             // Neg Z
-            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
+            0 + currPos.z, 0 + currPos.y, 0 + currPos.x,
+            0 + currPos.z, 1 + currPos.y, 0 + currPos.x,
+            1 + currPos.z, 1 + currPos.y, 0 + currPos.x,
+            1 + currPos.z, 0 + currPos.y, 0 + currPos.x,
             // Pos Y
-            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
+            0 + currPos.z, 1 + currPos.y, 0 + currPos.x,
+            0 + currPos.z, 1 + currPos.y, 1 + currPos.x,
+            1 + currPos.z, 1 + currPos.y, 1 + currPos.x,
+            1 + currPos.z, 1 + currPos.y, 0 + currPos.x,
             // Neg Y
-            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+            0 + currPos.z, 0 + currPos.y, 0 + currPos.x,
+            1 + currPos.z, 0 + currPos.y, 0 + currPos.x,
+            1 + currPos.z, 0 + currPos.y, 1 + currPos.x,
+            0 + currPos.z, 0 + currPos.y, 1 + currPos.x,
             // Pos X
-            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
+            1 + currPos.z, 0 + currPos.y, 0 + currPos.x,
+            1 + currPos.z, 1 + currPos.y, 0 + currPos.x,
+            1 + currPos.z, 1 + currPos.y, 1 + currPos.x,
+            1 + currPos.z, 0 + currPos.y, 1 + currPos.x,
             // Neg Z
-            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 0 + currPos.z};
+            0 + currPos.z, 0 + currPos.y, 0 + currPos.x,
+            0 + currPos.z, 0 + currPos.y, 1 + currPos.x,
+            0 + currPos.z, 1 + currPos.y, 1 + currPos.x,
+            0 + currPos.z, 1 + currPos.y, 0 + currPos.x};
 
         // TODO: Test if block in adjacent chunk is set
 
