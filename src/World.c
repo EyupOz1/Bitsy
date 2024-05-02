@@ -1,7 +1,5 @@
 #include "World.h"
 
-
-
 void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
     Vector3 chunkPosPlayerIsIn = worldPositionToChunk(player->camera.position);
@@ -67,17 +65,15 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
     }
 }
 
-
 void world_chunk_draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader, Texture2D tex)
 {
-        for (int i = 0; i < *loadedChunksCount; i++)
+    for (int i = 0; i < *loadedChunksCount; i++)
     {
         if (loadedChunks[i]->dirty && loadedChunks[i]->shouldLoad)
         {
             chunk_mesh_create(loadedChunks[i]);
             loadedChunks[i]->currentModel = LoadModelFromMesh(loadedChunks[i]->currentMesh);
             loadedChunks[i]->dirty = 0;
-            
         }
         if (loadedChunks[i]->shouldLoad)
         {

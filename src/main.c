@@ -18,24 +18,26 @@ Chunk *loadedChunks[2000];
 Shader shader;
 Light light;
 Texture2D tex;
-Ray cpy;
 
 void test()
 {
     if (IsKeyPressed(KEY_O))
     {
-        TraceLog(LOG_DEBUG, "Shooting Ray");
         Ray ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
-        cpy = ray;
-        TraceLog(LOG_DEBUG, "POSITION: %f, %f, %f\n VBO: %i ", loadedChunks[1]->pos.x, loadedChunks[1]->pos.y, loadedChunks[1]->pos.z, loadedChunks[1]->currentMesh.vaoId);
-        RayCollision rc = GetRayCollisionMesh(ray, loadedChunks[1]->currentMesh, loadedChunks[1]->currentModel.transform);
-        if (rc.hit)
+        RayCollision rc;
+
+        for (int i = 0; i < loadedChunksCount; i++)
         {
-            TraceLog(LOG_DEBUG, "Ray HIT");
-            TraceLog(LOG_DEBUG, TextFormat("Ray hit on pos: %f, %f, %f", rc.point.x, rc.point.y, rc.point.z));
+
+            Matrix m = MatrixTranslate(loadedChunks[i]->pos.x, loadedChunks[i]->pos.y, loadedChunks[i]->pos.z);
+            rc = GetRayCollisionMesh(ray, loadedChunks[i]->currentMesh, MatrixMultiply(m, loadedChunks[i]->currentModel.transform));
+
+            if (rc.hit)
+            {
+                TraceLog(LOG_DEBUG, TextFormat("Ray hit on pos: %f, %f, %f", rc.point.x, rc.point.y, rc.point.z));
+            }
+            rc.hit = 0;
         }
-        DrawRay(ray, BLUE);
-        DrawPoint3D(rc.point, GREEN);
     }
 }
 
@@ -45,8 +47,6 @@ void setup()
     player_create(player);
 
     shader_init(&shader, &light, &tex);
-
-
 }
 void update()
 {
@@ -63,6 +63,7 @@ void update()
 
     debug_chunk_show(&(Chunk){.pos = {0, 0, 0}});
 
+    test();
 }
 
 void ui()
