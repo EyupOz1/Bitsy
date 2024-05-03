@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "rcamera.h"
+#include "math.h"
 
 #include "World.h"
 #include "Player.h"
@@ -19,11 +20,15 @@ Shader shader;
 Light light;
 Texture2D tex;
 
-void test()
+Vector3 hits[100];
+int hits_index = 0;
+Ray ray;
+
+Vector3 test()
 {
     if (IsKeyPressed(KEY_O))
     {
-        Ray ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
+        ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
         RayCollision rc;
 
         for (int i = 0; i < loadedChunksCount; i++)
@@ -35,10 +40,13 @@ void test()
             if (rc.hit)
             {
                 TraceLog(LOG_DEBUG, TextFormat("Ray hit on pos: %f, %f, %f", rc.point.x, rc.point.y, rc.point.z));
+                hits[hits_index++] = rc.point;
+                return (Vector3){round(rc.point.x), round(rc.point.y), round(rc.point.x)};
             }
             rc.hit = 0;
         }
     }
+    return Vector3Zero();
 }
 
 void setup()
@@ -63,7 +71,20 @@ void update()
 
     debug_chunk_show(&(Chunk){.pos = {0, 0, 0}});
 
-    test();
+    Vector3 xx = test();
+    if (xx.x != 0.0f && xx.y != 0.0f && xx.z != 0.0f)
+    {
+        TraceLog(LOG_DEBUG, "%f, %f, %f", xx.x, xx.y, xx.z);
+        chunk_block_add(chunk_find(loadedChunks, &loadedChunksCount, xx), (Block){.BlockID = 1}, (Vector3){round(xx.x), round(xx.y), round(xx.z)});
+    }
+    
+DrawRay(ray, BLUE);
+
+    for (int i = 0; i < hits_index; i++)
+    {
+        DrawSphere(hits[i], 0.02f, BLUE);
+    }
+    
 }
 
 void ui()
@@ -74,6 +95,8 @@ void ui()
 
     Vector3 pos1 = worldPositionToChunk(player->camera.position);
     DrawText(TextFormat("%f, %f, %f", pos1.x, pos1.y, pos1.z), 0, 0, 10, BLACK);
+
+    DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
 }
 
 int main(void)

@@ -300,3 +300,16 @@ void chunk_perlin_generate(Chunk *chunk)
     }
     UnloadImage(noise);
 }
+
+Chunk *chunk_find(Chunk **loadedChunks, int *loadedChunksCount, Vector3 pos)
+{
+    Vector3 chunk_pos = worldPositionToChunk(pos);
+    for (int i = 0; i < *loadedChunksCount; i++)
+    {
+        if (loadedChunks[i]->pos.x == chunk_pos.x && loadedChunks[i]->pos.y == chunk_pos.y && loadedChunks[i]->pos.z == chunk_pos.z)
+        {
+            return loadedChunks[i];
+        }
+    }
+    return 0;
+}
