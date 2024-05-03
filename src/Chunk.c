@@ -1,10 +1,10 @@
 #include "Chunk.h"
 
-void chunk_create(Chunk *chnk, Vector3 pos)
+void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
 {
     chnk->pos = pos;
     chnk->dirty = 1;
-    chnk->currentMesh.vaoId = 0;
+    chnk->shouldLoad = 1;
 
     Vector3 newPos = worldPositionToChunk(pos);
     chnk->pos = newPos;
@@ -244,7 +244,6 @@ void chunk_mesh_create(Chunk *Chnk)
         }
 
         int old_j = j;
-        // Indices can be initialized right now
         for (; j - old_j < sideCount * 6; j += 6)
         {
             indices[j] = 4 * k;
@@ -281,10 +280,7 @@ void chunk_mesh_create(Chunk *Chnk)
     RL_FREE(normals);
 }
 
-int map(int input, int in_min, int in_max, int out_min, int out_max)
-{
-    return (input - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
+
 void chunk_perlin_generate(Chunk *chunk)
 {
     Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, chunk->pos.x, chunk->pos.y, 1);
@@ -294,7 +290,7 @@ void chunk_perlin_generate(Chunk *chunk)
         {
             unsigned char height = GetImageColor(noise, i, j).g;
 
-            float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
+            float x = map(height, 0, 255, 0, CHUNK_SIZE - 1); 
             chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
         }
     }

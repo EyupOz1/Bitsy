@@ -4,37 +4,20 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
 {
     Vector3 chunkPosPlayerIsIn = worldPositionToChunk(player->camera.position);
     int chunksToLoadCount = 27;
-    Vector3 chunksToLoad[] = {
+    Vector3 chunksToLoad[chunksToLoadCount];
 
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, 0, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, 0, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, 0, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, CHUNK_SIZE, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, -CHUNK_SIZE, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, 0, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, 0, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, CHUNK_SIZE, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, 0}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, 0, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, 0, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, 0, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, 0, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, -CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){0, -CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){CHUNK_SIZE, -CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, CHUNK_SIZE, -CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, CHUNK_SIZE}),
-        Vector3Add(chunkPosPlayerIsIn, (Vector3){-CHUNK_SIZE, -CHUNK_SIZE, -CHUNK_SIZE})
-
-    };
+    int count = 0;
+    int arr[] = {-CHUNK_SIZE, CHUNK_SIZE, 0};
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            for (int k = 0; k < 3; k++)
+            {
+                chunksToLoad[count++] = Vector3Add(chunkPosPlayerIsIn, (Vector3){arr[i], arr[j], arr[k]});
+            }
+        }
+    }
 
     for (int i = 0; i < chunksToLoadCount; i++)
     {
@@ -55,8 +38,7 @@ void world_chunk_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
         {
 
             Chunk *newChunk = RL_MALLOC(sizeof(Chunk));
-            chunk_create(newChunk, chunksToLoad[i]);
-            newChunk->shouldLoad = 1;
+            chunk_create(newChunk, chunksToLoad[i], 1);
 
             chunk_perlin_generate(newChunk);
 

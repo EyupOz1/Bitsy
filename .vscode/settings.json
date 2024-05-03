@@ -11,6 +11,8 @@
         "rlights.h": "c",
         "string.h": "c",
         "shader.h": "c",
-        "rcamera.h": "c"
+        "rcamera.h": "c",
+        "*.tcc": "c",
+        "cmath": "c"
     },
 }

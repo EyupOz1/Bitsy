@@ -13,6 +13,8 @@
 #include "rlights.h"
 
 Player *player;
+RayCollision rx;
+
 int loadedChunksCount = 0;
 Chunk *loadedChunks[2000];
 
@@ -20,71 +22,47 @@ Shader shader;
 Light light;
 Texture2D tex;
 
-Vector3 hits[100];
-int hits_index = 0;
-Ray ray;
-
-Vector3 test()
-{
-    if (IsKeyPressed(KEY_O))
-    {
-        ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
-        RayCollision rc;
-
-        for (int i = 0; i < loadedChunksCount; i++)
-        {
-
-            Matrix m = MatrixTranslate(loadedChunks[i]->pos.x, loadedChunks[i]->pos.y, loadedChunks[i]->pos.z);
-            rc = GetRayCollisionMesh(ray, loadedChunks[i]->currentMesh, MatrixMultiply(m, loadedChunks[i]->currentModel.transform));
-
-            if (rc.hit)
-            {
-                TraceLog(LOG_DEBUG, TextFormat("Ray hit on pos: %f, %f, %f", rc.point.x, rc.point.y, rc.point.z));
-                hits[hits_index++] = rc.point;
-                return (Vector3){round(rc.point.x), round(rc.point.y), round(rc.point.x)};
-            }
-            rc.hit = 0;
-        }
-    }
-    return Vector3Zero();
-}
-
 void setup()
 {
     player = RL_MALLOC(sizeof(Player));
     player_create(player);
 
     shader_init(&shader, &light, &tex);
+
+    Chunk *newChunk = RL_MALLOC(sizeof(Chunk));
+    chunk_create(newChunk, (Vector3){0, 0, 0}, 1);
+    chunk_block_add(newChunk, (Block){.BlockID = 1}, (Vector3){1, 1, 1});
+    chunk_mesh_create(newChunk);
+    newChunk->currentModel = LoadModelFromMesh(newChunk->currentMesh);
+    loadedChunks[loadedChunksCount++] = newChunk;
 }
+
 void update()
 {
-
+    // Shader
     light.position = player->camera.position;
     float cameraPos[3] = {player->camera.position.x, player->camera.position.y, player->camera.position.z};
     SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
     UpdateLightValues(shader, light);
 
-    player_update(player);
+    // Player
+    player_move(player);
+    RayCollision temp = player_interact(player, loadedChunks, &loadedChunksCount);
+    if (temp.hit == 1)
+    {
+        
+        rx = temp;
+    }
 
-    world_chunk_update(player, loadedChunks, &loadedChunksCount);
+    DrawSphere(rx.point, 0.02f, BLUE);
+    DrawLine3D(rx.point, Vector3Add(rx.point, rx.normal), PURPLE);
+
+    // World
+    // world_chunk_update(player, loadedChunks, &loadedChunksCount);
+    loadedChunks[0]->shouldLoad = 1;
     world_chunk_draw(loadedChunks, &loadedChunksCount, shader, tex);
 
-    debug_chunk_show(&(Chunk){.pos = {0, 0, 0}});
-
-    Vector3 xx = test();
-    if (xx.x != 0.0f && xx.y != 0.0f && xx.z != 0.0f)
-    {
-        TraceLog(LOG_DEBUG, "%f, %f, %f", xx.x, xx.y, xx.z);
-        chunk_block_add(chunk_find(loadedChunks, &loadedChunksCount, xx), (Block){.BlockID = 1}, (Vector3){round(xx.x), round(xx.y), round(xx.z)});
-    }
-    
-DrawRay(ray, BLUE);
-
-    for (int i = 0; i < hits_index; i++)
-    {
-        DrawSphere(hits[i], 0.02f, BLUE);
-    }
-    
+    debug_chunk_show(loadedChunks[0]);
 }
 
 void ui()
