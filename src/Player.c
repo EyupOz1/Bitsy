@@ -55,7 +55,7 @@ RayCollision player_interact(Player *player, Chunk **loadedChunks, int *loadedCh
                 }
                 if (rc.normal.y != 0)
                 {
-                    target = (Vector3){floorToInt(rc.point.x), (rc.normal.y == 1 ? rc.point.y : rc.point.y - 1), floorToInt(rc.point.z)};
+                    target = (Vector3){floorToInt(rc.point.x), (rc.normal.y == 1 ? rc.point.y + 1 : rc.point.y), floorToInt(rc.point.z)};
                 }
                 if (rc.normal.z != 0)
                 {
@@ -63,7 +63,7 @@ RayCollision player_interact(Player *player, Chunk **loadedChunks, int *loadedCh
                 }
 
                 TraceLog(LOG_DEBUG, TextFormat("target: %f, %f, %f", target.x, target.y, target.z));
-                chunk_block_add(loadedChunks[i], (Block){.BlockID = 1}, target);
+                chunk_block_add(loadedChunks[i], (Block){.BlockID = 1}, (Vector3){target.x, target.y, target.y});
                 return rc;
             }
             rc.hit = 0;

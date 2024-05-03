@@ -13,6 +13,11 @@
         "shader.h": "c",
         "rcamera.h": "c",
         "*.tcc": "c",
-        "cmath": "c"
+        "cmath": "c",
+        "text.h": "c",
+        "typeinfo": "c",
+        "debug.h": "c",
+        "raygui.h": "c",
+        "global.h": "c"
     },
 }
