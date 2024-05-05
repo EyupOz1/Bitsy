@@ -1,20 +1,19 @@
 #include "raylib.h"
 #include "rcamera.h"
-#include "math.h"
+#include "gui/raygui.h"
 
-#include "World.h"
-#include "Player.h"
-#include "Chunk.h"
-#include "Shader.h"
+#include "core/rlights.h"
+#include "core/Debug.h"
+#include "Utils.h"
 
-#include "Debug.h"
-#include "Text.h"
-
-#define RLIGHTS_IMPLEMENTATION
-#include "rlights.h"
+#include "world/World.h"
+#include "entity/Player.h"
+#include "world/Chunk.h"
+#include "core/Shader.h"
 
 Player *player;
 RayCollision rx;
+unsigned char mouseActive = 0;
 
 int loadedChunksCount = 0;
 Chunk *loadedChunks[2000];
@@ -23,52 +22,55 @@ Shader shader;
 Light light;
 Texture2D tex;
 
-Text commandLine;
-
 void setup()
 {
     player = RL_MALLOC(sizeof(Player));
-    player_create(player);
+    player_init(player);
 
     shader_init(&shader, &light, &tex);
+    GuiLoadStyleDefault();
 
-    //commandLine = Pop(10, 180, 225, 50);
+    Chunk *newChunk = RL_MALLOC(sizeof(Chunk));
+    chunk_create(newChunk, (Vector3){0, 0, 0}, 1);
+    chunk_block_add(newChunk, (Block){.BlockID = 1}, (Vector3){0, 0, 0});
+    chunk_mesh_create(newChunk);
+    newChunk->currentModel = LoadModelFromMesh(newChunk->currentMesh);
+    loadedChunks[loadedChunksCount++] = newChunk;
+
+    Vector3 vecToSearch = {0, 0, 1};
+    TraceLog(LOG_DEBUG, TextFormat("BlockID at (%f, %f, %f): %i", vecToSearch.x, vecToSearch.y, vecToSearch.z, (loadedChunks[0]->Blocks[(int)vecToSearch.x][(int)vecToSearch.y][(int)vecToSearch.z])));
 }
 
 void update()
 {
     // Shader
-    light.position = player->camera.position;
-    float cameraPos[3] = {player->camera.position.x, player->camera.position.y, player->camera.position.z};
-    SetShaderValue(shader, shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
-    UpdateLightValues(shader, light);
+    shader_update(&shader, &light, player->camera.position);
 
     // Player
-    player_move(player);
-    RayCollision temp = player_interact(player, loadedChunks, &loadedChunksCount);
-    if (temp.hit == 1)
+    player_update(player, loadedChunks, &loadedChunksCount);
+    if (IsKeyPressed(KEY_F))
     {
-
-        rx = temp;
+        mouseActive = !mouseActive;
+        mouseActive ? EnableCursor() : DisableCursor();
     }
+
+
+    DrawSphere((Vector3){0, 0, 0}, 0.2f, BLUE);
 
     DrawSphere(rx.point, 0.02f, BLUE);
     DrawLine3D(rx.point, Vector3Add(rx.point, rx.normal), PURPLE);
 
     // World
-    world_chunk_update(player, loadedChunks, &loadedChunksCount);
+    //world_chunk_update(player, loadedChunks, &loadedChunksCount);
+    loadedChunks[0]->shouldLoad = 1;
     world_chunk_draw(loadedChunks, &loadedChunksCount, shader, tex);
 
     // Debug
     debug_chunk_show(loadedChunks[0]);
-
-
 }
 
 void ui()
 {
-    //Text_collision(&commandLine);
-    //Text_draw(&commandLine);
     DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", player->camera.position.x, player->camera.position.y, player->camera.position.z), 610, 60, 10, BLACK);
     DrawText(TextFormat("- Target: (%06.3f, %06.3f, %06.3f)", player->camera.target.x, player->camera.target.y, player->camera.target.z), 610, 75, 10, BLACK);
     DrawText(TextFormat("- Up: (%06.3f, %06.3f, %06.3f)", player->camera.up.x, player->camera.up.y, player->camera.up.z), 610, 90, 10, BLACK);
@@ -77,13 +79,12 @@ void ui()
     DrawText(TextFormat("%f, %f, %f", pos1.x, pos1.y, pos1.z), 0, 0, 10, BLACK);
 
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
-
 }
 
 int main(void)
 {
     InitWindow(1080, 720, "Bitsy");
-    // DisableCursor();
+    DisableCursor();
     SetTargetFPS(120);
     SetTraceLogLevel(LOG_ALL);
 

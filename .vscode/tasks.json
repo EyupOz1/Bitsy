@@ -18,7 +18,7 @@
                 "args": [
                     "RAYLIB_PATH=C:/raylib/raylib",
                     "PROJECT_NAME=Bitsy",
-                    "OBJS=src/*.c",
+                    "OBJS=src/*.c src/core/*.c src/entity/*.c src/world/*.c src/gui/*.c  ",
                     "BUILD_MODE=DEBUG"
                 ],
             },
