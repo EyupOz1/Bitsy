@@ -10,6 +10,7 @@
 #include "entity/Player.h"
 #include "world/Chunk.h"
 #include "core/Shader.h"
+#include "world/ChunkSystem.h"
 
 Player *player;
 RayCollision rx;
@@ -30,15 +31,6 @@ void setup()
     shader_init(&shader, &light, &tex);
     GuiLoadStyleDefault();
 
-    Chunk *newChunk = RL_MALLOC(sizeof(Chunk));
-    chunk_create(newChunk, (Vector3){0, 0, 0}, 1);
-    chunk_block_add(newChunk, (Block){.BlockID = 1}, (Vector3){0, 0, 0});
-    chunk_mesh_create(newChunk);
-    newChunk->currentModel = LoadModelFromMesh(newChunk->currentMesh);
-    loadedChunks[loadedChunksCount++] = newChunk;
-
-    Vector3 vecToSearch = {0, 0, 1};
-    TraceLog(LOG_DEBUG, TextFormat("BlockID at (%f, %f, %f): %i", vecToSearch.x, vecToSearch.y, vecToSearch.z, (loadedChunks[0]->Blocks[(int)vecToSearch.x][(int)vecToSearch.y][(int)vecToSearch.z])));
 }
 
 void update()
@@ -61,9 +53,10 @@ void update()
     DrawLine3D(rx.point, Vector3Add(rx.point, rx.normal), PURPLE);
 
     // World
-    //world_chunk_update(player, loadedChunks, &loadedChunksCount);
-    loadedChunks[0]->shouldLoad = 1;
-    world_chunk_draw(loadedChunks, &loadedChunksCount, shader, tex);
+
+    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, tex);
+
+
 
     // Debug
     debug_chunk_show(loadedChunks[0]);

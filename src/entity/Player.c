@@ -58,11 +58,11 @@ void place(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
                 if (rc.normal.x != 0)
                 {
                     target = (Vector3){(rc.normal.x == 1 ? rc.point.x : rc.point.x - 1), floorToInt(rc.point.y), floorToInt(rc.point.z)};
-                }
+                } else
                 if (rc.normal.y != 0)
                 {
                     target = (Vector3){floorToInt(rc.point.x), (rc.normal.y == 1 ? rc.point.y : rc.point.y - 1), floorToInt(rc.point.z)};
-                }
+                } else
                 if (rc.normal.z != 0)
                 {
                     target = (Vector3){floorToInt(rc.point.x), floorToInt(rc.point.y), (rc.normal.z == 1 ? rc.point.z : rc.point.z - 1)};

@@ -6,6 +6,7 @@ void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
     chnk->dirty = 1;
     chnk->shouldLoad = 1;
     chnk->currentMesh = (Mesh){0};
+    chnk->currentMesh.vaoId = 0;
 
     Vector3 newPos = worldPositionToChunk(pos);
     chnk->pos = newPos;
@@ -17,7 +18,11 @@ void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
 
 void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
 {
-    Chnk->currentMesh = (Mesh){0};
+    if (Chnk->currentMesh.vaoId != 0 )
+    {
+        UnloadMesh(Chnk->currentMesh);
+    }
+    
 
     Chnk->Blocks[(int)pos.x][(int)pos.y][(int)pos.z] = Blck;
     Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
