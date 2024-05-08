@@ -69,7 +69,7 @@ void place(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
                 }
 
                 TraceLog(LOG_DEBUG, TextFormat("target: %f, %f, %f", target.x, target.y, target.z));
-                chunk_block_add(loadedChunks[i], (Block){.BlockID = 1}, (Vector3){target.x, target.y, target.z});
+                chunk_block_add(loadedChunks[i], (Block){.BlockID = 1}, (Vector3){floorToInt(target.x), floorToInt(target.y), floorToInt(target.z)});
             }
             rc.hit = 0;
         }

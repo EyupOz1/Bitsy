@@ -12,7 +12,8 @@ typedef struct Player
 {
 
     Camera3D camera;
-    RayCollision rx;
+    Ray ray;
+    RayCollision rayCollision;
 
 } Player;
 
