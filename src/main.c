@@ -1,16 +1,19 @@
 #include "raylib.h"
 #include "rcamera.h"
-#include "gui/raygui.h"
 
 #include "core/rlights.h"
 #include "core/Debug.h"
+#include "core/Utils.h"
+#include "core/Shader.h"
 
 #include "world/World.h"
-#include "entity/Player.h"
-#include "core/Utils.h"
 #include "world/Chunk.h"
-#include "core/Shader.h"
 #include "world/ChunkSystem.h"
+
+#include "entity/Player.h"
+
+#include "stdio.h"
+#include "stdlib.h"
 
 Config CFG = {
     .flyingSpeed = 0.2f,
@@ -36,11 +39,23 @@ void setup()
 
     shader_init(&shader, &light, &tex);
 
-    GuiLoadStyleDefault();
-
     block = LoadModelFromMesh(mesh_block());
 }
-int x = 1;
+
+int comp(const void *elem1, const void *elem2)
+{
+    Chunk *ch1 = *(Chunk **)elem1;
+    Chunk *ch2 = *(Chunk **)elem2;
+
+    float f = Vector3DistanceSqr(player->camera.position, ch1->pos);
+    float s = Vector3DistanceSqr(player->camera.position, ch2->pos);
+
+    if (f > s)
+        return 1;
+    if (f < s)
+        return -1;
+    return 0;
+}
 
 void update()
 {
@@ -50,12 +65,14 @@ void update()
 
     // Debug
     DrawSphere(player->rayCollision.point, 0.4f, BLUE);
-    DrawSphere((Vector3){0.5, 0, 0.5}, 0.3f, PURPLE);
     DrawLine3D(player->rayCollision.point, Vector3Add(player->rayCollision.point, player->rayCollision.normal), PURPLE);
     DrawRay(player->ray, GREEN);
 
-
     DrawModel(block, player->targetBlockPosInWorldSpace, 1.0, YELLOW);
+
+    DrawBillboard(player->camera, tex, (Vector3){0, 0, 0}, 1.0, WHITE);
+
+    qsort(loadedChunks, loadedChunksCount, sizeof(Chunk *), comp);
 }
 void ui()
 {

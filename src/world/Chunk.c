@@ -28,7 +28,7 @@ void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
     Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
     Chnk->dirty = 1;
 
-    TraceLog(LOG_DEBUG, "Chunk_blockAdd: %f, %f, %f", pos.x, pos.y, pos.z);
+    //TraceLog(LOG_DEBUG, "Chunk_blockAdd: %f, %f, %f", pos.x, pos.y, pos.z);
 }
 
 void chunk_mesh_create(Chunk *Chnk)
@@ -302,7 +302,7 @@ void chunk_perlin_generate(Chunk *chunk)
             unsigned char height = GetImageColor(noise, i, j).g;
 
             float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, 2, j});
+            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
         }
     }
     UnloadImage(noise);

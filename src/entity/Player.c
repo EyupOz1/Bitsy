@@ -101,16 +101,6 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     float y = player->targetBlockPosInWorldSpace.y >= 0 ? (int)player->targetBlockPosInWorldSpace.y % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.y % CHUNK_SIZE);
     float z = player->targetBlockPosInWorldSpace.z >= 0 ? (int)player->targetBlockPosInWorldSpace.z % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.z % CHUNK_SIZE);
 
-    if (player->targetBlockPosInChunkSpace.y == 0 && player->rayCollision.normal.y == 1.0f)
-    {
-        player->targetChunkPos.y += CHUNK_SIZE;
-    }
-
-    if (player->targetBlockPosInChunkSpace.y == CHUNK_SIZE - 1 && player->rayCollision.normal.y == -1.0f)
-    {
-        player->targetChunkPos.y -= CHUNK_SIZE;
-    }
-
     if (player->targetBlockPosInChunkSpace.x == 0 && player->rayCollision.normal.x == 1.0f)
     {
         player->targetChunkPos.x += CHUNK_SIZE;
@@ -119,6 +109,16 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     if (player->targetBlockPosInChunkSpace.x == CHUNK_SIZE - 1 && player->rayCollision.normal.x == -1.0f)
     {
         player->targetChunkPos.x -= CHUNK_SIZE;
+    }
+    
+    if (player->targetBlockPosInChunkSpace.y == 0 && player->rayCollision.normal.y == 1.0f)
+    {
+        player->targetChunkPos.y += CHUNK_SIZE;
+    }
+
+    if (player->targetBlockPosInChunkSpace.y == CHUNK_SIZE - 1 && player->rayCollision.normal.y == -1.0f)
+    {
+        player->targetChunkPos.y -= CHUNK_SIZE;
     }
 
     if (player->targetBlockPosInChunkSpace.z == 0 && player->rayCollision.normal.z == 1.0f)

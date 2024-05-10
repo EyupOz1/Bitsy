@@ -37,6 +37,8 @@
         "tuple": "c",
         "utility": "c",
         "gui.h": "c",
-        "system_error": "c"
+        "system_error": "c",
+        "bit": "c",
+        "limits": "c"
     },
 }

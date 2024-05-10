@@ -18,7 +18,7 @@ void reup(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     Vector3 chunksToLoad[chunksToLoadCount];
 
     int count = 0;
-    int arr[] = {-CHUNK_SIZE, CHUNK_SIZE, 0};
+    int arr[] = {0, CHUNK_SIZE, -CHUNK_SIZE};
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
