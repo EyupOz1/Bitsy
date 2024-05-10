@@ -3,75 +3,107 @@
 void player_init(Player *player)
 {
     player->camera.position = (Vector3){0.0f, 0.0f, 0.0f};
+    player->camera.target = (Vector3){1.0f, 0.0f, 0.0f};
     player->camera.up = (Vector3){0.0f, 1.0f, 0.0f};
-    player->camera.fovy = 60.0f;
+    player->camera.fovy = 95.0f;
     player->camera.projection = CAMERA_PERSPECTIVE;
 }
 
-void player_update(Player *player, Chunk **loadedChunks, int* loadedChunksCount)
+void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Config *cfg)
 {
-    move(player);
+    move(player, cfg);
+    look(player, loadedChunks, loadedChunksCount);
+
     place(player, loadedChunks, loadedChunksCount);
+
+    if (IsKeyPressed(KEY_F))
+    {
+
+        cfg->mouseActive = !cfg->mouseActive;
+        cfg->mouseActive ? EnableCursor() : DisableCursor();
+    }
 }
 
-void move(Player *player)
+void move(Player *player, Config *cfg)
 {
+
     if (IsKeyDown(KEY_W))
-        CameraMoveForward(&(player->camera), CAMERA_MOVE_SPEED, 1);
+        CameraMoveForward(&(player->camera), cfg->flyingSpeed, 1);
     if (IsKeyDown(KEY_A))
-        CameraMoveRight(&(player->camera), -CAMERA_MOVE_SPEED, 1);
+        CameraMoveRight(&(player->camera), -cfg->flyingSpeed, 1);
     if (IsKeyDown(KEY_S))
-        CameraMoveForward(&(player->camera), -CAMERA_MOVE_SPEED, 1);
+        CameraMoveForward(&(player->camera), -cfg->flyingSpeed, 1);
     if (IsKeyDown(KEY_D))
-        CameraMoveRight(&(player->camera), CAMERA_MOVE_SPEED, 1);
+        CameraMoveRight(&(player->camera), cfg->flyingSpeed, 1);
 
     if (IsKeyDown(KEY_SPACE))
-        CameraMoveUp(&(player->camera), CAMERA_MOVE_SPEED);
+        CameraMoveUp(&(player->camera), cfg->flyingSpeed);
 
     if (IsKeyDown(KEY_LEFT_SHIFT))
-        CameraMoveUp(&(player->camera), -CAMERA_MOVE_SPEED);
+        CameraMoveUp(&(player->camera), -cfg->flyingSpeed);
 
     Vector2 mousePositionDelta = GetMouseDelta();
-    CameraYaw(&(player->camera), -mousePositionDelta.x * CAMERA_MOUSE_MOVE_SENSITIVITY, 0);
-    CameraPitch(&(player->camera), -mousePositionDelta.y * CAMERA_MOUSE_MOVE_SENSITIVITY, 1, 0, 0);
+    CameraYaw(&(player->camera), -mousePositionDelta.x * cfg->mouseSensitivity, 0);
+    CameraPitch(&(player->camera), -mousePositionDelta.y * cfg->mouseSensitivity, 1, 0, 0);
+}
+
+void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+{
+    player->ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
+    player->rayCollision.distance = 999999;
+
+    int nearestChunkIndex = -1;
+    for (int i = 0; i < *loadedChunksCount; i++)
+    {
+        RayCollision currCollision;
+
+        Matrix m = MatrixTranslate(loadedChunks[i]->pos.x, loadedChunks[i]->pos.y, loadedChunks[i]->pos.z);
+        currCollision = GetRayCollisionMesh(player->ray, loadedChunks[i]->currentMesh, MatrixMultiply(m, loadedChunks[i]->currentModel.transform));
+
+        if ((currCollision.hit && player->rayCollision.distance > currCollision.distance))
+        {
+            player->rayCollision = currCollision;
+            nearestChunkIndex = i;
+        }
+    }
+    if (nearestChunkIndex == -1)
+    {
+        return;
+    }
+
+    player->targetBlockPosInWorldSpace = rayCollisionToBlockPos(player->rayCollision);
+    player->targetChunk = loadedChunks[nearestChunkIndex];
+    player->targetChunkValid = 1;
+
+    float x = player->targetBlockPosInWorldSpace.x >= 0 ? (int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE);
+    float y = player->targetBlockPosInWorldSpace.y >= 0 ? (int)player->targetBlockPosInWorldSpace.y % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.y % CHUNK_SIZE);
+    float z = player->targetBlockPosInWorldSpace.z >= 0 ? (int)player->targetBlockPosInWorldSpace.z % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.z % CHUNK_SIZE);
+    if (x == CHUNK_SIZE)
+    {
+        x = 0;
+    }
+    if (y == CHUNK_SIZE)
+    {
+        y = 0;
+    }
+    if (z == CHUNK_SIZE)
+    {
+        z = 0;
+    }
+
+    player->targetBlockPosInChunkSpace = (Vector3){x, y, z};
 }
 
 void place(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        TraceLog(LOG_DEBUG, "Place block");
-        for (int i = 0; i < *loadedChunksCount; i++)
-        {
-            Ray ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
-            RayCollision rc;
+        Vector3 chunkPosOfBlock = worldPositionToChunk(player->targetBlockPosInWorldSpace);
+        Vector3 blockPosInChunk = Vector3Subtract(player->targetBlockPosInWorldSpace, chunkPosOfBlock);
 
-            Matrix m = MatrixTranslate(loadedChunks[i]->pos.x, loadedChunks[i]->pos.y, loadedChunks[i]->pos.z);
-            rc = GetRayCollisionMesh(ray, loadedChunks[i]->currentMesh, MatrixMultiply(m, loadedChunks[i]->currentModel.transform));
-
-            if (rc.hit)
-            {
-                TraceLog(LOG_DEBUG, TextFormat("Ray hit on pos: %f, %f, %f", rc.point.x, rc.point.y, rc.point.z));
-                TraceLog(LOG_DEBUG, TextFormat("normal: %f, %f, %f", rc.normal.x, rc.normal.y, rc.normal.z));
-
-                Vector3 target;
-                if (rc.normal.x != 0)
-                {
-                    target = (Vector3){(rc.normal.x == 1 ? rc.point.x : rc.point.x - 1), floorToInt(rc.point.y), floorToInt(rc.point.z)};
-                } else
-                if (rc.normal.y != 0)
-                {
-                    target = (Vector3){floorToInt(rc.point.x), (rc.normal.y == 1 ? rc.point.y : rc.point.y - 1), floorToInt(rc.point.z)};
-                } else
-                if (rc.normal.z != 0)
-                {
-                    target = (Vector3){floorToInt(rc.point.x), floorToInt(rc.point.y), (rc.normal.z == 1 ? rc.point.z : rc.point.z - 1)};
-                }
-
-                TraceLog(LOG_DEBUG, TextFormat("target: %f, %f, %f", target.x, target.y, target.z));
-                chunk_block_add(loadedChunks[i], (Block){.BlockID = 1}, (Vector3){floorToInt(target.x), floorToInt(target.y), floorToInt(target.z)});
-            }
-            rc.hit = 0;
-        }
+        Vector3 target = player->targetBlockPosInChunkSpace;
+        TraceLog(LOG_DEBUG, "Place on: %f, %f, %f", target.x, target.y, target.z);
+        chunk_block_add(player->targetChunk, (Block){.BlockID = 1}, target);
+        player->targetChunk->dirty = 1;
     }
 }

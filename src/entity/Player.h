@@ -4,9 +4,8 @@
 #include "rcamera.h"
 #include "raymath.h"
 #include "../world/Chunk.h"
+#include "../core/Utils.h"
 
-#define CAMERA_MOVE_SPEED 0.2f
-#define CAMERA_MOUSE_MOVE_SENSITIVITY 0.003f
 
 typedef struct Player
 {
@@ -14,8 +13,12 @@ typedef struct Player
     Camera3D camera;
     Ray ray;
     RayCollision rayCollision;
+    Vector3 targetBlockPosInWorldSpace;
+    Vector3 targetBlockPosInChunkSpace;
+    Chunk* targetChunk;
+    unsigned char targetChunkValid;
 
 } Player;
 
 void player_init(Player *player);
-void player_update(Player *player, Chunk **loadedChunks, int* loadedChunksCount);
+void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Config* cfg);

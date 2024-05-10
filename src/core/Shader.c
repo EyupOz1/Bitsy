@@ -9,12 +9,12 @@ void shader_init(Shader *shader, Light *light, Texture2D *tex)
     int ambientLoc = GetShaderLocation(*shader, "ambient");
     SetShaderValue(*shader, ambientLoc, (float[4]){0.1f, 0.1f, 0.1f, 1.0f}, SHADER_UNIFORM_VEC4);
 
-    *light = CreateLight(LIGHT_POINT, (Vector3){-2, 1, -2}, Vector3Zero(), GREEN, *shader);
+    *light = CreateLight(LIGHT_POINT, (Vector3){-2, 1, -2}, Vector3Zero(), (Color){255, 255, 255, 255}, *shader);
 
     *tex = LoadTexture("Test.png");
 }
 
-void shader_update(Shader* shader, Light *light, Vector3 pos)
+void shader_update(Shader *shader, Light *light, Vector3 pos)
 {
     light->position = pos;
     float cameraPos[3] = {pos.x, pos.y, pos.z};

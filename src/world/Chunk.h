@@ -2,12 +2,12 @@
 
 #include "stdio.h"
 #include "string.h"
-#include "../Utils.h"
+#include "../core/Utils.h"
 
 #include "raylib.h"
 #include "raymath.h"
 
-#define CHUNK_SIZE 16
+#define CHUNK_SIZE 8
 
 typedef struct
 {

@@ -4,3 +4,4 @@
 #include "raymath.h"
 
 void debug_chunk_show(Chunk* chunk);
+Mesh mesh_block();

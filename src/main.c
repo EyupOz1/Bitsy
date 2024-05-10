@@ -4,7 +4,7 @@
 
 #include "core/rlights.h"
 #include "core/Debug.h"
-#include "Utils.h"
+#include "core/Utils.h"
 
 #include "world/World.h"
 #include "entity/Player.h"
@@ -12,9 +12,14 @@
 #include "core/Shader.h"
 #include "world/ChunkSystem.h"
 
+Config CFG = {
+    .flyingSpeed = 0.2f,
+    .mouseActive = 1,
+    .mouseSensitivity = 0.005f,
+    .fieldOfView = 95.0f,
+};
+
 Player *player;
-RayCollision rx;
-unsigned char mouseActive = 0;
 
 int loadedChunksCount = 0;
 Chunk *loadedChunks[2000];
@@ -22,54 +27,48 @@ Chunk *loadedChunks[2000];
 Shader shader;
 Light light;
 Texture2D tex;
+Model block;
 
 void setup()
 {
-    player = RL_MALLOC(sizeof(Player));
+    player = MemAlloc(sizeof(Player));
     player_init(player);
 
     shader_init(&shader, &light, &tex);
+
     GuiLoadStyleDefault();
 
+    block = LoadModelFromMesh(mesh_block());
 }
+int x = 1;
 
 void update()
 {
-    // Shader
+    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, tex);
+    player_update(player, loadedChunks, &loadedChunksCount, &CFG);
     shader_update(&shader, &light, player->camera.position);
 
-    // Player
-    player_update(player, loadedChunks, &loadedChunksCount);
-    if (IsKeyPressed(KEY_F))
-    {
-        mouseActive = !mouseActive;
-        mouseActive ? EnableCursor() : DisableCursor();
-    }
-
-
-    DrawSphere((Vector3){0, 0, 0}, 0.2f, BLUE);
-
-    DrawSphere(rx.point, 0.02f, BLUE);
-    DrawLine3D(rx.point, Vector3Add(rx.point, rx.normal), PURPLE);
-
-    // World
-
-    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, tex);
-
-
-
     // Debug
-    debug_chunk_show(loadedChunks[0]);
-}
+    DrawSphere(player->rayCollision.point, 0.4f, BLUE);
+    DrawSphere((Vector3){0.5, 0.5, 0.5}, 0.9f, PURPLE);
+    DrawLine3D(player->rayCollision.point, Vector3Add(player->rayCollision.point, player->rayCollision.normal), PURPLE);
+    DrawRay(player->ray, GREEN);
 
+    TraceLog(LOG_DEBUG, "Target Block: %f, %f, %f", player->targetBlockPosInWorldSpace.x, player->targetBlockPosInWorldSpace.y, player->targetBlockPosInWorldSpace.z);
+
+    DrawModel(block, player->targetBlockPosInWorldSpace, 1.0, YELLOW);
+}
 void ui()
 {
-    DrawText(TextFormat("- Position: (%06.3f, %06.3f, %06.3f)", player->camera.position.x, player->camera.position.y, player->camera.position.z), 610, 60, 10, BLACK);
-    DrawText(TextFormat("- Target: (%06.3f, %06.3f, %06.3f)", player->camera.target.x, player->camera.target.y, player->camera.target.z), 610, 75, 10, BLACK);
-    DrawText(TextFormat("- Up: (%06.3f, %06.3f, %06.3f)", player->camera.up.x, player->camera.up.y, player->camera.up.z), 610, 90, 10, BLACK);
+    DrawText(TextFormat("pos: (%f, %f, %f)", player->camera.position.x, player->camera.position.y, player->camera.position.z), 0, 0, 20, BLACK);
 
     Vector3 pos1 = worldPositionToChunk(player->camera.position);
-    DrawText(TextFormat("%f, %f, %f", pos1.x, pos1.y, pos1.z), 0, 0, 10, BLACK);
+    DrawText(TextFormat("chunkPos: %f, %f, %f", pos1.x, pos1.y, pos1.z), 0, 20, 20, BLACK);
+
+    if (player->targetChunkValid)
+    {
+        DrawText(TextFormat("BlockSpace: chunk:  %.2f, %.2f, %.2f / blockPos: %.2f, %.2f, %.2f", player->targetChunk->pos.x, player->targetChunk->pos.y, player->targetChunk->pos.z, player->targetBlockPosInChunkSpace.x, player->targetBlockPosInChunkSpace.y, player->targetBlockPosInChunkSpace.z), 0, 40, 20, BLACK);
+    }
 
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
 }
