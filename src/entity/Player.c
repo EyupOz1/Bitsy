@@ -56,11 +56,12 @@ void move(Player *player, Config *cfg)
     CameraPitch(&(player->camera), -mousePositionDelta.y * cfg->mouseSensitivity, 1, 0, 0);
 }
 
-Chunk* setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+Vector3 setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
     int x = -1;
     for (int i = 0; i < *loadedChunksCount; i++)
     {
+
         RayCollision currCollision;
 
         Matrix m = MatrixTranslate(loadedChunks[i]->pos.x, loadedChunks[i]->pos.y, loadedChunks[i]->pos.z);
@@ -74,9 +75,9 @@ Chunk* setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksC
     }
     if (x != -1)
     {
-        return loadedChunks[x];
+        return loadedChunks[x]->pos;
     }
-    return 0;
+    return (Vector3){-1, -1, -1};
 }
 
 void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
@@ -84,31 +85,50 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     player->ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
     player->rayCollision.distance = 999999;
 
-    Chunk* ch = setPlayerRayInfo(player, loadedChunks, loadedChunksCount);
-    if (!player->rayCollision.hit || ch == 0)
+    Vector3 chunkPos = setPlayerRayInfo(player, loadedChunks, loadedChunksCount);
+    if (!player->rayCollision.hit || chunkPos.x == -1)
     {
         return;
     }
 
     player->targetBlockPosInWorldSpace = rayCollisionToBlockPos(player->rayCollision);
 
-    player->targetChunk = ch;
+    player->targetChunkPos = chunkPos;
     player->targetChunkValid = 1;
 
+    // FIXME:
     float x = player->targetBlockPosInWorldSpace.x >= 0 ? (int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE);
     float y = player->targetBlockPosInWorldSpace.y >= 0 ? (int)player->targetBlockPosInWorldSpace.y % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.y % CHUNK_SIZE);
     float z = player->targetBlockPosInWorldSpace.z >= 0 ? (int)player->targetBlockPosInWorldSpace.z % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.z % CHUNK_SIZE);
-    if (x == CHUNK_SIZE)
+
+    if (player->targetBlockPosInChunkSpace.y == 0 && player->rayCollision.normal.y == 1.0f)
     {
-        x = 0;
+        player->targetChunkPos.y += CHUNK_SIZE;
     }
-    if (y == CHUNK_SIZE)
+
+    if (player->targetBlockPosInChunkSpace.y == CHUNK_SIZE - 1 && player->rayCollision.normal.y == -1.0f)
     {
-        y = 0;
+        player->targetChunkPos.y -= CHUNK_SIZE;
     }
-    if (z == CHUNK_SIZE)
+
+    if (player->targetBlockPosInChunkSpace.x == 0 && player->rayCollision.normal.x == 1.0f)
     {
-        z = 0;
+        player->targetChunkPos.x += CHUNK_SIZE;
+    }
+
+    if (player->targetBlockPosInChunkSpace.x == CHUNK_SIZE - 1 && player->rayCollision.normal.x == -1.0f)
+    {
+        player->targetChunkPos.x -= CHUNK_SIZE;
+    }
+
+    if (player->targetBlockPosInChunkSpace.z == 0 && player->rayCollision.normal.z == 1.0f)
+    {
+        player->targetChunkPos.z += CHUNK_SIZE;
+    }
+
+    if (player->targetBlockPosInChunkSpace.z == CHUNK_SIZE - 1 && player->rayCollision.normal.z == -1.0f)
+    {
+        player->targetChunkPos.z -= CHUNK_SIZE;
     }
 
     player->targetBlockPosInChunkSpace = (Vector3){x, y, z};
@@ -118,12 +138,10 @@ void place(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        Vector3 chunkPosOfBlock = worldPositionToChunk(player->targetBlockPosInWorldSpace);
-        Vector3 blockPosInChunk = Vector3Subtract(player->targetBlockPosInWorldSpace, chunkPosOfBlock);
-
+        Chunk *targetChunk = chunk_find(loadedChunks, loadedChunksCount, player->targetChunkPos);
         Vector3 target = player->targetBlockPosInChunkSpace;
-        TraceLog(LOG_DEBUG, "Place on: %f, %f, %f", target.x, target.y, target.z);
-        chunk_block_add(player->targetChunk, (Block){.BlockID = 1}, target);
-        player->targetChunk->dirty = 1;
+        TraceLog(LOG_DEBUG, "Player_place: %f, %f, %f", target.x, target.y, target.z);
+        chunk_block_add(targetChunk, (Block){.BlockID = 1}, target);
+        targetChunk->dirty = 1;
     }
 }

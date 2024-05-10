@@ -73,7 +73,7 @@ void ui()
 
     if (player->targetChunkValid)
     {
-        DrawText(TextFormat("rayChunkPos:  %.2f, %.2f, %.2f", player->targetChunk->pos.x, player->targetChunk->pos.y, player->targetChunk->pos.z), 0, y += step, 20, BLACK);
+        DrawText(TextFormat("rayChunkPos:  %.2f, %.2f, %.2f", player->targetChunkPos.x, player->targetChunkPos.y, player->targetChunkPos.z), 0, y += step, 20, BLACK);
     }
     DrawText(TextFormat("rayBlockPosInChunkSpace: %.2f, %.2f, %.2f", player->targetBlockPosInChunkSpace.x, player->targetBlockPosInChunkSpace.y, player->targetBlockPosInChunkSpace.z), 0, y += step, 20, BLACK);
 

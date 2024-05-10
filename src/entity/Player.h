@@ -16,7 +16,7 @@ typedef struct Player
     RayCollision rayCollision;
     Vector3 targetBlockPosInWorldSpace;
     Vector3 targetBlockPosInChunkSpace;
-    Chunk* targetChunk;
+    Vector3 targetChunkPos;
     unsigned char targetChunkValid;
 
 } Player;

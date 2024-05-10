@@ -13,7 +13,7 @@ void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
 
     chnk->BlockPosIndex = 0;
 
-    TraceLog(LOG_DEBUG, "New Chunk: \nPos: %f, %f, %f", newPos.x, newPos.y, newPos.z);
+    TraceLog(LOG_DEBUG, "Chunk_new: %f, %f, %f", newPos.x, newPos.y, newPos.z);
 }
 
 void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
@@ -27,6 +27,8 @@ void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
     Chnk->Blocks[(int)pos.x][(int)pos.y][(int)pos.z] = Blck;
     Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
     Chnk->dirty = 1;
+
+    TraceLog(LOG_DEBUG, "Chunk_blockAdd: %f, %f, %f", pos.x, pos.y, pos.z);
 }
 
 void chunk_mesh_create(Chunk *Chnk)
@@ -300,7 +302,7 @@ void chunk_perlin_generate(Chunk *chunk)
             unsigned char height = GetImageColor(noise, i, j).g;
 
             float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
+            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, 2, j});
         }
     }
     UnloadImage(noise);
@@ -313,6 +315,7 @@ Chunk *chunk_find(Chunk **loadedChunks, int *loadedChunksCount, Vector3 pos)
     {
         if (loadedChunks[i]->pos.x == chunk_pos.x && loadedChunks[i]->pos.y == chunk_pos.y && loadedChunks[i]->pos.z == chunk_pos.z)
         {
+            TraceLog(LOG_DEBUG, "Chunk_find: arg: %f, %f, %f res: %f, %f, %f", pos.x, pos.y, pos.z, loadedChunks[i]->pos.x, loadedChunks[i]->pos.y, loadedChunks[i]->pos.z);
             return loadedChunks[i];
         }
     }

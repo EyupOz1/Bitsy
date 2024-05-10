@@ -36,6 +36,7 @@
         "streambuf": "c",
         "tuple": "c",
         "utility": "c",
-        "gui.h": "c"
+        "gui.h": "c",
+        "system_error": "c"
     },
 }

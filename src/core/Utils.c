@@ -8,10 +8,7 @@ Vector3 worldPositionToChunk(Vector3 pos)
     return res;
 }
 
-void worldPosToChunkAndPos(Vector3 worldPos, Vector3 *dstPosInChunkSpace, Chunk *dstChunk)
-{
-    Vector3 chunkPos = worldPositionToChunk(worldPos);
-}
+
 
 unsigned char Vector3Compare(Vector3 a, Vector3 b)
 {
