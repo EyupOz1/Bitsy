@@ -22,37 +22,42 @@ void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount,
         cfg->mouseActive = !cfg->mouseActive;
         cfg->mouseActive ? EnableCursor() : DisableCursor();
     }
+
+    if (IsKeyPressed(KEY_F11))
+    {
+        ToggleFullscreen();
+    }
 }
 
 void move(Player *player, Config *cfg)
 {
 
+    float speed = cfg->flyingSpeed;
+    if (IsKeyDown(KEY_LEFT_SHIFT))
+        speed *= 2;
+
     if (IsKeyDown(KEY_W))
-        CameraMoveForward(&(player->camera), cfg->flyingSpeed, 1);
+        CameraMoveForward(&(player->camera), speed, 1);
     if (IsKeyDown(KEY_A))
-        CameraMoveRight(&(player->camera), -cfg->flyingSpeed, 1);
+        CameraMoveRight(&(player->camera), -speed, 1);
     if (IsKeyDown(KEY_S))
-        CameraMoveForward(&(player->camera), -cfg->flyingSpeed, 1);
+        CameraMoveForward(&(player->camera), -speed, 1);
     if (IsKeyDown(KEY_D))
-        CameraMoveRight(&(player->camera), cfg->flyingSpeed, 1);
+        CameraMoveRight(&(player->camera), speed, 1);
 
     if (IsKeyDown(KEY_SPACE))
-        CameraMoveUp(&(player->camera), cfg->flyingSpeed);
+        CameraMoveUp(&(player->camera), speed);
 
-    if (IsKeyDown(KEY_LEFT_SHIFT))
-        CameraMoveUp(&(player->camera), -cfg->flyingSpeed);
+    if (IsKeyDown(KEY_LEFT_CONTROL))
+        CameraMoveUp(&(player->camera), -speed);
 
     Vector2 mousePositionDelta = GetMouseDelta();
     CameraYaw(&(player->camera), -mousePositionDelta.x * cfg->mouseSensitivity, 0);
     CameraPitch(&(player->camera), -mousePositionDelta.y * cfg->mouseSensitivity, 1, 0, 0);
 }
 
-void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+void setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
-    player->ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
-    player->rayCollision.distance = 999999;
-
-    int nearestChunkIndex = -1;
     for (int i = 0; i < *loadedChunksCount; i++)
     {
         RayCollision currCollision;
@@ -63,16 +68,25 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
         if ((currCollision.hit && player->rayCollision.distance > currCollision.distance))
         {
             player->rayCollision = currCollision;
-            nearestChunkIndex = i;
         }
     }
-    if (nearestChunkIndex == -1)
+}
+
+void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+{
+    player->ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
+    player->rayCollision.distance = 999999;
+
+    setPlayerRayInfo(player, loadedChunks, loadedChunksCount);
+    if (!player->rayCollision.hit)
     {
         return;
     }
 
     player->targetBlockPosInWorldSpace = rayCollisionToBlockPos(player->rayCollision);
-    player->targetChunk = loadedChunks[nearestChunkIndex];
+
+    /*
+    player->targetChunk = loadedChunks[0];
     player->targetChunkValid = 1;
 
     float x = player->targetBlockPosInWorldSpace.x >= 0 ? (int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE);
@@ -92,6 +106,7 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     }
 
     player->targetBlockPosInChunkSpace = (Vector3){x, y, z};
+    */
 }
 
 void place(Player *player, Chunk **loadedChunks, int *loadedChunksCount)

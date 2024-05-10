@@ -70,7 +70,7 @@ void draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader, Texture2D
         }
         if (loadedChunks[i]->shouldLoad)
         {
-            DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, WHITE);
+            DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, DARKBLUE);
             loadedChunks[i]->shouldLoad = 0;
             loadedChunks[i]->currentModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = tex;
             loadedChunks[i]->currentModel.materials[0].shader = shader;

@@ -11,6 +11,7 @@ typedef struct Player
 {
 
     Camera3D camera;
+    
     Ray ray;
     RayCollision rayCollision;
     Vector3 targetBlockPosInWorldSpace;

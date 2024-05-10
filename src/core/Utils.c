@@ -1,10 +1,16 @@
 #include "Utils.h"
 
+// In World-Space
 Vector3 worldPositionToChunk(Vector3 pos)
 {
     Vector3 res = (Vector3){(int)(pos.x / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.y / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.z / CHUNK_SIZE) * CHUNK_SIZE};
 
     return res;
+}
+
+void worldPosToChunkAndPos(Vector3 worldPos, Vector3 *dstPosInChunkSpace, Chunk *dstChunk)
+{
+    Vector3 chunkPos = worldPositionToChunk(worldPos);
 }
 
 unsigned char Vector3Compare(Vector3 a, Vector3 b)
@@ -42,47 +48,49 @@ float floorToInt(float x)
 
 Vector3 rayCollisionToBlockPos(RayCollision coll)
 {
-    Vector3 targetBlock = Vector3Zero();
-    if (coll.normal.x != 0)
-    {
-        if (coll.point.x > 0)
-        {
-            float x = (coll.normal.x == 1.0f ? coll.point.x : coll.point.x - 1);
-            targetBlock = (Vector3){x, coll.point.y, coll.point.z};
-        }
-        else
-        {
+    Vector3 targetBlock = (Vector3){coll.point.x, coll.point.y, coll.point.z};
 
-            float x = (coll.normal.x == 1.0f ? coll.point.x + 1 : coll.point.x);
-            targetBlock = (Vector3){x, coll.point.y, coll.point.z};
-        }
-    }
-    else if (coll.normal.y != 0)
+    if (coll.normal.x == 1.0f || coll.normal.x == -1.0f)
     {
-        if (coll.point.y > 0)
+        targetBlock.x = round(targetBlock.x);
+        targetBlock.y = ceil(targetBlock.y);
+        targetBlock.z = ceil(targetBlock.z);
+
+        targetBlock.y--;
+        targetBlock.z--;
+        if (coll.normal.x == -1.0f)
         {
-            float y = (coll.normal.y == 1.0f ? coll.point.y : coll.point.y - 1);
-            targetBlock = (Vector3){coll.point.x, y, coll.point.z};
-        }
-        else
-        {
-            float y = (coll.normal.y == 1.0f ? coll.point.y + 1 : coll.point.y);
-            targetBlock = (Vector3){coll.point.x, y, coll.point.z};
+            targetBlock.x--;
         }
     }
-    else if (coll.normal.z != 0)
+    if (coll.normal.y == 1.0f || coll.normal.y == -1.0f)
     {
-        if (coll.point.z > 0)
+        targetBlock.x = ceil(targetBlock.x);
+        targetBlock.y = round(targetBlock.y);
+        targetBlock.z = ceil(targetBlock.z);
+
+        targetBlock.x--;
+        targetBlock.z--;
+        if (coll.normal.y == -1.0f)
         {
-            float z = (coll.normal.z == 1 ? coll.point.z : coll.point.z - 1);
-            targetBlock = (Vector3){coll.point.x, coll.point.y, z};
-        }
-        else
-        {
-            float z = (coll.normal.z == 1 ? coll.point.z + 1 : coll.point.z);
-            targetBlock = (Vector3){coll.point.x, coll.point.y, z};
+            targetBlock.y--;
         }
     }
-    targetBlock = (Vector3){floorToInt(targetBlock.x), floorToInt(targetBlock.y), floorToInt(targetBlock.z)};
+    if (coll.normal.z == 1.0f || coll.normal.z == -1.0f)
+    {
+        targetBlock.x = ceil(targetBlock.x);
+        targetBlock.y = ceil(targetBlock.y);
+        targetBlock.z = round(targetBlock.z);
+
+        targetBlock.x--;
+        targetBlock.y--;
+        if (coll.normal.z == -1.0f)
+        {
+            targetBlock.z--;
+        }
+    }
+
+    targetBlock = (Vector3){(targetBlock.x), (targetBlock.y), (targetBlock.z)};
+
     return targetBlock;
 }

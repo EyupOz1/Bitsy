@@ -4,10 +4,10 @@
 
 #include "core/rlights.h"
 #include "core/Debug.h"
-#include "core/Utils.h"
 
 #include "world/World.h"
 #include "entity/Player.h"
+#include "core/Utils.h"
 #include "world/Chunk.h"
 #include "core/Shader.h"
 #include "world/ChunkSystem.h"
@@ -50,25 +50,32 @@ void update()
 
     // Debug
     DrawSphere(player->rayCollision.point, 0.4f, BLUE);
-    DrawSphere((Vector3){0.5, 0.5, 0.5}, 0.9f, PURPLE);
+    DrawSphere((Vector3){0.5, 0, 0.5}, 0.3f, PURPLE);
     DrawLine3D(player->rayCollision.point, Vector3Add(player->rayCollision.point, player->rayCollision.normal), PURPLE);
     DrawRay(player->ray, GREEN);
 
-    TraceLog(LOG_DEBUG, "Target Block: %f, %f, %f", player->targetBlockPosInWorldSpace.x, player->targetBlockPosInWorldSpace.y, player->targetBlockPosInWorldSpace.z);
 
     DrawModel(block, player->targetBlockPosInWorldSpace, 1.0, YELLOW);
 }
 void ui()
 {
-    DrawText(TextFormat("pos: (%f, %f, %f)", player->camera.position.x, player->camera.position.y, player->camera.position.z), 0, 0, 20, BLACK);
+    int step = 20;
+    int y = -step;
+    DrawText(TextFormat("playerPosRaw: (%f, %f, %f)", player->camera.position.x, player->camera.position.y, player->camera.position.z), 0, y += step, 20, BLACK);
 
     Vector3 pos1 = worldPositionToChunk(player->camera.position);
-    DrawText(TextFormat("chunkPos: %f, %f, %f", pos1.x, pos1.y, pos1.z), 0, 20, 20, BLACK);
+    DrawText(TextFormat("playerChunk: %f, %f, %f", pos1.x, pos1.y, pos1.z), 0, y += step, 20, BLACK);
+
+    DrawText(TextFormat("rayPosRaw: %f, %f, %f", player->rayCollision.point.x, player->rayCollision.point.y, player->rayCollision.point.z), 0, y += step, 20, BLACK);
+    DrawText(TextFormat("rayNormal: %f, %f, %f", player->rayCollision.normal.x, player->rayCollision.normal.y, player->rayCollision.normal.z), 0, y += step, 20, BLACK);
+
+    DrawText(TextFormat("rayBlockPosInWorldSpace: %f, %f, %f", player->targetBlockPosInWorldSpace.x, player->targetBlockPosInWorldSpace.y, player->targetBlockPosInWorldSpace.z), 0, y += step, 20, BLACK);
 
     if (player->targetChunkValid)
     {
-        DrawText(TextFormat("BlockSpace: chunk:  %.2f, %.2f, %.2f / blockPos: %.2f, %.2f, %.2f", player->targetChunk->pos.x, player->targetChunk->pos.y, player->targetChunk->pos.z, player->targetBlockPosInChunkSpace.x, player->targetBlockPosInChunkSpace.y, player->targetBlockPosInChunkSpace.z), 0, 40, 20, BLACK);
+        DrawText(TextFormat("rayChunkPos:  %.2f, %.2f, %.2f", player->targetChunk->pos.x, player->targetChunk->pos.y, player->targetChunk->pos.z), 0, y += step, 20, BLACK);
     }
+    DrawText(TextFormat("rayBlockPosInChunkSpace: %.2f, %.2f, %.2f", player->targetBlockPosInChunkSpace.x, player->targetBlockPosInChunkSpace.y, player->targetBlockPosInChunkSpace.z), 0, y += step, 20, BLACK);
 
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
 }
@@ -77,7 +84,7 @@ int main(void)
 {
     InitWindow(1080, 720, "Bitsy");
     DisableCursor();
-    SetTargetFPS(120);
+    SetTargetFPS(60);
     SetTraceLogLevel(LOG_ALL);
 
     setup();

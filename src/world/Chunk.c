@@ -300,7 +300,7 @@ void chunk_perlin_generate(Chunk *chunk)
             unsigned char height = GetImageColor(noise, i, j).g;
 
             float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, 1, j});
+            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
         }
     }
     UnloadImage(noise);
