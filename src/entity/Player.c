@@ -56,8 +56,9 @@ void move(Player *player, Config *cfg)
     CameraPitch(&(player->camera), -mousePositionDelta.y * cfg->mouseSensitivity, 1, 0, 0);
 }
 
-void setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+Chunk* setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
+    int x = -1;
     for (int i = 0; i < *loadedChunksCount; i++)
     {
         RayCollision currCollision;
@@ -68,8 +69,14 @@ void setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCou
         if ((currCollision.hit && player->rayCollision.distance > currCollision.distance))
         {
             player->rayCollision = currCollision;
+            x = i;
         }
     }
+    if (x != -1)
+    {
+        return loadedChunks[x];
+    }
+    return 0;
 }
 
 void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
@@ -77,16 +84,15 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     player->ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
     player->rayCollision.distance = 999999;
 
-    setPlayerRayInfo(player, loadedChunks, loadedChunksCount);
-    if (!player->rayCollision.hit)
+    Chunk* ch = setPlayerRayInfo(player, loadedChunks, loadedChunksCount);
+    if (!player->rayCollision.hit || ch == 0)
     {
         return;
     }
 
     player->targetBlockPosInWorldSpace = rayCollisionToBlockPos(player->rayCollision);
 
-    /*
-    player->targetChunk = loadedChunks[0];
+    player->targetChunk = ch;
     player->targetChunkValid = 1;
 
     float x = player->targetBlockPosInWorldSpace.x >= 0 ? (int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE : CHUNK_SIZE + ((int)player->targetBlockPosInWorldSpace.x % CHUNK_SIZE);
@@ -106,7 +112,6 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     }
 
     player->targetBlockPosInChunkSpace = (Vector3){x, y, z};
-    */
 }
 
 void place(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
