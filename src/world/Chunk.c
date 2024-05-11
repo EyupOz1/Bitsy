@@ -95,7 +95,7 @@ void chunk_mesh_create(Chunk *Chnk)
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            // Neg Z
+            // Neg Z 
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
