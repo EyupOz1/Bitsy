@@ -5,6 +5,7 @@
 #include "core/Debug.h"
 #include "core/Utils.h"
 #include "core/Shader.h"
+#include "core/Texture.h"
 
 #include "world/World.h"
 #include "world/Chunk.h"
@@ -32,6 +33,8 @@ Light light;
 Texture2D tex;
 Model block;
 
+RenderTexture tileTexture;
+
 void setup()
 {
     player = MemAlloc(sizeof(Player));
@@ -40,6 +43,8 @@ void setup()
     shader_init(&shader, &light, &tex);
 
     block = LoadModelFromMesh(mesh_block());
+    tileTexture = texture_init();
+
 }
 
 int comp(const void *elem1, const void *elem2)
@@ -59,7 +64,7 @@ int comp(const void *elem1, const void *elem2)
 
 void update()
 {
-    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, tex);
+    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, tileTexture);
     player_update(player, loadedChunks, &loadedChunksCount, &CFG);
     shader_update(&shader, &light, player->camera.position);
 

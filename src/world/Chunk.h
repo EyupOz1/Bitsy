@@ -9,6 +9,12 @@
 
 #define CHUNK_SIZE 8
 
+typedef enum Blocks
+{
+    BLOCK_grass = 1,
+    BLOCK_stone
+} Blocks;
+
 typedef struct
 {
     int BlockID;
@@ -22,7 +28,7 @@ typedef struct Chunk
 
     Mesh currentMesh;
     Model currentModel;
-    
+
     unsigned char dirty;
     Vector3 pos;
     unsigned char shouldLoad;
@@ -30,6 +36,6 @@ typedef struct Chunk
 
 void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad);
 void chunk_mesh_create(Chunk *Chnk);
-void chunk_block_add(Chunk* Chnk, Block Blck, Vector3 pos);
+void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos);
 void chunk_perlin_generate(Chunk *chunk);
 Chunk *chunk_find(Chunk **loadedChunks, int *loadedChunksCount, Vector3 pos);

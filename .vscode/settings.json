@@ -39,6 +39,7 @@
         "gui.h": "c",
         "system_error": "c",
         "bit": "c",
-        "limits": "c"
+        "limits": "c",
+        "texture.h": "c"
     },
 }

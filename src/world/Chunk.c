@@ -18,17 +18,16 @@ void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
 
 void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
 {
-    if (Chnk->currentMesh.vaoId != 0 )
+    if (Chnk->currentMesh.vaoId != 0)
     {
         UnloadMesh(Chnk->currentMesh);
     }
-    
 
     Chnk->Blocks[(int)pos.x][(int)pos.y][(int)pos.z] = Blck;
     Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
     Chnk->dirty = 1;
 
-    //TraceLog(LOG_DEBUG, "Chunk_blockAdd: %f, %f, %f", pos.x, pos.y, pos.z);
+    // TraceLog(LOG_DEBUG, "Chunk_blockAdd: %f, %f, %f", pos.x, pos.y, pos.z);
 }
 
 void chunk_mesh_create(Chunk *Chnk)
@@ -52,7 +51,7 @@ void chunk_mesh_create(Chunk *Chnk)
 
     long int BlockCount = 0;
 
-    float localNormals[] = {
+    float baseNormals[] = {
         1.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
         1.0f, 0.0f, 0.0f,
@@ -80,32 +79,6 @@ void chunk_mesh_create(Chunk *Chnk)
 
     };
 
-    float localTexcoords[] = {
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        0.0f, 0.0f,
-        0.0f, 0.0f,
-        1.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f};
-
     for (int i = 0; i < Chnk->BlockPosIndex; i++)
     {
         Vector3 currPos = Chnk->BlocksPos[i];
@@ -115,6 +88,7 @@ void chunk_mesh_create(Chunk *Chnk)
         {
             continue;
         }
+
         float localVertices[] = {
             // Pos Z
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
@@ -146,6 +120,50 @@ void chunk_mesh_create(Chunk *Chnk)
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z};
+        float n;
+        float p;
+
+        if (currBlock.BlockID == 1)
+        {
+            n = 0.5f;
+            p = 0.75f;
+        }
+        else
+        {
+            n = 0.75f;
+            p = 1.0f;
+        }
+
+        float baseTexCoords[] = {
+            n, n,
+            p, n,
+            p, p,
+            n, p,
+
+            p, n,
+            p, p,
+            n, p,
+            n, n,
+
+            n, p,
+            n, n,
+            p, n,
+            p, p,
+
+            p, p,
+            n, p,
+            n, n,
+            p, n,
+
+            p, n,
+            p, p,
+            n, p,
+            n, n,
+
+            n, n,
+            p, n,
+            p, p,
+            n, p};
 
         // TODO: Test if block in adjacent chunk is set
 
@@ -164,11 +182,11 @@ void chunk_mesh_create(Chunk *Chnk)
             for (int l = x * 0; l < x * 1; l++)
             {
                 vertices[vertex_index++] = localVertices[l];
-                normals[normals_index++] = localNormals[l];
+                normals[normals_index++] = baseNormals[l];
             }
             for (int l = y * 0; l < y * 1; l++)
             {
-                texcoords[texcoords_index++] = localTexcoords[l];
+                texcoords[texcoords_index++] = baseTexCoords[l];
             }
             mesh.triangleCount += 2;
             sideCount++;
@@ -179,11 +197,11 @@ void chunk_mesh_create(Chunk *Chnk)
             for (int l = x * 1; l < x * 2; l++)
             {
                 vertices[vertex_index++] = localVertices[l];
-                normals[normals_index++] = localNormals[l];
+                normals[normals_index++] = baseNormals[l];
             }
             for (int l = y * 1; l < y * 2; l++)
             {
-                texcoords[texcoords_index++] = localTexcoords[l];
+                texcoords[texcoords_index++] = baseTexCoords[l];
             }
 
             mesh.triangleCount += 2;
@@ -195,11 +213,11 @@ void chunk_mesh_create(Chunk *Chnk)
             for (int l = x * 2; l < x * 3; l++)
             {
                 vertices[vertex_index++] = localVertices[l];
-                normals[normals_index++] = localNormals[l];
+                normals[normals_index++] = baseNormals[l];
             }
             for (int l = y * 2; l < y * 3; l++)
             {
-                texcoords[texcoords_index++] = localTexcoords[l];
+                texcoords[texcoords_index++] = baseTexCoords[l];
             }
 
             mesh.triangleCount += 2;
@@ -211,12 +229,12 @@ void chunk_mesh_create(Chunk *Chnk)
             for (int l = x * 3; l < x * 4; l++)
             {
                 vertices[vertex_index++] = localVertices[l];
-                normals[normals_index++] = localNormals[l];
+                normals[normals_index++] = baseNormals[l];
             }
 
             for (int l = y * 3; l < y * 4; l++)
             {
-                texcoords[texcoords_index++] = localTexcoords[l];
+                texcoords[texcoords_index++] = baseTexCoords[l];
             }
 
             mesh.triangleCount += 2;
@@ -228,11 +246,11 @@ void chunk_mesh_create(Chunk *Chnk)
             for (int l = x * 4; l < x * 5; l++)
             {
                 vertices[vertex_index++] = localVertices[l];
-                normals[normals_index++] = localNormals[l];
+                normals[normals_index++] = baseNormals[l];
             }
             for (int l = y * 4; l < y * 5; l++)
             {
-                texcoords[texcoords_index++] = localTexcoords[l];
+                texcoords[texcoords_index++] = baseTexCoords[l];
             }
 
             mesh.triangleCount += 2;
@@ -244,11 +262,11 @@ void chunk_mesh_create(Chunk *Chnk)
             for (int l = x * 5; l < x * 6; l++)
             {
                 vertices[vertex_index++] = localVertices[l];
-                normals[normals_index++] = localNormals[l];
+                normals[normals_index++] = baseNormals[l];
             }
             for (int l = y * 5; l < y * 6; l++)
             {
-                texcoords[texcoords_index++] = localTexcoords[l];
+                texcoords[texcoords_index++] = baseTexCoords[l];
             }
 
             mesh.triangleCount += 2;
@@ -302,7 +320,13 @@ void chunk_perlin_generate(Chunk *chunk)
             unsigned char height = GetImageColor(noise, i, j).g;
 
             float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-            chunk_block_add(chunk, (Block){.BlockID = 1}, (Vector3){i, x, j});
+            int BlockID = 1;
+            if (x > 3)
+            {
+                BlockID = 2;
+            }
+            
+            chunk_block_add(chunk, (Block){.BlockID = BlockID}, (Vector3){i, x, j});
         }
     }
     UnloadImage(noise);
