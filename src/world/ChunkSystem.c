@@ -70,10 +70,10 @@ void draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader, RenderTex
         }
         if (loadedChunks[i]->shouldLoad)
         {
-            DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, WHITE);
             loadedChunks[i]->shouldLoad = 0;
             loadedChunks[i]->currentModel.materials[0].maps[0].texture = tex.texture;
             loadedChunks[i]->currentModel.materials[0].shader = shader;
+            DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, WHITE);
         }
     }
 }

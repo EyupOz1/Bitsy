@@ -44,7 +44,6 @@ void setup()
 
     block = LoadModelFromMesh(mesh_block());
     tileTexture = texture_init();
-
 }
 
 int comp(const void *elem1, const void *elem2)
@@ -100,13 +99,16 @@ void ui()
     DrawText(TextFormat("rayBlockPosInChunkSpace: %.2f, %.2f, %.2f", player->targetBlockPosInChunkSpace.x, player->targetBlockPosInChunkSpace.y, player->targetBlockPosInChunkSpace.z), 0, y += step, 20, BLACK);
 
     DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 1, GREEN);
+
+    DrawFPS(0, y += step);
+
+    DrawTexture(tileTexture.texture, 0, y += step, WHITE);
 }
 
 int main(void)
 {
     InitWindow(1080, 720, "Bitsy");
     DisableCursor();
-    SetTargetFPS(60);
     SetTraceLogLevel(LOG_ALL);
 
     setup();
