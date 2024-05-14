@@ -4,7 +4,7 @@ void chunkSystem_init()
 {
 }
 
-void chunkSystem_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Shader shader, RenderTexture tex)
+void chunkSystem_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Shader shader, Texture tex)
 {
     reup(player, loadedChunks, loadedChunksCount);
 
@@ -58,7 +58,7 @@ void reup(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     }
 }
 
-void draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader, RenderTexture tex)
+void draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader, Texture tex)
 {
     for (int i = 0; i < *loadedChunksCount; i++)
     {
@@ -71,7 +71,7 @@ void draw(Chunk **loadedChunks, int *loadedChunksCount, Shader shader, RenderTex
         if (loadedChunks[i]->shouldLoad)
         {
             loadedChunks[i]->shouldLoad = 0;
-            loadedChunks[i]->currentModel.materials[0].maps[0].texture = tex.texture;
+            loadedChunks[i]->currentModel.materials[0].maps[0].texture = tex;
             loadedChunks[i]->currentModel.materials[0].shader = shader;
             DrawModel(loadedChunks[i]->currentModel, loadedChunks[i]->pos, 1.0f, WHITE);
         }

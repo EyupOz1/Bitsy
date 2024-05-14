@@ -8,6 +8,7 @@
 #include "raymath.h"
 
 #define CHUNK_SIZE 16
+#define TEXTURE_SIZE 16
 
 typedef enum Blocks
 {

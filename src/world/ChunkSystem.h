@@ -5,4 +5,4 @@
 #include "../entity/Player.h"
 
 void chunkSystem_init();
-void chunkSystem_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Shader shader, RenderTexture tex);
+void chunkSystem_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Shader shader, Texture tex);

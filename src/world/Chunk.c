@@ -76,38 +76,37 @@ void chunk_mesh_create(Chunk *Chnk)
 
     };
 
-    float xx = 0.0f;
-    float yy = 0.0f;
+    float lowerBound = 0.0f;
+    float upperBound = 0.5f;
+
     float baseTexcoords[] = {
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
 
-        yy, xx,
-        yy, yy,
-        xx, yy,
-        xx, xx,
+        lowerBound, 0.0f,
+        upperBound, 0.0f,
+        upperBound, 1.0f,
+        lowerBound, 1.0f,
+        upperBound, 0.0f,
+        upperBound, 1.0f,
+        lowerBound, 1.0f,
+        lowerBound, 0.0f,
+        lowerBound, 1.0f,
+        lowerBound, 0.0f,
+        upperBound, 0.0f,
+        upperBound, 1.0f,
+        upperBound, 1.0f,
+        lowerBound, 1.0f,
+        lowerBound, 0.0f,
+        upperBound, 0.0f,
+        upperBound, 0.0f,
+        upperBound, 1.0f,
+        lowerBound, 1.0f,
+        lowerBound, 0.0f,
+        lowerBound, 0.0f,
+        upperBound, 0.0f,
+        upperBound, 1.0f,
+        lowerBound, 1.0f
 
-        xx, yy,
-        xx, xx,
-        yy, xx,
-        yy, yy,
-
-        yy, yy,
-        xx, yy,
-        xx, xx,
-        yy, xx,
-
-        yy, xx,
-        yy, yy,
-        xx, yy,
-        xx, xx,
-
-        xx, xx,
-        yy, xx,
-        yy, yy,
-        xx, yy};
+    };
 
     for (int i = 0; i < Chnk->BlockPosIndex; i++)
     {

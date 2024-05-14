@@ -33,7 +33,7 @@ Light light;
 Texture2D tex;
 Model block;
 
-RenderTexture tileTexture;
+Texture atlas;
 
 void setup()
 {
@@ -43,7 +43,10 @@ void setup()
     shader_init(&shader, &light, &tex);
 
     block = LoadModelFromMesh(mesh_block());
-    tileTexture = texture_init();
+
+    
+    Image img = LoadImage("Test.png");
+    atlas = LoadTextureFromImage(img);
 }
 
 int comp(const void *elem1, const void *elem2)
@@ -63,7 +66,7 @@ int comp(const void *elem1, const void *elem2)
 
 void update()
 {
-    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, tileTexture);
+    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, atlas);
     player_update(player, loadedChunks, &loadedChunksCount, &CFG);
     shader_update(&shader, &light, player->camera.position);
 
@@ -102,7 +105,7 @@ void ui()
 
     DrawFPS(0, y += step);
 
-    DrawTexture(tileTexture.texture, 0, y += step, WHITE);
+    DrawTexture(atlas, 0, y += step, WHITE);
 }
 
 int main(void)
