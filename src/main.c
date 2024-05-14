@@ -1,27 +1,19 @@
 #include "raylib.h"
 #include "rcamera.h"
 
+
 #include "core/rlights.h"
 #include "core/Debug.h"
 #include "core/Utils.h"
 #include "core/Shader.h"
-#include "core/Texture.h"
 
-#include "world/World.h"
 #include "world/Chunk.h"
 #include "world/ChunkSystem.h"
 
 #include "entity/Player.h"
 
-#include "stdio.h"
-#include "stdlib.h"
-
-Config CFG = {
-    .flyingSpeed = 0.2f,
-    .mouseActive = 1,
-    .mouseSensitivity = 0.005f,
-    .fieldOfView = 95.0f,
-};
+#include "GLOBAL.h"
+Config GLOBAL; 
 
 Player *player;
 
@@ -35,8 +27,21 @@ Model block;
 
 Texture atlas;
 
+
 void setup()
 {
+    GLOBAL = (Config){
+        .fieldOfView = 95.0f,
+        .flyingSpeed = 0.2f,
+        .mouseActive = 1,
+        .mouseSensitivity = 0.008f
+    };
+
+    SaveStorageValue(1, 10);
+    int t = LoadStorageValue(1);
+    TraceLog(LOG_DEBUG, "%u", t);
+    
+    
     player = MemAlloc(sizeof(Player));
     player_init(player);
 
@@ -67,7 +72,7 @@ int comp(const void *elem1, const void *elem2)
 void update()
 {
     chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, atlas);
-    player_update(player, loadedChunks, &loadedChunksCount, &CFG);
+    player_update(player, loadedChunks, &loadedChunksCount);
     shader_update(&shader, &light, player->camera.position);
 
     // Debug

@@ -22,4 +22,4 @@ typedef struct Player
 } Player;
 
 void player_init(Player *player);
-void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Config* cfg);
+void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount);

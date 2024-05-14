@@ -1,4 +1,5 @@
 #include "player.h"
+#include "../GLOBAL.h"
 
 void player_init(Player *player)
 {
@@ -9,9 +10,9 @@ void player_init(Player *player)
     player->camera.projection = CAMERA_PERSPECTIVE;
 }
 
-void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount, Config *cfg)
+void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
-    move(player, cfg);
+    move(player);
     look(player, loadedChunks, loadedChunksCount);
 
     place(player, loadedChunks, loadedChunksCount);
@@ -19,8 +20,8 @@ void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount,
     if (IsKeyPressed(KEY_F))
     {
 
-        cfg->mouseActive = !cfg->mouseActive;
-        cfg->mouseActive ? EnableCursor() : DisableCursor();
+        GLOBAL.mouseActive = !GLOBAL.mouseActive;
+        GLOBAL.mouseActive ? EnableCursor() : DisableCursor();
     }
 
     if (IsKeyPressed(KEY_F11))
@@ -29,10 +30,10 @@ void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount,
     }
 }
 
-void move(Player *player, Config *cfg)
+void move(Player *player)
 {
 
-    float speed = cfg->flyingSpeed;
+    float speed = GLOBAL.flyingSpeed;
     if (IsKeyDown(KEY_LEFT_SHIFT))
         speed *= 2;
 
@@ -52,8 +53,8 @@ void move(Player *player, Config *cfg)
         CameraMoveUp(&(player->camera), -speed);
 
     Vector2 mousePositionDelta = GetMouseDelta();
-    CameraYaw(&(player->camera), -mousePositionDelta.x * cfg->mouseSensitivity, 0);
-    CameraPitch(&(player->camera), -mousePositionDelta.y * cfg->mouseSensitivity, 1, 0, 0);
+    CameraYaw(&(player->camera), -mousePositionDelta.x * GLOBAL.mouseSensitivity, 0);
+    CameraPitch(&(player->camera), -mousePositionDelta.y * GLOBAL.mouseSensitivity, 1, 0, 0);
 }
 
 Vector3 setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
