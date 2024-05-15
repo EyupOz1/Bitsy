@@ -30,17 +30,17 @@
                 "command": "mingw32-make.exe",
                 "args": [
                     "SHELL=cmd",
-                    "config=release"
+                    "config=release_x64"
                 ],
             },
             "linux": {
                 "args": [
-                    "config=release"
+                    "config=release_x64"
                 ],
             },
             "osx": {
                 "args": [
-                    "config=release"
+                    "config=release_x64"
                 ],
             },
             "group": "build",
