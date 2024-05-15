@@ -19,7 +19,7 @@ baseName = path.getbasename(os.getcwd());
 
 project (workspaceName)
     kind "ConsoleApp"
-    location "./"
+    location "../bin/int"
     targetdir "../bin/%{cfg.buildcfg}"
 
     filter "configurations:Release"
@@ -44,9 +44,16 @@ project (workspaceName)
     includedirs { "./" }
     includedirs { "src" }
     includedirs { "include" }
-    
-    include_raylib()
-
     link_raylib()
 
--- To link to a lib use link_to("LIB_FOLDER_NAME")
+    includedirs {"../lib/raylib-master" .."/src" }
+    includedirs {"../lib/raylib-master" .."/src/external" }
+    includedirs {"../lib/raylib-master" .."/src/external/glfw/include" }
+    platform_defines()
+
+    filter "action:vs*"
+        defines{"_WINSOCK_DEPRECATED_NO_WARNINGS", "_CRT_SECURE_NO_WARNINGS"}
+    filter{}
+    
+    includedirs {"../lib/example_library/include" }
+    links {"example_library"}
