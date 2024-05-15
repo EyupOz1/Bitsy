@@ -14,7 +14,7 @@ void chunkSystem_update(Player *player, Chunk **loadedChunks, int *loadedChunksC
 void reup(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
 {
     Vector3 chunkPosPlayerIsIn = worldPositionToChunk(player->camera.position);
-    int chunksToLoadCount = 27;
+    const int chunksToLoadCount = 27;
     Vector3 chunksToLoad[chunksToLoadCount];
 
     int count = 0;

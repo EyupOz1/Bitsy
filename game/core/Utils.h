@@ -3,7 +3,7 @@
 #include "raylib.h"
 #include "../world/Chunk.h"
 #include "math.h"
-
+#include "GLOBAL.h"
 
 Vector3 worldPositionToChunk(Vector3 pos);
 unsigned char Vector3Compare(Vector3 a, Vector3 b);

@@ -75,14 +75,13 @@ Vector3 rayCollisionToBlockPos(RayCollision coll)
 }
 
 
-#define STORAGE_DATA_FILE "test"
 
 unsigned char SaveStorageValue(unsigned int position, int value)
 {
     bool success = false;
     int dataSize = 0;
     unsigned int newDataSize = 0;
-    unsigned char *fileData = LoadFileData(STORAGE_DATA_FILE, &dataSize);
+    unsigned char *fileData = LoadFileData(PATH_CONFIG, &dataSize);
     unsigned char *newFileData = NULL;
 
     if (fileData != NULL)
@@ -102,7 +101,7 @@ unsigned char SaveStorageValue(unsigned int position, int value)
             else
             {
                 // RL_REALLOC failed
-                TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to realloc data (%u), position in bytes (%u) bigger than actual file size", STORAGE_DATA_FILE, dataSize, position*sizeof(int));
+                TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to realloc data (%u), position in bytes (%u) bigger than actual file size", PATH_CONFIG, dataSize, position*sizeof(int));
 
                 // We store the old size of the file
                 newFileData = fileData;
@@ -120,24 +119,24 @@ unsigned char SaveStorageValue(unsigned int position, int value)
             dataPtr[position] = value;
         }
 
-        success = SaveFileData(STORAGE_DATA_FILE, newFileData, newDataSize);
+        success = SaveFileData(PATH_CONFIG, newFileData, newDataSize);
         RL_FREE(newFileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", STORAGE_DATA_FILE, value);
+        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", PATH_CONFIG, value);
     }
     else
     {
-        TraceLog(LOG_INFO, "FILEIO: [%s] File created successfully", STORAGE_DATA_FILE);
+        TraceLog(LOG_INFO, "FILEIO: [%s] File created successfully", PATH_CONFIG);
 
         dataSize = (position + 1)*sizeof(int);
         fileData = (unsigned char *)RL_MALLOC(dataSize);
         int *dataPtr = (int *)fileData;
         dataPtr[position] = value;
 
-        success = SaveFileData(STORAGE_DATA_FILE, fileData, dataSize);
+        success = SaveFileData(PATH_CONFIG, fileData, dataSize);
         UnloadFileData(fileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", STORAGE_DATA_FILE, value);
+        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", PATH_CONFIG, value);
     }
 
     return success;
@@ -148,11 +147,11 @@ int LoadStorageValue(unsigned int position)
 {
     int value = 0;
     int dataSize = 0;
-    unsigned char *fileData = LoadFileData(STORAGE_DATA_FILE, &dataSize);
+    unsigned char *fileData = LoadFileData(PATH_CONFIG, &dataSize);
 
     if (fileData != NULL)
     {
-        if (dataSize < (position*4)) TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to find storage position: %i", STORAGE_DATA_FILE, position);
+        if (dataSize < (position*4)) TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to find storage position: %i", PATH_CONFIG, position);
         else
         {
             int *dataPtr = (int *)fileData;
@@ -161,7 +160,7 @@ int LoadStorageValue(unsigned int position)
 
         UnloadFileData(fileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", STORAGE_DATA_FILE, value);
+        TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", PATH_CONFIG, value);
     }
 
     return value;

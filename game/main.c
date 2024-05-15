@@ -22,10 +22,10 @@ Chunk *loadedChunks[2000];
 
 Shader shader;
 Light light;
-Texture2D tex;
 Model block;
 
-Texture atlas;
+Texture2D atlas;
+
 
 
 void setup()
@@ -45,12 +45,12 @@ void setup()
     player = MemAlloc(sizeof(Player));
     player_init(player);
 
-    shader_init(&shader, &light, &tex);
+    shader_init(&shader, &light);
 
     block = LoadModelFromMesh(mesh_block());
 
     
-    Image img = LoadImage("Test.png");
+    Image img = LoadImage(PATH_TEXTURES_ATLAS);
     atlas = LoadTextureFromImage(img);
 }
 
@@ -82,7 +82,7 @@ void update()
 
     DrawModel(block, player->targetBlockPosInWorldSpace, 1.0, YELLOW);
 
-    DrawBillboard(player->camera, tex, (Vector3){0, 0, 0}, 1.0, WHITE);
+    DrawBillboard(player->camera, atlas, (Vector3){0, 0, 0}, 1.0, WHITE);
 
     qsort(loadedChunks, loadedChunksCount, sizeof(Chunk *), comp);
 }

@@ -7,27 +7,10 @@
             "label": "build debug",
             "type": "process",
             "command": "make",
-            "args": [
-                "PLATFORM=PLATFORM_DESKTOP",
-                "BUILD_MODE=DEBUG",
-                "PROJECT_NAME=Bitsy",
-                "OBJS=src/*.c"
-            ],
             "windows": {
                 "command": "mingw32-make.exe",
                 "args": [
-                    "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=Bitsy",
-                    "OBJS=src/*.c src/core/*.c src/entity/*.c src/world/*.c",
-                    "BUILD_MODE=DEBUG"
-                ],
-            },
-            "osx": {
-                "args": [
-                    "RAYLIB_PATH=<path_to_raylib>/raylib",
-                    "PROJECT_NAME=Bitsy",
-                    "OBJS=src/*.c",
-                    "BUILD_MODE=DEBUG"
+                    "SHELL=cmd"
                 ],
             },
             "group": {
@@ -36,36 +19,58 @@
             },
             "problemMatcher": [
                 "$gcc"
-            ]
+            ],
+            "dependsOn":["UpdateMake"]
         },
         {
             "label": "build release",
             "type": "process",
             "command": "make",
-            "args": [
-                "PLATFORM=PLATFORM_DESKTOP",
-                "PROJECT_NAME=Bitsy",
-                "OBJS=src/*.c"
-            ],
             "windows": {
                 "command": "mingw32-make.exe",
                 "args": [
-                    "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=Bitsy",
-                    "OBJS=src/*.c src/core/*.c src/entity/*.c src/world/*.c",
+                    "SHELL=cmd",
+                    "config=release"
+                ],
+            },
+            "linux": {
+                "args": [
+                    "config=release"
                 ],
             },
             "osx": {
                 "args": [
-                    "RAYLIB_PATH=<path_to_raylib>/raylib",
-                    "PROJECT_NAME=Bitsy",
-                    "OBJS=src/*.c"
+                    "config=release"
                 ],
             },
             "group": "build",
             "problemMatcher": [
                 "$gcc"
-            ]
+            ],
+            "dependsOn":["UpdateMake"]
+        },
+        {
+            "label": "UpdateMake",
+            "type": "process",
+            "windows": {
+                "command": "premake5.exe",
+                "args": [
+                    "gmake2"
+                ],
+            },
+            "linux": {
+                "command": "premake5",
+                "args": [
+                    "gmake2"
+                ],
+            },
+            "osx": {
+                "command": "premake5.osx",
+                "args": [
+                    "gmake2"
+                ],
+            },
+            "group": "build"
         }
     ]
 }
