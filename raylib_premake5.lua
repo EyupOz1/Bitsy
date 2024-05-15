@@ -49,22 +49,16 @@ function platform_defines()
 end
 
 function get_raylib_dir()
-    if (os.isdir("raylib-master")) then
-        return "raylib-master"
-    end
-    if (os.isdir("../raylib-master")) then
-        return "raylib-master"
-    end
-    return "raylib"
+    return path.join("lib", "raylib-master")
 end
 
 function link_raylib()
     links {"raylib"}
 
     raylib_dir = get_raylib_dir();
-    includedirs {"../" .. raylib_dir .. "/src" }
-    includedirs {"../" .. raylib_dir .."/src/external" }
-    includedirs {"../" .. raylib_dir .."/src/external/glfw/include" }
+    includedirs {path.join("..", raylib_dir, "src" )}
+    includedirs {path.join("..", raylib_dir, "src", "external" )}
+    includedirs {path.join("..", raylib_dir, "src","external","glfw","include" )}
     platform_defines()
 
     filter "action:vs*"
@@ -90,9 +84,9 @@ end
 
 function include_raylib()
     raylib_dir = get_raylib_dir();
-    includedirs {"../" .. raylib_dir .."/src" }
-    includedirs {"../" .. raylib_dir .."/src/external" }
-    includedirs {"../" .. raylib_dir .."/src/external/glfw/include" }
+    includedirs {path.join("..",  raylib_dir, "src" )}
+    includedirs {path.join("..", raylib_dir, "src", "external" )}
+    includedirs {path.join("..",  raylib_dir, "src","external","glfw","include" )}
     platform_defines()
 
     filter "action:vs*"

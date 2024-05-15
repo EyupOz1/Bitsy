@@ -10,33 +10,33 @@ endif
 
 ifeq ($(config),debug_x64)
   raylib_config = debug_x64
-  game_premake_main_config = debug_x64
+  Bitsy_config = debug_x64
 
 else ifeq ($(config),debug_x86)
   raylib_config = debug_x86
-  game_premake_main_config = debug_x86
+  Bitsy_config = debug_x86
 
 else ifeq ($(config),debug_arm64)
   raylib_config = debug_arm64
-  game_premake_main_config = debug_arm64
+  Bitsy_config = debug_arm64
 
 else ifeq ($(config),release_x64)
   raylib_config = release_x64
-  game_premake_main_config = release_x64
+  Bitsy_config = release_x64
 
 else ifeq ($(config),release_x86)
   raylib_config = release_x86
-  game_premake_main_config = release_x86
+  Bitsy_config = release_x86
 
 else ifeq ($(config),release_arm64)
   raylib_config = release_arm64
-  game_premake_main_config = release_arm64
+  Bitsy_config = release_arm64
 
 else
   $(error "invalid configuration $(config)")
 endif
 
-PROJECTS := raylib game-premake-main
+PROJECTS := raylib Bitsy
 
 .PHONY: all clean help $(PROJECTS) 
 
@@ -45,17 +45,17 @@ all: $(PROJECTS)
 raylib:
 ifneq (,$(raylib_config))
 	@echo "==== Building raylib ($(raylib_config)) ===="
-	@${MAKE} --no-print-directory -C raylib-master -f Makefile config=$(raylib_config)
+	@${MAKE} --no-print-directory -C lib/raylib-master -f Makefile config=$(raylib_config)
 endif
 
-game-premake-main: raylib
-ifneq (,$(game_premake_main_config))
-	@echo "==== Building game-premake-main ($(game_premake_main_config)) ===="
-	@${MAKE} --no-print-directory -C game -f Makefile config=$(game_premake_main_config)
+Bitsy: raylib
+ifneq (,$(Bitsy_config))
+	@echo "==== Building Bitsy ($(Bitsy_config)) ===="
+	@${MAKE} --no-print-directory -C game -f Makefile config=$(Bitsy_config)
 endif
 
 clean:
-	@${MAKE} --no-print-directory -C raylib-master -f Makefile clean
+	@${MAKE} --no-print-directory -C lib/raylib-master -f Makefile clean
 	@${MAKE} --no-print-directory -C game -f Makefile clean
 
 help:
@@ -73,6 +73,6 @@ help:
 	@echo "   all (default)"
 	@echo "   clean"
 	@echo "   raylib"
-	@echo "   game-premake-main"
+	@echo "   Bitsy"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"

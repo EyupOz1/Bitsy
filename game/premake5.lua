@@ -44,6 +44,8 @@ project (workspaceName)
     includedirs { "./" }
     includedirs { "src" }
     includedirs { "include" }
+    
+    include_raylib()
 
     link_raylib()
 
