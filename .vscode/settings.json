@@ -7,9 +7,5 @@
 		"**/.DS_Store": true,
 		"**/*.o": true,
 		"**/*.exe": true,
-	},
-	"files.associations": {
-		"shader.h": "c",
-		"player.h": "c"
 	}
 }

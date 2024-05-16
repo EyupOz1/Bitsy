@@ -6,5 +6,10 @@ _bin
 /build
 Makefile
 obj
-/temp
+*.vcxproj
+*.filters
+*.user
+*.sln
 game/Makefile
+lib/*/Makefile
+lib/raylib-master
