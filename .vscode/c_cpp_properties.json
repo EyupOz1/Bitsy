@@ -4,8 +4,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/lib/raylib-master/src",
-                "${workspaceFolder}/game/**",
-                "${workspaceFolder}/lib/**"
+                "${workspaceFolder}/game/**"
             ],
             "defines": [
                 "_DEBUG",

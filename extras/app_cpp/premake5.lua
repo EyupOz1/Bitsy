@@ -18,19 +18,30 @@
 baseName = path.getbasename(os.getcwd());
 
 project (baseName)
-    kind "StaticLib"
-    location "../../bin/int"
-    targetdir "../../bin/%{cfg.buildcfg}"
+    kind "ConsoleApp"
+    location "./"
+    targetdir "../bin/%{cfg.buildcfg}"
+
+    filter "action:vs*"
+        debugdir "$(SolutionDir)"
+
+    filter {"action:vs*", "configurations:Release"}
+        kind "WindowedApp"
+        entrypoint "mainCRTStartup"
+
+    filter{}
 
     vpaths 
     {
-        ["Header Files/*"] = { "include/**.h", "include/**.hpp", "**.h", "**.hpp"},
-        ["Source Files/*"] = { "src/**.cpp", "src/**.c", "**.cpp","**.c"},
+        ["Header Files/*"] = { "include/**.h",  "include/**.hpp", "src/**.h", "src/**.hpp", "**.h", "**.hpp"},
+        ["Source Files/*"] = {"src/**.c", "src/**.cpp","**.c", "**.cpp"},
     }
-    files {"**.hpp", "**.h", "**.cpp","**.c"}
-
+    files {"**.c", "**.cpp", "**.h", "**.hpp"}
+  
     includedirs { "./" }
-    includedirs { "./src" }
-    includedirs { "./include" }
+    includedirs { "src" }
+    includedirs { "include" }
+    
+    link_raylib()
 
-    include_raylib()
+-- To link to a lib use link_to("LIB_FOLDER_NAME")

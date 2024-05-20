@@ -1,3 +1,5 @@
+// C library
+/*
 -- Copyright (c) 2020-2024 Jeffery Myers
 --
 --This software is provided "as-is", without any express or implied warranty. In no event 
@@ -14,39 +16,8 @@
 --  as being the original software.
 --
 --  3. This notice may not be removed or altered from any source distribution.
+*/
 
-baseName = path.getbasename(os.getcwd());
+#pragma once
 
-project (workspaceName)
-    kind "ConsoleApp"
-    location "./"
-    targetdir "../bin/%{cfg.buildcfg}"
-
-    filter "configurations:Release"
-        kind "WindowedApp"
-        entrypoint "mainCRTStartup"
-
-    filter "action:vs*"
-        debugdir "$(SolutionDir)"
-
-    filter {"action:vs*", "configurations:Release"}
-            kind "WindowedApp"
-            entrypoint "mainCRTStartup"
-    filter {}
-
-    vpaths 
-    {
-        ["Header Files/*"] = { "include/**.h",  "include/**.hpp", "src/**.h", "src/**.hpp", "**.h", "**.hpp"},
-        ["Source Files/*"] = {"src/**.c", "src/**.cpp","**.c", "**.cpp"},
-    }
-    files {"**.c", "**.cpp", "**.h", "**.hpp"}
-
-    includedirs { "./" }
-    includedirs { "src" }
-    includedirs { "include" }
-    
-    include_raylib()
-
-    link_raylib()
-
--- To link to a lib use link_to("LIB_FOLDER_NAME")
+void LibFunction();

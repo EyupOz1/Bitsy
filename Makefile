@@ -11,38 +11,32 @@ endif
 ifeq ($(config),debug_x64)
   raylib_config = debug_x64
   Bitsy_config = debug_x64
-  example_library_config = debug_x64
 
 else ifeq ($(config),debug_x86)
   raylib_config = debug_x86
   Bitsy_config = debug_x86
-  example_library_config = debug_x86
 
 else ifeq ($(config),debug_arm64)
   raylib_config = debug_arm64
   Bitsy_config = debug_arm64
-  example_library_config = debug_arm64
 
 else ifeq ($(config),release_x64)
   raylib_config = release_x64
   Bitsy_config = release_x64
-  example_library_config = release_x64
 
 else ifeq ($(config),release_x86)
   raylib_config = release_x86
   Bitsy_config = release_x86
-  example_library_config = release_x86
 
 else ifeq ($(config),release_arm64)
   raylib_config = release_arm64
   Bitsy_config = release_arm64
-  example_library_config = release_arm64
 
 else
   $(error "invalid configuration $(config)")
 endif
 
-PROJECTS := raylib Bitsy example_library
+PROJECTS := raylib Bitsy
 
 .PHONY: all clean help $(PROJECTS) 
 
@@ -54,22 +48,15 @@ ifneq (,$(raylib_config))
 	@${MAKE} --no-print-directory -C lib/raylib-master -f Makefile config=$(raylib_config)
 endif
 
-Bitsy: raylib example_library
+Bitsy: raylib
 ifneq (,$(Bitsy_config))
 	@echo "==== Building Bitsy ($(Bitsy_config)) ===="
-	@${MAKE} --no-print-directory -C bin/int -f Bitsy.make config=$(Bitsy_config)
-endif
-
-example_library:
-ifneq (,$(example_library_config))
-	@echo "==== Building example_library ($(example_library_config)) ===="
-	@${MAKE} --no-print-directory -C bin/int -f example_library.make config=$(example_library_config)
+	@${MAKE} --no-print-directory -C game -f Makefile config=$(Bitsy_config)
 endif
 
 clean:
 	@${MAKE} --no-print-directory -C lib/raylib-master -f Makefile clean
-	@${MAKE} --no-print-directory -C bin/int -f Bitsy.make clean
-	@${MAKE} --no-print-directory -C bin/int -f example_library.make clean
+	@${MAKE} --no-print-directory -C game -f Makefile clean
 
 help:
 	@echo "Usage: make [config=name] [target]"
@@ -87,6 +74,5 @@ help:
 	@echo "   clean"
 	@echo "   raylib"
 	@echo "   Bitsy"
-	@echo "   example_library"
 	@echo ""
 	@echo "For more information, see https://github.com/premake/premake-core/wiki"
