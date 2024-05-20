@@ -43,18 +43,17 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "program": "${workspaceFolder}/bin/Release/${workspaceFolderBasename}.exe",
+            "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}.exe",
             "MIMode": "gdb",
             "windows": {
-              "program": "${workspaceFolder}/bin/Release/${workspaceFolderBasename}.exe",
+              "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}.exe",
               "miDebuggerPath": "gdb.exe"
             },
             "osx": {
-              "program": "${workspaceFolder}/bin/Release/${workspaceFolderBasename}",
               "MIMode": "lldb"
             },
             "linux": {
-              "program": "${workspaceFolder}/bin/Release/${workspaceFolderBasename}",
+              "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}",
               "miDebuggerPath": "/usr/bin/gdb"
             },
             "preLaunchTask": "build release",

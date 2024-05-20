@@ -6,10 +6,5 @@ _bin
 /build
 Makefile
 obj
-*.vcxproj
-*.filters
-*.user
-*.sln
+/temp
 game/Makefile
-lib/*/Makefile
-lib/raylib-master

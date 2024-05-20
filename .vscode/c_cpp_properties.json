@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/lib/raylib-master/src",
                 "${workspaceFolder}/game/**",
-                "${workspaceFolder}/lib/game_objects/**"
+                "${workspaceFolder}/lib/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -21,9 +21,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/raylib-master/src",
-                "${workspaceFolder}/game/**",
-                "${workspaceFolder}/lib/game_objects/**"
+                "${workspaceFolder}/lib/raylib-master/src",
+                "${workspaceFolder}/game/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -43,9 +42,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/raylib-master/src",
-                "${workspaceFolder}/game/**",
-                "${workspaceFolder}/lib/game_objects/**"
+                "${workspaceFolder}/lib/raylib-master/src",
+                "${workspaceFolder}/game/**"
             ],
             "defines": [
                 "_DEBUG",

@@ -1,3 +1,5 @@
+// C library
+/*
 -- Copyright (c) 2020-2024 Jeffery Myers
 --
 --This software is provided "as-is", without any express or implied warranty. In no event 
@@ -14,22 +16,9 @@
 --  as being the original software.
 --
 --  3. This notice may not be removed or altered from any source distribution.
+*/
 
-baseName = path.getbasename(os.getcwd());
+#pragma once
+#include "raylib.h"
 
-project (baseName)
-    kind "StaticLib"
-    location (path.join(out_path, "int"))
-    targetdir (out_path)
-
-    vpaths 
-    {
-        ["Header Files/*"] = { "include/**.h", "include/**.hpp", "**.h", "**.hpp"},
-        ["Source Files/*"] = { "src/**.cpp", "src/**.c", "**.cpp","**.c"},
-    }
-    files {"**.hpp", "**.h", "**.cpp","**.c"}
-
-    includedirs { "./" }
-    includedirs { "./include" }
-
-    include_raylib()
+void LibFunction();
