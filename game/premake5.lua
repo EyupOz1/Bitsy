@@ -19,8 +19,8 @@ baseName = path.getbasename(os.getcwd());
 
 project (workspaceName)
     kind "ConsoleApp"
-    location "./"
-    targetdir "../bin/%{cfg.buildcfg}"
+    location (path.join(out_path, "int"))
+    targetdir (out_path)
 
     filter "configurations:Release"
         kind "WindowedApp"
@@ -44,9 +44,8 @@ project (workspaceName)
     includedirs { "./" }
     includedirs { "src" }
     includedirs { "include" }
-    
-    include_raylib()
 
     link_raylib()
+    link_to("game_objects")
 
 -- To link to a lib use link_to("LIB_FOLDER_NAME")

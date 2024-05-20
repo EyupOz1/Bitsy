@@ -19,8 +19,8 @@ baseName = path.getbasename(os.getcwd());
 
 project (baseName)
     kind "StaticLib"
-    location "./"
-    targetdir "../bin/%{cfg.buildcfg}"
+    location (path.join(out_path, "int"))
+    targetdir (out_path)
 
     vpaths 
     {
@@ -30,7 +30,6 @@ project (baseName)
     files {"**.hpp", "**.h", "**.cpp","**.c"}
 
     includedirs { "./" }
-    includedirs { "./src" }
     includedirs { "./include" }
 
     include_raylib()

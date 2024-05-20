@@ -7,4 +7,4 @@ _bin
 Makefile
 obj
 /temp
-game/Makefile
+/game/Makefile
