@@ -1,4 +1,4 @@
-#include "raylib.h"
+  #include "raylib.h"
 #include "rcamera.h"
 
 
@@ -17,8 +17,8 @@ Config GLOBAL;
 
 Player *player;
 
-int loadedChunksCount = 0;
-Chunk *loadedChunks[2000];
+
+ChunkSystem chunkSys;
 
 Shader shader;
 Light light;
@@ -32,15 +32,15 @@ void setup()
 {
     GLOBAL = (Config){
         .fieldOfView = 95.0f,
-        .flyingSpeed = 0.2f,
+        .flyingSpeed = 0.1f,
         .mouseActive = 1,
         .mouseSensitivity = 0.008f
     };
-
+/*
     SaveStorageValue(1, 10);
     int t = LoadStorageValue(1);
     TraceLog(LOG_DEBUG, "%u", t);
-    
+    */
     
     player = MemAlloc(sizeof(Player));
     player_init(player);
@@ -49,30 +49,17 @@ void setup()
 
     block = LoadModelFromMesh(mesh_block());
 
+    chunkSystem_init(&chunkSys);
     
     Image img = LoadImage(PATH_TEXTURES_ATLAS);
     atlas = LoadTextureFromImage(img);
 }
 
-int comp(const void *elem1, const void *elem2)
-{
-    Chunk *ch1 = *(Chunk **)elem1;
-    Chunk *ch2 = *(Chunk **)elem2;
-
-    float f = Vector3DistanceSqr(player->camera.position, ch1->pos);
-    float s = Vector3DistanceSqr(player->camera.position, ch2->pos);
-
-    if (f > s)
-        return 1;
-    if (f < s)
-        return -1;
-    return 0;
-}
 
 void update()
 {
-    chunkSystem_update(player, loadedChunks, &loadedChunksCount, shader, atlas);
-    player_update(player, loadedChunks, &loadedChunksCount);
+    chunkSystem_update(player->camera.position, &chunkSys, shader, atlas);
+    player_update(player, &chunkSys);
     shader_update(&shader, &light, player->camera.position);
 
     // Debug
@@ -84,7 +71,6 @@ void update()
 
     DrawBillboard(player->camera, atlas, (Vector3){0, 0, 0}, 1.0, WHITE);
 
-    qsort(loadedChunks, loadedChunksCount, sizeof(Chunk *), comp);
 }
 void ui()
 {
@@ -117,6 +103,7 @@ int main(void)
 {
     InitWindow(1080, 720, "Bitsy");
     DisableCursor();
+    SetTargetFPS(144);
     SetTraceLogLevel(LOG_ALL);
 
     setup();

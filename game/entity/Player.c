@@ -10,12 +10,12 @@ void player_init(Player *player)
     player->camera.projection = CAMERA_PERSPECTIVE;
 }
 
-void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+void player_update(Player *player, ChunkSystem *chunkSys)
 {
     move(player);
-    look(player, loadedChunks, loadedChunksCount);
+    look(player, chunkSys);
 
-    place(player, loadedChunks, loadedChunksCount);
+    place(player, chunkSys);
 
     if (IsKeyPressed(KEY_F))
     {
@@ -57,16 +57,16 @@ void move(Player *player)
     CameraPitch(&(player->camera), -mousePositionDelta.y * GLOBAL.mouseSensitivity, 1, 0, 0);
 }
 
-Vector3 setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+Vector3 setPlayerRayInfo(Player *player, ChunkSystem *chunkSys)
 {
     int x = -1;
-    for (int i = 0; i < *loadedChunksCount; i++)
+    for (int i = 0; i < chunkSys->loadedChunksCount; i++)
     {
 
         RayCollision currCollision;
 
-        Matrix m = MatrixTranslate(loadedChunks[i]->pos.x, loadedChunks[i]->pos.y, loadedChunks[i]->pos.z);
-        currCollision = GetRayCollisionMesh(player->ray, loadedChunks[i]->currentMesh, MatrixMultiply(m, loadedChunks[i]->currentModel.transform));
+        Matrix m = MatrixTranslate(chunkSys->loadedChunks[i]->pos.x, chunkSys->loadedChunks[i]->pos.y, chunkSys->loadedChunks[i]->pos.z);
+        currCollision = GetRayCollisionMesh(player->ray, chunkSys->loadedChunks[i]->currentMesh, MatrixMultiply(m, chunkSys->loadedChunks[i]->currentModel.transform));
 
         if ((currCollision.hit && player->rayCollision.distance > currCollision.distance))
         {
@@ -76,17 +76,17 @@ Vector3 setPlayerRayInfo(Player *player, Chunk **loadedChunks, int *loadedChunks
     }
     if (x != -1)
     {
-        return loadedChunks[x]->pos;
+        return chunkSys->loadedChunks[x]->pos;
     }
     return (Vector3){-1, -1, -1};
 }
 
-void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+void look(Player *player, ChunkSystem *chunkSys)
 {
     player->ray = GetMouseRay((Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2}, player->camera);
     player->rayCollision.distance = 999999;
 
-    Vector3 chunkPos = setPlayerRayInfo(player, loadedChunks, loadedChunksCount);
+    Vector3 chunkPos = setPlayerRayInfo(player, chunkSys);
     if (!player->rayCollision.hit || chunkPos.x == -1)
     {
         return;
@@ -111,7 +111,7 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     {
         player->targetChunkPos.x -= CHUNK_SIZE;
     }
-    
+
     if (player->targetBlockPosInChunkSpace.y == 0 && player->rayCollision.normal.y == 1.0f)
     {
         player->targetChunkPos.y += CHUNK_SIZE;
@@ -135,11 +135,11 @@ void look(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
     player->targetBlockPosInChunkSpace = (Vector3){x, y, z};
 }
 
-void place(Player *player, Chunk **loadedChunks, int *loadedChunksCount)
+void place(Player *player, ChunkSystem *chunkSys)
 {
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        Chunk *targetChunk = chunk_find(loadedChunks, loadedChunksCount, player->targetChunkPos);
+        Chunk *targetChunk = chunk_find(chunkSys, player->targetChunkPos);
         Vector3 target = player->targetBlockPosInChunkSpace;
         TraceLog(LOG_DEBUG, "Player_place: %f, %f, %f", target.x, target.y, target.z);
         chunk_block_add(targetChunk, (Block){.BlockID = 1}, target);

@@ -4,6 +4,7 @@
 #include "rcamera.h"
 #include "raymath.h"
 #include "../world/Chunk.h"
+#include "../world/ChunkSystem.h"
 #include "../core/Utils.h"
 
 
@@ -11,7 +12,7 @@ typedef struct Player
 {
 
     Camera3D camera;
-    
+
     Ray ray;
     RayCollision rayCollision;
     Vector3 targetBlockPosInWorldSpace;
@@ -22,4 +23,4 @@ typedef struct Player
 } Player;
 
 void player_init(Player *player);
-void player_update(Player *player, Chunk **loadedChunks, int *loadedChunksCount);
+void player_update(Player *player, ChunkSystem *chunkSys);

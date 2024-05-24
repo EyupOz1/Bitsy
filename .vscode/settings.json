@@ -10,6 +10,14 @@
 	},
 	"files.associations": {
 		"shader.h": "c",
-		"player.h": "c"
+		"player.h": "c",
+		"chunksystem.h": "c",
+		"global.h": "c",
+		"utils.h": "c",
+		"chunk.h": "c",
+		"raylib.h": "c",
+		"rcamera.h": "c",
+		"raymath.h": "c",
+		"string.h": "c"
 	}
 }
