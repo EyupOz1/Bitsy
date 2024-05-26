@@ -18,6 +18,11 @@ void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
 
 void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
 {
+    if (pos.x >= CHUNK_SIZE || pos.y >= CHUNK_SIZE || pos.z >= CHUNK_SIZE)
+    {
+        TraceLog(LOG_WARNING, "Tried Placing block out of bound");
+    }
+
     if (Chnk->currentMesh.vaoId != 0)
     {
         UnloadMesh(Chnk->currentMesh);
@@ -27,7 +32,81 @@ void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
     Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
     Chnk->dirty = 1;
 
-    // TraceLog(LOG_DEBUG, "Chunk_blockAdd: %f, %f, %f", pos.x, pos.y, pos.z);
+    
+}
+
+block_setTexCoords(Block *block, float *buf)
+{
+    float texCount = 4.0f;
+    float stepSize = 1.0f / texCount;
+
+    float lowerBound_posZ;
+    float lowerBound_negZ;
+    float lowerBound_posY;
+    float lowerBound_negY;
+    float lowerBound_posX;
+    float lowerBound_negX;
+    float upperBound_posZ;
+    float upperBound_negZ;
+    float upperBound_posY;
+    float upperBound_negY;
+    float upperBound_posX;
+    float upperBound_negX;
+
+    if (block->BlockID == 1)
+    {
+        upperBound_posZ = 2 * stepSize;
+        upperBound_negZ = 2 * stepSize;
+        upperBound_posY = 3 * stepSize;
+        upperBound_negY = 1 * stepSize;
+        upperBound_posX = 2 * stepSize;
+        upperBound_negX = 2 * stepSize;
+
+        lowerBound_posZ = 1 * stepSize;
+        lowerBound_negZ = 1 * stepSize;
+        lowerBound_posY = 2 * stepSize;
+        lowerBound_negY = 0 * stepSize;
+        lowerBound_posX = 1 * stepSize;
+        lowerBound_negX = 1 * stepSize;
+    }
+
+    float baseTexcoords[] = {
+        lowerBound_posZ, 1.0f,
+        upperBound_posZ, 1.0f,
+        upperBound_posZ, 0.0f,
+        lowerBound_posZ, 0.0f,
+
+        upperBound_negZ, 1.0f, 
+        upperBound_negZ, 0.0f,
+        lowerBound_negZ, 0.0f,
+        lowerBound_negZ, 1.0f, 
+
+        lowerBound_posY, 0.0f,
+        lowerBound_posY, 1.0f, 
+        upperBound_posY, 1.0f, 
+        upperBound_posY, 0.0f,
+
+        upperBound_negY, 0.0f,
+        lowerBound_negY, 0.0f,
+        lowerBound_negY, 1.0f, 
+        upperBound_negY, 1.0f, 
+
+        upperBound_posX, 1.0f, 
+        upperBound_posX, 0.0f,
+        lowerBound_posX, 0.0f,
+        lowerBound_posX, 1.0f, 
+
+        lowerBound_negX, 1.0f, 
+        upperBound_negX, 1.0f, 
+        upperBound_negX, 0.0f,
+        lowerBound_negX, 0.0f
+
+    };
+
+    for (int i = 0; i < 48; i++)
+    {
+        buf[i] = baseTexcoords[i];
+    }
 }
 
 void chunk_mesh_create(Chunk *Chnk)
@@ -76,37 +155,7 @@ void chunk_mesh_create(Chunk *Chnk)
 
     };
 
-    float lowerBound = 0.0f;
-    float upperBound = 0.5f;
-
-    float baseTexcoords[] = {
-
-        lowerBound, 0.0f,
-        upperBound, 0.0f,
-        upperBound, 1.0f,
-        lowerBound, 1.0f,
-        upperBound, 0.0f,
-        upperBound, 1.0f,
-        lowerBound, 1.0f,
-        lowerBound, 0.0f,
-        lowerBound, 1.0f,
-        lowerBound, 0.0f,
-        upperBound, 0.0f,
-        upperBound, 1.0f,
-        upperBound, 1.0f,
-        lowerBound, 1.0f,
-        lowerBound, 0.0f,
-        upperBound, 0.0f,
-        upperBound, 0.0f,
-        upperBound, 1.0f,
-        lowerBound, 1.0f,
-        lowerBound, 0.0f,
-        lowerBound, 0.0f,
-        upperBound, 0.0f,
-        upperBound, 1.0f,
-        lowerBound, 1.0f
-
-    };
+   
 
     for (int i = 0; i < Chnk->BlockPosIndex; i++)
     {
@@ -119,38 +168,45 @@ void chunk_mesh_create(Chunk *Chnk)
         }
 
         float localVertices[] = {
-            // Pos Z
+            
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            // Neg Z
+            
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            // Pos Y
+            
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            // Neg Y
+            
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            // Pos X
+            
             0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            // Neg Z
+            
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z};
 
-        // TODO: Test if block in adjacent chunk is set
+        
+
+        float lowerBound = 0.5f;
+        float upperBound = 1.0f;
+
+        float baseTexcoords[48];
+
+        block_setTexCoords(&currBlock, &baseTexcoords);
 
         unsigned char sideCount = 0;
         unsigned char sidesToDraw[] = {
@@ -209,26 +265,3 @@ void chunk_mesh_create(Chunk *Chnk)
     RL_FREE(normals);
     RL_FREE(texcoords);
 }
-
-void chunk_perlin_generate(Chunk *chunk)
-{
-    Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, chunk->pos.x, chunk->pos.y, 1);
-    for (int i = 0; i < CHUNK_SIZE; i++)
-    {
-        for (int j = 0; j < CHUNK_SIZE; j++)
-        {
-            unsigned char height = GetImageColor(noise, i, j).g;
-
-            float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-            int BlockID = 1;
-            if (x > 3)
-            {
-                BlockID = 2;
-            }
-
-            chunk_block_add(chunk, (Block){.BlockID = BlockID}, (Vector3){i, x, j});
-        }
-    }
-    UnloadImage(noise);
-}
-

@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 #include "Chunk.h"
+#include "WorldGen.h"
 
 typedef struct ChunkSystem
 {

@@ -18,6 +18,8 @@
 		"raylib.h": "c",
 		"rcamera.h": "c",
 		"raymath.h": "c",
-		"string.h": "c"
+		"string.h": "c",
+		"worldgen.h": "c",
+		"stdio.h": "c"
 	}
 }

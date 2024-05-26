@@ -11,6 +11,7 @@ typedef struct Config
     float flyingSpeed;
     float mouseSensitivity;
     float fieldOfView;
+    Vector3 pos;
 } Config;
 
 extern Config GLOBAL;

@@ -10,11 +10,11 @@
 
 typedef struct Player
 {
-
     Camera3D camera;
 
     Ray ray;
     RayCollision rayCollision;
+
     Vector3 targetBlockPosInWorldSpace;
     Vector3 targetBlockPosInChunkSpace;
     Vector3 targetChunkPos;

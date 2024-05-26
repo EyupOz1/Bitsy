@@ -3,10 +3,11 @@
 
 void player_init(Player *player)
 {
+    
     player->camera.position = (Vector3){0.0f, 0.0f, 0.0f};
     player->camera.target = (Vector3){1.0f, 0.0f, 0.0f};
     player->camera.up = (Vector3){0.0f, 1.0f, 0.0f};
-    player->camera.fovy = 95.0f;
+    player->camera.fovy = GLOBAL.fieldOfView;
     player->camera.projection = CAMERA_PERSPECTIVE;
 }
 

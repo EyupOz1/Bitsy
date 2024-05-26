@@ -36,10 +36,7 @@ void reup(Vector3 playerPos, ChunkSystem *chunkSys)
         unsigned char chunkExists = 0;
         for (int j = 0; j < chunkSys->loadedChunksCount; j++)
         {
-            if (
-                chunksToLoad[i].x == (chunkSys->loadedChunks[j])->pos.x &&
-                chunksToLoad[i].y == (chunkSys->loadedChunks[j])->pos.y &&
-                chunksToLoad[i].z == (chunkSys->loadedChunks[j])->pos.z)
+            if (Vector3Compare(chunksToLoad[i], ((chunkSys->loadedChunks[j])->pos)))
             {
                 chunkExists = 1;
                 (chunkSys->loadedChunks[j])->shouldLoad = 1;
@@ -52,7 +49,7 @@ void reup(Vector3 playerPos, ChunkSystem *chunkSys)
             Chunk *newChunk = RL_MALLOC(sizeof(Chunk));
             chunk_create(newChunk, chunksToLoad[i], 1);
 
-            chunk_perlin_generate(newChunk);
+            worldGen_generate(newChunk);
 
             chunkSys->loadedChunks[(chunkSys->loadedChunksCount)++] = newChunk;
         }
@@ -79,7 +76,7 @@ void draw(ChunkSystem *chunkSys, Shader shader, Texture tex)
     }
 }
 
-Chunk *chunk_find(ChunkSystem * chunkSys, Vector3 pos)
+Chunk *chunk_find(ChunkSystem *chunkSys, Vector3 pos)
 {
     Vector3 chunk_pos = worldPositionToChunk(pos);
     for (int i = 0; i < chunkSys->loadedChunksCount; i++)

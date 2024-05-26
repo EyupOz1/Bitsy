@@ -1,6 +1,5 @@
-  #include "raylib.h"
+#include "raylib.h"
 #include "rcamera.h"
-
 
 #include "core/rlights.h"
 #include "core/Debug.h"
@@ -13,10 +12,9 @@
 #include "entity/Player.h"
 
 #include "GLOBAL.h"
-Config GLOBAL; 
+Config GLOBAL;
 
 Player *player;
-
 
 ChunkSystem chunkSys;
 
@@ -26,22 +24,22 @@ Model block;
 
 Texture2D atlas;
 
-
-
 void setup()
 {
-    GLOBAL = (Config){
+    GLOBAL = (Config)
+    {
         .fieldOfView = 95.0f,
         .flyingSpeed = 0.1f,
         .mouseActive = 1,
-        .mouseSensitivity = 0.008f
+        .mouseSensitivity = 0.008f,
+        .pos = (Vector3){0, 0, 0},
     };
-/*
-    SaveStorageValue(1, 10);
-    int t = LoadStorageValue(1);
-    TraceLog(LOG_DEBUG, "%u", t);
-    */
-    
+    /*
+        SaveStorageValue(1, 10);
+        int t = LoadStorageValue(1);
+        TraceLog(LOG_DEBUG, "%u", t);
+        */
+
     player = MemAlloc(sizeof(Player));
     player_init(player);
 
@@ -50,11 +48,10 @@ void setup()
     block = LoadModelFromMesh(mesh_block());
 
     chunkSystem_init(&chunkSys);
-    
+
     Image img = LoadImage(PATH_TEXTURES_ATLAS);
     atlas = LoadTextureFromImage(img);
 }
-
 
 void update()
 {
@@ -70,7 +67,6 @@ void update()
     DrawModel(block, player->targetBlockPosInWorldSpace, 1.0, YELLOW);
 
     DrawBillboard(player->camera, atlas, (Vector3){0, 0, 0}, 1.0, WHITE);
-
 }
 void ui()
 {
