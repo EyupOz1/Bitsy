@@ -4,22 +4,16 @@
 #include "string.h"
 #include "../core/Utils.h"
 
+#include "Block.h"
+
 #include "raylib.h"
 #include "raymath.h"
 
+
 #define CHUNK_SIZE 16
-#define TEXTURE_SIZE 16
 
-typedef enum Blocks
-{
-    BLOCK_grass = 1,
-    BLOCK_stone
-} Blocks;
 
-typedef struct
-{
-    int BlockID;
-} Block;
+
 
 typedef struct Chunk
 {

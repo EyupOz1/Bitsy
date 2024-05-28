@@ -6,11 +6,16 @@
 #include "../world/Chunk.h"
 #include "../world/ChunkSystem.h"
 #include "../core/Utils.h"
+#include "../GLOBAL.h"
+#include "../world/Block.h"
+#include "rlights.h"
 
 
 typedef struct Player
 {
     Camera3D camera;
+
+    Light light;
 
     Ray ray;
     RayCollision rayCollision;

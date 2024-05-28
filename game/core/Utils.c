@@ -1,10 +1,22 @@
 #include "Utils.h"
 
-
 // Math
 Vector3 worldPositionToChunk(Vector3 pos)
 {
     Vector3 res = (Vector3){(int)(pos.x / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.y / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.z / CHUNK_SIZE) * CHUNK_SIZE};
+    if (pos.x < 0)
+    {
+        res.x -= CHUNK_SIZE;
+    }
+
+    if (pos.y < 0)
+    {
+        res.y -= CHUNK_SIZE;
+    }
+    if (pos.z < 0)
+    {
+        res.z -= CHUNK_SIZE;
+    }
 
     return res;
 }
@@ -23,7 +35,6 @@ int map(int input, int in_min, int in_max, int out_min, int out_max)
 {
     return (input - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-
 
 Vector3 rayCollisionToBlockPos(RayCollision coll)
 {
@@ -74,22 +85,20 @@ Vector3 rayCollisionToBlockPos(RayCollision coll)
     return targetBlock;
 }
 
-
-
 unsigned char SaveStorageValue(unsigned int position, int value)
 {
     bool success = false;
     int dataSize = 0;
     unsigned int newDataSize = 0;
-    unsigned char *fileData = LoadFileData(PATH_CONFIG, &dataSize);
+    unsigned char *fileData = LoadFileData(PATH_CONFIGS, &dataSize);
     unsigned char *newFileData = NULL;
 
     if (fileData != NULL)
     {
-        if (dataSize <= (position*sizeof(int)))
+        if (dataSize <= (position * sizeof(int)))
         {
             // Increase data size up to position and store value
-            newDataSize = (position + 1)*sizeof(int);
+            newDataSize = (position + 1) * sizeof(int);
             newFileData = (unsigned char *)RL_REALLOC(fileData, newDataSize);
 
             if (newFileData != NULL)
@@ -101,7 +110,7 @@ unsigned char SaveStorageValue(unsigned int position, int value)
             else
             {
                 // RL_REALLOC failed
-                TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to realloc data (%u), position in bytes (%u) bigger than actual file size", PATH_CONFIG, dataSize, position*sizeof(int));
+                TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to realloc data (%u), position in bytes (%u) bigger than actual file size", PATH_CONFIGS, dataSize, position * sizeof(int));
 
                 // We store the old size of the file
                 newFileData = fileData;
@@ -119,39 +128,39 @@ unsigned char SaveStorageValue(unsigned int position, int value)
             dataPtr[position] = value;
         }
 
-        success = SaveFileData(PATH_CONFIG, newFileData, newDataSize);
+        success = SaveFileData(PATH_CONFIGS, newFileData, newDataSize);
         RL_FREE(newFileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", PATH_CONFIG, value);
+        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", PATH_CONFIGS, value);
     }
     else
     {
-        TraceLog(LOG_INFO, "FILEIO: [%s] File created successfully", PATH_CONFIG);
+        TraceLog(LOG_INFO, "FILEIO: [%s] File created successfully", PATH_CONFIGS);
 
-        dataSize = (position + 1)*sizeof(int);
+        dataSize = (position + 1) * sizeof(int);
         fileData = (unsigned char *)RL_MALLOC(dataSize);
         int *dataPtr = (int *)fileData;
         dataPtr[position] = value;
 
-        success = SaveFileData(PATH_CONFIG, fileData, dataSize);
+        success = SaveFileData(PATH_CONFIGS, fileData, dataSize);
         UnloadFileData(fileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", PATH_CONFIG, value);
+        TraceLog(LOG_INFO, "FILEIO: [%s] Saved storage value: %i", PATH_CONFIGS, value);
     }
 
     return success;
 }
 
-
 int LoadStorageValue(unsigned int position)
 {
     int value = 0;
     int dataSize = 0;
-    unsigned char *fileData = LoadFileData(PATH_CONFIG, &dataSize);
+    unsigned char *fileData = LoadFileData(PATH_CONFIGS, &dataSize);
 
     if (fileData != NULL)
     {
-        if (dataSize < (position*4)) TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to find storage position: %i", PATH_CONFIG, position);
+        if (dataSize < (position * 4))
+            TraceLog(LOG_WARNING, "FILEIO: [%s] Failed to find storage position: %i", PATH_CONFIGS, position);
         else
         {
             int *dataPtr = (int *)fileData;
@@ -160,7 +169,7 @@ int LoadStorageValue(unsigned int position)
 
         UnloadFileData(fileData);
 
-        TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", PATH_CONFIG, value);
+        TraceLog(LOG_INFO, "FILEIO: [%s] Loaded storage value: %i", PATH_CONFIGS, value);
     }
 
     return value;

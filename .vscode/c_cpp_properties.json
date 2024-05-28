@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/lib/raylib-master/src",
-                "${workspaceFolder}/game/**"
+                "${workspaceFolder}/game/**",
+                "${workspaceFolder}/lib/rlights/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -21,7 +22,8 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/lib/raylib-master/src",
-                "${workspaceFolder}/game/**"
+                "${workspaceFolder}/game/**",
+                "${workspaceFolder}/lib/rlights/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -42,7 +44,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/lib/raylib-master/src",
-                "${workspaceFolder}/game/**"
+                "${workspaceFolder}/game/**",
+                "${workspaceFolder}/lib/rlights/**"
             ],
             "defines": [
                 "_DEBUG",

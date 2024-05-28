@@ -5,31 +5,49 @@ void chunkSystem_init(ChunkSystem *chunkSys)
     chunkSys->loadedChunksCount = 0;
 }
 
-void chunkSystem_update(Vector3 playerPos, ChunkSystem *chunkSys, Shader shader, Texture tex)
+void chunkSystem_update(Vector3 playerPos, ChunkSystem *chunkSys)
 {
-    reup(playerPos, chunkSys);
+    update_chunksToLoad(playerPos, chunkSys);
 
-    draw(chunkSys, shader, tex);
+    draw_chunksToLoad(chunkSys);
 }
 
-void reup(Vector3 playerPos, ChunkSystem *chunkSys)
+void update_chunksToLoad(Vector3 playerPos, ChunkSystem *chunkSys)
 {
-    Vector3 chunkPosPlayerIsIn = worldPositionToChunk(playerPos);
-    const int chunksToLoadCount = 27;
+    Vector3 chunkPosOfPlayer = worldPositionToChunk(playerPos);
+
+    const unsigned char renderDist = GLOBAL.renderDistance * 2 - 1;
+    const int chunksToLoadCount = renderDist * renderDist * renderDist;
     Vector3 chunksToLoad[chunksToLoadCount];
 
-    int count = 0;
-    int arr[] = {0, CHUNK_SIZE, -CHUNK_SIZE};
-    for (int i = 0; i < 3; i++)
+
+    int nearChunksCount = 0;
+    int f = 1;
+    int nearChunks[renderDist];
+    nearChunks[nearChunksCount++] = 0;
+    for (; nearChunksCount < renderDist; nearChunksCount++)
     {
-        for (int j = 0; j < 3; j++)
+        if (nearChunksCount % 2 == 0)
         {
-            for (int k = 0; k < 3; k++)
-            {
-                chunksToLoad[count++] = Vector3Add(chunkPosPlayerIsIn, (Vector3){arr[i], arr[j], arr[k]});
-            }
+            nearChunks[nearChunksCount] = CHUNK_SIZE * f++;
+        }
+        else
+        {
+            nearChunks[nearChunksCount] = -(CHUNK_SIZE * f);
         }
     }
+
+    int count = 0;
+    for (int i = 0; i < renderDist; i++)
+    {
+        for (int j = 0; j < renderDist; j++)
+        {
+            for (int k = 0; k < renderDist; k++)
+            {
+                chunksToLoad[count++] = Vector3Add(chunkPosOfPlayer, (Vector3){nearChunks[i], nearChunks[j], nearChunks[k]});
+            }
+        }
+    } 
 
     for (int i = 0; i < chunksToLoadCount; i++)
     {
@@ -56,7 +74,7 @@ void reup(Vector3 playerPos, ChunkSystem *chunkSys)
     }
 }
 
-void draw(ChunkSystem *chunkSys, Shader shader, Texture tex)
+void draw_chunksToLoad(ChunkSystem *chunkSys)
 {
     for (int i = 0; i < chunkSys->loadedChunksCount; i++)
     {
@@ -69,8 +87,8 @@ void draw(ChunkSystem *chunkSys, Shader shader, Texture tex)
         if (chunkSys->loadedChunks[i]->shouldLoad)
         {
             chunkSys->loadedChunks[i]->shouldLoad = 0;
-            chunkSys->loadedChunks[i]->currentModel.materials[0].maps[0].texture = tex;
-            chunkSys->loadedChunks[i]->currentModel.materials[0].shader = shader;
+            chunkSys->loadedChunks[i]->currentModel.materials[0].maps[0].texture = GLOBAL.atlas;
+            chunkSys->loadedChunks[i]->currentModel.materials[0].shader = GLOBAL.shader;
             DrawModel(chunkSys->loadedChunks[i]->currentModel, chunkSys->loadedChunks[i]->pos, 1.0f, WHITE);
         }
     }

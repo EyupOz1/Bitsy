@@ -1,13 +1,14 @@
 #include "raylib.h"
 #include "rcamera.h"
 
-#include "core/rlights.h"
 #include "core/Debug.h"
 #include "core/Utils.h"
-#include "core/Shader.h"
+
+#include "visuals/Shader.h"
 
 #include "world/Chunk.h"
 #include "world/ChunkSystem.h"
+#include "world/BlockData.h"
 
 #include "entity/Player.h"
 
@@ -18,46 +19,34 @@ Player *player;
 
 ChunkSystem chunkSys;
 
-Shader shader;
-Light light;
 Model block;
-
-Texture2D atlas;
 
 void setup()
 {
-    GLOBAL = (Config)
-    {
+    GLOBAL = (Config){
         .fieldOfView = 95.0f,
         .flyingSpeed = 0.1f,
         .mouseActive = 1,
         .mouseSensitivity = 0.008f,
         .pos = (Vector3){0, 0, 0},
-    };
-    /*
-        SaveStorageValue(1, 10);
-        int t = LoadStorageValue(1);
-        TraceLog(LOG_DEBUG, "%u", t);
-        */
+        .atlas = LoadTextureFromImage(LoadImage(PATH_TEXTURES_ATLAS)),
+        .renderDistance = 3};
+
+    shader_init();
 
     player = MemAlloc(sizeof(Player));
     player_init(player);
-
-    shader_init(&shader, &light);
-
-    block = LoadModelFromMesh(mesh_block());
-
     chunkSystem_init(&chunkSys);
 
-    Image img = LoadImage(PATH_TEXTURES_ATLAS);
-    atlas = LoadTextureFromImage(img);
+    blockData_init();
+
+    block = LoadModelFromMesh(mesh_block());
 }
 
 void update()
 {
-    chunkSystem_update(player->camera.position, &chunkSys, shader, atlas);
+    chunkSystem_update(player->camera.position, &chunkSys);
     player_update(player, &chunkSys);
-    shader_update(&shader, &light, player->camera.position);
 
     // Debug
     DrawSphere(player->rayCollision.point, 0.4f, BLUE);
@@ -66,7 +55,7 @@ void update()
 
     DrawModel(block, player->targetBlockPosInWorldSpace, 1.0, YELLOW);
 
-    DrawBillboard(player->camera, atlas, (Vector3){0, 0, 0}, 1.0, WHITE);
+    DrawBillboard(player->camera, GLOBAL.atlas, (Vector3){0, 0, 0}, 1.0, WHITE);
 }
 void ui()
 {
@@ -74,8 +63,8 @@ void ui()
     int y = -step;
     DrawText(TextFormat("playerPosRaw: (%f, %f, %f)", player->camera.position.x, player->camera.position.y, player->camera.position.z), 0, y += step, 20, BLACK);
 
-    Vector3 pos1 = worldPositionToChunk(player->camera.position);
-    DrawText(TextFormat("playerChunk: %f, %f, %f", pos1.x, pos1.y, pos1.z), 0, y += step, 20, BLACK);
+    Vector3 res = worldPositionToChunk(player->camera.position);
+    DrawText(TextFormat("playerChunk: %f, %f, %f", res.x, res.y, res.z), 0, y += step, 20, BLACK);
 
     DrawText(TextFormat("rayPosRaw: %f, %f, %f", player->rayCollision.point.x, player->rayCollision.point.y, player->rayCollision.point.z), 0, y += step, 20, BLACK);
     DrawText(TextFormat("rayNormal: %f, %f, %f", player->rayCollision.normal.x, player->rayCollision.normal.y, player->rayCollision.normal.z), 0, y += step, 20, BLACK);
@@ -92,11 +81,12 @@ void ui()
 
     DrawFPS(0, y += step);
 
-    DrawTexture(atlas, 0, y += step, WHITE);
+    DrawTexture(GLOBAL.atlas, 0, y += step, WHITE);
 }
 
 int main(void)
 {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(1080, 720, "Bitsy");
     DisableCursor();
     SetTargetFPS(144);
@@ -107,11 +97,9 @@ int main(void)
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(WHITE);
         BeginMode3D(player->camera);
-
         update();
-
         EndMode3D();
 
         ui();

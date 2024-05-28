@@ -1,22 +1,28 @@
 #include "player.h"
-#include "../GLOBAL.h"
 
 void player_init(Player *player)
 {
-    
+
     player->camera.position = (Vector3){0.0f, 0.0f, 0.0f};
     player->camera.target = (Vector3){1.0f, 0.0f, 0.0f};
     player->camera.up = (Vector3){0.0f, 1.0f, 0.0f};
     player->camera.fovy = GLOBAL.fieldOfView;
     player->camera.projection = CAMERA_PERSPECTIVE;
+
+    player->light = CreateLight(LIGHT_POINT, player->camera.position, Vector3Zero(), WHITE, GLOBAL.shader);
 }
 
 void player_update(Player *player, ChunkSystem *chunkSys)
 {
     move(player);
     look(player, chunkSys);
-
     place(player, chunkSys);
+
+    float cameraPos[3] = {player->camera.position.x, player->camera.position.y, player->camera.position.z};
+    SetShaderValue(GLOBAL.shader, GLOBAL.shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
+    UpdateLightValues(GLOBAL.shader, player->light);
+    player->light.position = player->camera.position;
+
 
     if (IsKeyPressed(KEY_F))
     {
@@ -36,7 +42,7 @@ void move(Player *player)
 
     float speed = GLOBAL.flyingSpeed;
     if (IsKeyDown(KEY_LEFT_SHIFT))
-        speed *= 2;
+        speed *= 4;
 
     if (IsKeyDown(KEY_W))
         CameraMoveForward(&(player->camera), speed, 1);

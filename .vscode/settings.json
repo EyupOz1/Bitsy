@@ -20,6 +20,11 @@
 		"raymath.h": "c",
 		"string.h": "c",
 		"worldgen.h": "c",
-		"stdio.h": "c"
+		"stdio.h": "c",
+		"texture.h": "c",
+		"blockdata.h": "c",
+		"*.m": "c",
+		"block.h": "c",
+		"rlights.h": "c"
 	}
 }

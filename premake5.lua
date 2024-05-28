@@ -17,7 +17,7 @@
 raylib_path = path.join(_MAIN_SCRIPT_DIR, "lib/raylib-master")
 
 lib_path = path.join(_MAIN_SCRIPT_DIR, "lib")
-libraries = {"game_objects"}
+libraries = {"rlights"}
 
 out_path = path.join(_MAIN_SCRIPT_DIR, "bin/Debug")
 
@@ -242,4 +242,5 @@ for k,v in pairs(libraries) do
     local lib = path.join(lib_path, v)
     print("LIBRARY: " .. lib)
     include(lib)
+    
   end

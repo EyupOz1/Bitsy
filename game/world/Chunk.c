@@ -1,5 +1,6 @@
 #include "Chunk.h"
 
+
 void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
 {
     chnk->pos = pos;
@@ -8,12 +9,11 @@ void chunk_create(Chunk *chnk, Vector3 pos, int shouldLoad)
     chnk->currentMesh = (Mesh){0};
     chnk->currentMesh.vaoId = 0;
 
-    Vector3 newPos = worldPositionToChunk(pos);
-    chnk->pos = newPos;
+    chnk->pos = pos;
 
     chnk->BlockPosIndex = 0;
 
-    TraceLog(LOG_DEBUG, "Chunk_new: %f, %f, %f", newPos.x, newPos.y, newPos.z);
+    TraceLog(LOG_DEBUG, "Chunk_new: %f, %f, %f", pos.x, pos.y, pos.z);
 }
 
 void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
@@ -31,84 +31,7 @@ void chunk_block_add(Chunk *Chnk, Block Blck, Vector3 pos)
     Chnk->Blocks[(int)pos.x][(int)pos.y][(int)pos.z] = Blck;
     Chnk->BlocksPos[Chnk->BlockPosIndex++] = pos;
     Chnk->dirty = 1;
-
-    
 }
-
-block_setTexCoords(Block *block, float *buf)
-{
-    float texCount = 4.0f;
-    float stepSize = 1.0f / texCount;
-
-    float lowerBound_posZ;
-    float lowerBound_negZ;
-    float lowerBound_posY;
-    float lowerBound_negY;
-    float lowerBound_posX;
-    float lowerBound_negX;
-    float upperBound_posZ;
-    float upperBound_negZ;
-    float upperBound_posY;
-    float upperBound_negY;
-    float upperBound_posX;
-    float upperBound_negX;
-
-    if (block->BlockID == 1)
-    {
-        upperBound_posZ = 2 * stepSize;
-        upperBound_negZ = 2 * stepSize;
-        upperBound_posY = 3 * stepSize;
-        upperBound_negY = 1 * stepSize;
-        upperBound_posX = 2 * stepSize;
-        upperBound_negX = 2 * stepSize;
-
-        lowerBound_posZ = 1 * stepSize;
-        lowerBound_negZ = 1 * stepSize;
-        lowerBound_posY = 2 * stepSize;
-        lowerBound_negY = 0 * stepSize;
-        lowerBound_posX = 1 * stepSize;
-        lowerBound_negX = 1 * stepSize;
-    }
-
-    float baseTexcoords[] = {
-        lowerBound_posZ, 1.0f,
-        upperBound_posZ, 1.0f,
-        upperBound_posZ, 0.0f,
-        lowerBound_posZ, 0.0f,
-
-        upperBound_negZ, 1.0f, 
-        upperBound_negZ, 0.0f,
-        lowerBound_negZ, 0.0f,
-        lowerBound_negZ, 1.0f, 
-
-        lowerBound_posY, 0.0f,
-        lowerBound_posY, 1.0f, 
-        upperBound_posY, 1.0f, 
-        upperBound_posY, 0.0f,
-
-        upperBound_negY, 0.0f,
-        lowerBound_negY, 0.0f,
-        lowerBound_negY, 1.0f, 
-        upperBound_negY, 1.0f, 
-
-        upperBound_posX, 1.0f, 
-        upperBound_posX, 0.0f,
-        lowerBound_posX, 0.0f,
-        lowerBound_posX, 1.0f, 
-
-        lowerBound_negX, 1.0f, 
-        upperBound_negX, 1.0f, 
-        upperBound_negX, 0.0f,
-        lowerBound_negX, 0.0f
-
-    };
-
-    for (int i = 0; i < 48; i++)
-    {
-        buf[i] = baseTexcoords[i];
-    }
-}
-
 void chunk_mesh_create(Chunk *Chnk)
 {
     Mesh mesh = {0};
@@ -155,8 +78,6 @@ void chunk_mesh_create(Chunk *Chnk)
 
     };
 
-   
-
     for (int i = 0; i < Chnk->BlockPosIndex; i++)
     {
         Vector3 currPos = Chnk->BlocksPos[i];
@@ -168,38 +89,36 @@ void chunk_mesh_create(Chunk *Chnk)
         }
 
         float localVertices[] = {
-            
+
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            
+
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            
+
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            
+
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            
+
             0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            
+
             0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
             1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
             0 + currPos.x, 1 + currPos.y, 0 + currPos.z};
-
-        
 
         float lowerBound = 0.5f;
         float upperBound = 1.0f;
