@@ -3,22 +3,37 @@
 // Math
 Vector3 worldPositionToChunk(Vector3 pos)
 {
-    Vector3 res = (Vector3){(int)(pos.x / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.y / CHUNK_SIZE) * CHUNK_SIZE, (int)(pos.z / CHUNK_SIZE) * CHUNK_SIZE};
-    if (pos.x < 0)
+    float x = pos.x, y = pos.y, z = pos.z;
+
+    if (fmod(pos.x, CHUNK_SIZE) != 0)
     {
-        res.x -= CHUNK_SIZE;
+        x = (int)(pos.x / CHUNK_SIZE) * CHUNK_SIZE;
+        if (pos.x < 0)
+        {
+            x -= CHUNK_SIZE;
+        }
     }
 
-    if (pos.y < 0)
+    if (fmod(pos.y, CHUNK_SIZE) != 0)
     {
-        res.y -= CHUNK_SIZE;
-    }
-    if (pos.z < 0)
-    {
-        res.z -= CHUNK_SIZE;
+        y = (int)(pos.y / CHUNK_SIZE) * CHUNK_SIZE;
+        if (pos.y < 0)
+        {
+            y -= CHUNK_SIZE;
+        }
     }
 
-    return res;
+    if (fmod(pos.z, CHUNK_SIZE) != 0)
+    {
+        z = (int)(pos.z / CHUNK_SIZE) * CHUNK_SIZE;
+
+        if (pos.z < 0)
+        {
+            z -= CHUNK_SIZE;
+        }
+    }
+
+    return (Vector3){x, y, z};
 }
 
 unsigned char Vector3Compare(Vector3 a, Vector3 b)
@@ -173,4 +188,22 @@ int LoadStorageValue(unsigned int position)
     }
 
     return value;
+}
+
+void calculateChunkDistToDraw(int *dist, int trueRenderDistance)
+{
+    int nearChunksCount = 0;
+    int f = 1;
+    dist[nearChunksCount++] = 0;
+    for (; nearChunksCount < trueRenderDistance; nearChunksCount++)
+    {
+        if (nearChunksCount % 2 == 0)
+        {
+            dist[nearChunksCount] = CHUNK_SIZE * f++;
+        }
+        else
+        {
+            dist[nearChunksCount] = -(CHUNK_SIZE * f);
+        }
+    }
 }

@@ -13,4 +13,4 @@ typedef struct ChunkSystem
 
 void chunkSystem_init(ChunkSystem* chunkSys);
 void chunkSystem_update(Vector3 playerPos, ChunkSystem *chunkSys);
-Chunk *chunk_find(ChunkSystem * chunkSys, Vector3 pos);
+Chunk *chunkSystem_findChunkByPos(ChunkSystem * chunkSys, Vector3 pos);

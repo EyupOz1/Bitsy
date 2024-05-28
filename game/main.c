@@ -13,6 +13,8 @@
 #include "entity/Player.h"
 
 #include "GLOBAL.h"
+
+
 Config GLOBAL;
 
 Player *player;
@@ -30,7 +32,7 @@ void setup()
         .mouseSensitivity = 0.008f,
         .pos = (Vector3){0, 0, 0},
         .atlas = LoadTextureFromImage(LoadImage(PATH_TEXTURES_ATLAS)),
-        .renderDistance = 3};
+        .renderDistance = 2};
 
     shader_init();
 

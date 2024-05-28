@@ -14,28 +14,13 @@ void chunkSystem_update(Vector3 playerPos, ChunkSystem *chunkSys)
 
 void update_chunksToLoad(Vector3 playerPos, ChunkSystem *chunkSys)
 {
-    Vector3 chunkPosOfPlayer = worldPositionToChunk(playerPos);
-
+    // FIXME: Write function to set or reset Globals this doesnt need to be so ugly
     const unsigned char renderDist = GLOBAL.renderDistance * 2 - 1;
-    const int chunksToLoadCount = renderDist * renderDist * renderDist;
-    Vector3 chunksToLoad[chunksToLoadCount];
+    Vector3 chunkPosOfPlayer = worldPositionToChunk(playerPos);
+    Vector3 chunksToLoad[renderDist * renderDist * renderDist];
 
-
-    int nearChunksCount = 0;
-    int f = 1;
     int nearChunks[renderDist];
-    nearChunks[nearChunksCount++] = 0;
-    for (; nearChunksCount < renderDist; nearChunksCount++)
-    {
-        if (nearChunksCount % 2 == 0)
-        {
-            nearChunks[nearChunksCount] = CHUNK_SIZE * f++;
-        }
-        else
-        {
-            nearChunks[nearChunksCount] = -(CHUNK_SIZE * f);
-        }
-    }
+    calculateChunkDistToDraw(&nearChunks, renderDist);
 
     int count = 0;
     for (int i = 0; i < renderDist; i++)
@@ -47,28 +32,22 @@ void update_chunksToLoad(Vector3 playerPos, ChunkSystem *chunkSys)
                 chunksToLoad[count++] = Vector3Add(chunkPosOfPlayer, (Vector3){nearChunks[i], nearChunks[j], nearChunks[k]});
             }
         }
-    } 
+    }
 
-    for (int i = 0; i < chunksToLoadCount; i++)
+    for (int i = 0; i < renderDist * renderDist * renderDist; i++)
     {
-        unsigned char chunkExists = 0;
-        for (int j = 0; j < chunkSys->loadedChunksCount; j++)
+        Chunk *curr = chunkSystem_findChunkByPos(chunkSys, chunksToLoad[i]);
+        //TraceLog(LOG_DEBUG, "CH %i", curr);
+
+        if (curr)
         {
-            if (Vector3Compare(chunksToLoad[i], ((chunkSys->loadedChunks[j])->pos)))
-            {
-                chunkExists = 1;
-                (chunkSys->loadedChunks[j])->shouldLoad = 1;
-                break;
-            }
-        }
-        if (!chunkExists)
+            curr->shouldLoad = 1;
+        } else 
         {
 
             Chunk *newChunk = RL_MALLOC(sizeof(Chunk));
             chunk_create(newChunk, chunksToLoad[i], 1);
-
             worldGen_generate(newChunk);
-
             chunkSys->loadedChunks[(chunkSys->loadedChunksCount)++] = newChunk;
         }
     }
@@ -94,14 +73,14 @@ void draw_chunksToLoad(ChunkSystem *chunkSys)
     }
 }
 
-Chunk *chunk_find(ChunkSystem *chunkSys, Vector3 pos)
+Chunk *chunkSystem_findChunkByPos(ChunkSystem *chunkSys, Vector3 pos)
 {
     Vector3 chunk_pos = worldPositionToChunk(pos);
     for (int i = 0; i < chunkSys->loadedChunksCount; i++)
     {
-        if (chunkSys->loadedChunks[i]->pos.x == chunk_pos.x && chunkSys->loadedChunks[i]->pos.y == chunk_pos.y && chunkSys->loadedChunks[i]->pos.z == chunk_pos.z)
+        if (Vector3Compare(chunk_pos, chunkSys->loadedChunks[i]->pos))
         {
-            TraceLog(LOG_DEBUG, "Chunk_find: arg: %f, %f, %f res: %f, %f, %f", pos.x, pos.y, pos.z, chunkSys->loadedChunks[i]->pos.x, chunkSys->loadedChunks[i]->pos.y, chunkSys->loadedChunks[i]->pos.z);
+            //TraceLog(LOG_DEBUG, "Chunk_find: arg: %f, %f, %f res: %f, %f, %f", pos.x, pos.y, pos.z, chunkSys->loadedChunks[i]->pos.x, chunkSys->loadedChunks[i]->pos.y, chunkSys->loadedChunks[i]->pos.z);
             return chunkSys->loadedChunks[i];
         }
     }

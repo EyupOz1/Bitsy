@@ -146,7 +146,7 @@ void place(Player *player, ChunkSystem *chunkSys)
 {
     if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
     {
-        Chunk *targetChunk = chunk_find(chunkSys, player->targetChunkPos);
+        Chunk *targetChunk = chunkSystem_findChunkByPos(chunkSys, player->targetChunkPos);
         Vector3 target = player->targetBlockPosInChunkSpace;
         TraceLog(LOG_DEBUG, "Player_place: %f, %f, %f", target.x, target.y, target.z);
         chunk_block_add(targetChunk, (Block){.BlockID = 1}, target);
