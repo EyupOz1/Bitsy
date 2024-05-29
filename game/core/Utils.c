@@ -207,3 +207,12 @@ void calculateChunkDistToDraw(int *dist, int trueRenderDistance)
         }
     }
 }
+
+
+void  chunk_swap(ChunkSystem* chunkSys, int chunkIndex1, int chunkIndex2)
+{
+    Chunk* temp = chunkSys->loadedChunks[chunkIndex1];
+    chunkSys->loadedChunks[chunkIndex1] = chunkSys->loadedChunks[chunkIndex2];
+    chunkSys->loadedChunks[chunkIndex2] = temp; 
+}
+

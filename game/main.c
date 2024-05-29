@@ -32,7 +32,7 @@ void setup()
         .mouseSensitivity = 0.008f,
         .pos = (Vector3){0, 0, 0},
         .atlas = LoadTextureFromImage(LoadImage(PATH_TEXTURES_ATLAS)),
-        .renderDistance = 2};
+        .renderDistance = 3};
 
     shader_init();
 
@@ -47,8 +47,8 @@ void setup()
 
 void update()
 {
-    chunkSystem_update(player->camera.position, &chunkSys);
     player_update(player, &chunkSys);
+    chunkSystem_update(player->camera.position,player->chunkPos, &chunkSys);
 
     // Debug
     DrawSphere(player->rayCollision.point, 0.4f, BLUE);

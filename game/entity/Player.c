@@ -37,6 +37,31 @@ void player_update(Player *player, ChunkSystem *chunkSys)
     }
 }
 
+Vector3 setPlayerRayInfo(Player *player, ChunkSystem *chunkSys)
+{
+    int x = -1;
+    for (int i = 0; i < chunkSys->loadedChunksCount; i++)
+    {
+
+        RayCollision currCollision;
+
+        Matrix m = MatrixTranslate(chunkSys->loadedChunks[i]->pos.x, chunkSys->loadedChunks[i]->pos.y, chunkSys->loadedChunks[i]->pos.z);
+        currCollision = GetRayCollisionMesh(player->ray, chunkSys->loadedChunks[i]->currentMesh, MatrixMultiply(m, chunkSys->loadedChunks[i]->currentModel.transform));
+
+        if ((currCollision.hit && player->rayCollision.distance > currCollision.distance))
+        {
+            player->rayCollision = currCollision;
+            x = i;
+        }
+    }
+    if (x != -1)
+    {
+        return chunkSys->loadedChunks[x]->pos;
+    }
+    return (Vector3){-1, -1, -1};
+}
+
+
 void move(Player *player)
 {
 
@@ -62,31 +87,10 @@ void move(Player *player)
     Vector2 mousePositionDelta = GetMouseDelta();
     CameraYaw(&(player->camera), -mousePositionDelta.x * GLOBAL.mouseSensitivity, 0);
     CameraPitch(&(player->camera), -mousePositionDelta.y * GLOBAL.mouseSensitivity, 1, 0, 0);
+
+    player->chunkPos = worldPositionToChunk(player->camera.position);
 }
 
-Vector3 setPlayerRayInfo(Player *player, ChunkSystem *chunkSys)
-{
-    int x = -1;
-    for (int i = 0; i < chunkSys->loadedChunksCount; i++)
-    {
-
-        RayCollision currCollision;
-
-        Matrix m = MatrixTranslate(chunkSys->loadedChunks[i]->pos.x, chunkSys->loadedChunks[i]->pos.y, chunkSys->loadedChunks[i]->pos.z);
-        currCollision = GetRayCollisionMesh(player->ray, chunkSys->loadedChunks[i]->currentMesh, MatrixMultiply(m, chunkSys->loadedChunks[i]->currentModel.transform));
-
-        if ((currCollision.hit && player->rayCollision.distance > currCollision.distance))
-        {
-            player->rayCollision = currCollision;
-            x = i;
-        }
-    }
-    if (x != -1)
-    {
-        return chunkSys->loadedChunks[x]->pos;
-    }
-    return (Vector3){-1, -1, -1};
-}
 
 void look(Player *player, ChunkSystem *chunkSys)
 {

@@ -20,6 +20,8 @@ typedef struct Player
     Ray ray;
     RayCollision rayCollision;
 
+    Vector3 chunkPos;
+
     Vector3 targetBlockPosInWorldSpace;
     Vector3 targetBlockPosInChunkSpace;
     Vector3 targetChunkPos;
