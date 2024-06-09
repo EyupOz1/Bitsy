@@ -212,5 +212,21 @@ void Chunk::perlin()
             }
         }
         UnloadImage(noise);
+    } else if (this->position.y < 0)
+    {
+        for (int i = 0; i < CHUNK_SIZE; i++)
+        {
+            for (int j = 0; j < CHUNK_SIZE; j++)
+            {
+                for (int k = 0; k < CHUNK_SIZE; k++)
+                {
+                    this->setBlock({static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)}, {2});
+                }
+                
+            }
+            
+        }
+        
     }
+    
 }

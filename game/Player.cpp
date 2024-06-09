@@ -5,6 +5,7 @@
 #include "Defines.hpp"
 #include "Utils.hpp"
 
+
 void Player::Init()
 {
     this->camera.position = {0.1f, 0.0f, 0.0f};
@@ -13,7 +14,7 @@ void Player::Init()
     this->camera.fovy = State::get().fieldOfView;
     this->camera.projection = CAMERA_PERSPECTIVE;
 
-    this->light = CreateLight(LIGHT_POINT, this->camera.position, Vector3Zero(), WHITE, State::get().shader);
+    this->light = Light(LIGHT_POINT, this->camera.position, Vector3Zero(), WHITE, State::get().shader);
 }
 
 void Player::Update()
@@ -28,7 +29,7 @@ void Player::Update()
     float cameraPos[3] = {camera.position.x, camera.position.y, camera.position.z};
     SetShaderValue(State::get().shader, State::get().shader.locs[SHADER_LOC_VECTOR_VIEW], cameraPos, SHADER_UNIFORM_VEC3);
     this->light.position = this->position;
-    UpdateLightValues(State::get().shader, this->light);
+    this->light.Update();
 }
 
 void Player::move()

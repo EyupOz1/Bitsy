@@ -11,7 +11,7 @@ void World::Init() {};
 void World::Draw()
 {
     int lower = this->loadedChunks.size();
-    for (int i = 0; i < lower; i++)
+    for (int i = 0; i < 128; i++)
     {
         this->loadedChunks[i]->Draw();
     }
@@ -47,7 +47,10 @@ void World::calculateChunksToLoad(Vector3 playerPos, std::vector<Vector3> &chunk
                     {roundToChunk(playerPos.x), roundToChunk(playerPos.y), roundToChunk(playerPos.z)},
                     {static_cast<float>(possibleDistances[i]), static_cast<float>(possibleDistances[j]), static_cast<float>(possibleDistances[k])});
 
-                chunksToLoad.push_back(newVec);
+                if (Vector3Distance(playerPos, newVec) < renderDistance * CHUNK_SIZE)
+                {
+                    chunksToLoad.push_back(newVec);
+                }
             }
         }
     }
@@ -79,23 +82,9 @@ void World::Update(Vector3 playerPos)
 
         this->loadedChunks.push_back(newChunk);
     }
+
     std::sort(this->loadedChunks.begin(), this->loadedChunks.end(), [&playerPos](const auto &lhs, const auto &rhs)
               { return Vector3DistanceSqr(Vector3AddValue(lhs->position, CHUNK_SIZE / 2), playerPos) < Vector3DistanceSqr(Vector3AddValue(rhs->position, CHUNK_SIZE / 2), playerPos); });
-
-    // TraceLog(LOG_DEBUG, "Size: %i, FE: %f, %f, %f, LAST: %f, %f, %f", this->loadedChunks.size(), ExpandVc3(this->loadedChunks[0]->position), ExpandVc3(this->loadedChunks.back()->position));
-    int x = this->loadedChunks.size();
-
-    int renderDist = State::get().renderDistance;
-    for (int i = this->loadedChunks.size() - 1; i >= renderDist * renderDist * renderDist + 1; --i)
-    {
-        //TraceLog(LOG_DEBUG, "Del %i", i);
-        this->loadedChunks[i]->Destroy();
-        this->loadedChunks.erase(this->loadedChunks.end());
-    }
-
-    int a = this->loadedChunks.size();
-
-    // TraceLog(LOG_DEBUG, "X");
 }
 
 unsigned char Vector3Compare(Vector3 a, Vector3 b)

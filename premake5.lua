@@ -17,7 +17,7 @@
 raylib_path = path.join(_MAIN_SCRIPT_DIR, "lib/raylib-master")
 
 lib_path = path.join(_MAIN_SCRIPT_DIR, "lib")
-libraries = {"rlights"}
+libraries = {}
 
 out_path = path.join(_MAIN_SCRIPT_DIR, "bin/Debug")
 

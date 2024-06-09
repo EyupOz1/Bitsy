@@ -41,7 +41,7 @@ int main(void)
     InitWindow(1080, 720, "Bitsy");
     DisableCursor();
     SetTargetFPS(144);
-    SetTraceLogLevel(LOG_ALL);
+    SetTraceLogLevel(6);
 
     setup();
 

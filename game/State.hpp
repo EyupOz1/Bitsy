@@ -3,7 +3,6 @@
 #include "raylib.h"
 #include "World/BlockData.hpp"
 #include <vector>
-#include "rlights.h"
 
 
 class State
@@ -17,7 +16,6 @@ public:
 
     Texture atlas;
     Shader shader;
-    Light globalLight;
 
     std::vector<BlockData> blocks;
 

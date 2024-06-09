@@ -12,7 +12,7 @@ State::State()
     movementSpeed = 0.1f;
     playerStartingPos = {0, 0, 0};
     mouseSensitivity = 0.008f;
-    renderDistance = 9;
+    renderDistance = 7;
 
     this->shader = LoadShader(PATH_SHADERS_VERTEX, PATH_SHADERS_FRAGMENT);
     shader.locs[SHADER_LOC_VECTOR_VIEW] = GetShaderLocation(shader, "viewPos");
