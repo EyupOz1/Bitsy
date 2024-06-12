@@ -1,9 +1,9 @@
 #include "Player.hpp"
-#include "State.hpp"
+#include "Core/State.hpp"
 #include "rcamera.h"
 #include "raymath.h"
-#include "Defines.hpp"
-#include "Utils.hpp"
+#include "Core/Defines.hpp"
+#include "Core/Utils.hpp"
 
 
 void Player::Init()

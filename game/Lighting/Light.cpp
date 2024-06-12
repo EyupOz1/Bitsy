@@ -1,5 +1,5 @@
 #include "raylib.h"
-#include "State.hpp"
+#include "Core/State.hpp"
 #include "Light.hpp"
 
 static int lightsCount = 0;

@@ -4,7 +4,7 @@
 #include "Block.hpp"
 #include "raylib.h"
 #include <vector>
-#include "Defines.hpp"
+#include "Core/Defines.hpp"
 
 class BlockData
 {

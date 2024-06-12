@@ -1,7 +1,7 @@
 #pragma once
 
 #include "raylib.h"
-#include "Light.hpp"
+#include "Lighting/Light.hpp"
 
 class Player
 {

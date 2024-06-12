@@ -7,9 +7,6 @@
 class Chunk
 {
 public:
-    Mesh mesh;
-    Model model;
-
     bool dirty;
 
     Vector3 position;
@@ -21,11 +18,21 @@ public:
 
     void Update();
     void Draw();
+
     void Destroy();
 
     void gen();
-    void perlin();
 
     Block getBlock(Vector3 pos);
     bool setBlock(Vector3 pos, Block block);
+
+    Mesh mesh;
+    Model model;
+
+    bool meshValid();
+    bool modelValid();
+
+    void meshModelDestroy();
+
+    void perlin();
 };

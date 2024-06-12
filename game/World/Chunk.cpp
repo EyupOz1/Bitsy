@@ -1,51 +1,49 @@
 #include "Chunk.hpp"
 #include "raylib.h"
 #include <iostream>
-#include "Utils.hpp"
-#include "Defines.hpp"
-#include "State.hpp"
+#include "Core/Utils.hpp"
+#include "Core/Defines.hpp"
+#include "Core/State.hpp"
 
 void Chunk::Init(Vector3 pos)
 {
-    this->position = pos;
     this->dirty = true;
+
+    this->position = pos;
+    TraceLog(LOG_DEBUG, "%f, %f, %f", ExpandVc3(pos));
+
+    this->blocks.reserve(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 
     this->mesh.vertexCount = 0;
     this->model.meshCount = 0;
-
-    this->blocks.reserve(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 }
 
 void Chunk::Update()
 {
     if (this->dirty && this->blocksPos.size() > 0)
     {
-        TraceLog(LOG_DEBUG, "Chunk(%f, %f, %f).genMesh & genModel", ExpandVc3(this->position));
+        // TraceLog(LOG_DEBUG, "Chunk(%f, %f, %f).genMesh & genModel", ExpandVc3(this->position));
         this->gen();
-        this->dirty = false;
     }
 }
+
 void Chunk::Draw()
 {
-    DrawModel(this->model, this->position, 1.0f, WHITE);
+    if (this->meshValid() && this->modelValid())
+    {
+        DrawModel(this->model, this->position, 1.0f, WHITE);
+    }
 }
 
 void Chunk::Destroy()
 {
-
-    if (this->model.meshCount != 0)
-    {
-        UnloadModel(this->model);
-    }
+    this->meshModelDestroy();
 }
 
 void Chunk::gen()
 {
 
-    if (this->model.meshCount != 0)
-    {
-        UnloadModel(this->model);
-    }
+    this->meshModelDestroy();
 
     Mesh mesh = {0};
     mesh.triangleCount = 0;
@@ -69,37 +67,8 @@ void Chunk::gen()
             continue;
         }
 
-        float localVertices[] = {
-
-            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-
-            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-
-            0 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-
-            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-
-            0 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 1 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 1 + currPos.z,
-
-            0 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 0 + currPos.y, 0 + currPos.z,
-            1 + currPos.x, 1 + currPos.y, 0 + currPos.z,
-            0 + currPos.x, 1 + currPos.y, 0 + currPos.z};
+        float localVertices[72];
+        calculateVertices(localVertices, currPos);
 
         // Tex
         float baseTexcoords[48];
@@ -118,14 +87,14 @@ void Chunk::gen()
         {
             if (sidesToDraw[j])
             {
-                for (int l = 12 * j; l < 12 * (j + 1); l++)
+                for (int k = 12 * j; k < 12 * (j + 1); k++)
                 {
-                    vertices.push_back(localVertices[l]);
-                    normals.push_back(baseNormals[l]);
+                    vertices.push_back(localVertices[k]);
+                    normals.push_back(baseNormals[k]);
                 }
-                for (int l = 8 * j; l < 8 * (j + 1); l++)
+                for (int k = 8 * j; k < 8 * (j + 1); k++)
                 {
-                    texcoords.push_back(baseTexcoords[l]);
+                    texcoords.push_back(baseTexcoords[k]);
                 }
 
                 indices.push_back(mesh.vertexCount + (4 * sideCount + 3));
@@ -160,6 +129,8 @@ void Chunk::gen()
     this->model = LoadModelFromMesh(mesh);
     this->model.materials[0].maps[0].texture = State::get().atlas;
     this->model.materials[0].shader = State::get().shader;
+
+    this->dirty = false;
 }
 Block Chunk::getBlock(Vector3 pos)
 {
@@ -190,12 +161,33 @@ bool Chunk::setBlock(Vector3 pos, Block block)
     return true;
 }
 
+bool Chunk::meshValid()
+{
+    return this->mesh.vertexCount > 0;
+}
+bool Chunk::modelValid()
+{
+    return this->model.meshCount > 0;
+}
+
+void Chunk::meshModelDestroy()
+{
+    if (this->modelValid() && this->meshValid())
+    {
+        UnloadModel(this->model);
+        this->model = {0};
+        this->mesh = {0};
+    }
+}
+
 void Chunk::perlin()
 {
+    if (Vector3Compare(this->position, {0, 0, 0}))
+        return;
     if (this->position.y == 0)
     {
 
-        Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, this->position.x, this->position.y, 1);
+        Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, this->position.x, this->position.z, 1);
         for (int i = 0; i < CHUNK_SIZE; i++)
         {
             for (int j = 0; j < CHUNK_SIZE; j++)
@@ -212,7 +204,8 @@ void Chunk::perlin()
             }
         }
         UnloadImage(noise);
-    } else if (this->position.y < 0)
+    }
+    else if (this->position.y < 0)
     {
         for (int i = 0; i < CHUNK_SIZE; i++)
         {
@@ -222,11 +215,7 @@ void Chunk::perlin()
                 {
                     this->setBlock({static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)}, {2});
                 }
-                
             }
-            
         }
-        
     }
-    
 }

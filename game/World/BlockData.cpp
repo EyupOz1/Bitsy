@@ -1,7 +1,7 @@
 #include "BlockData.hpp"
 #include "Block.hpp"
-#include "State.hpp"
-#include "Defines.hpp"
+#include "Core/State.hpp"
+#include "Core/Defines.hpp"
 
 void BlockData::getTexcoords(Block &block, float (&buf)[48])
 {
