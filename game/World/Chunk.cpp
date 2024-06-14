@@ -5,11 +5,12 @@
 #include "Core/Defines.hpp"
 #include "Core/State.hpp"
 
-void Chunk::Init(Vector3 pos)
+void Chunk::Init(Vector3Int pos)
 {
     this->dirty = true;
 
     this->position = pos;
+
     TraceLog(LOG_DEBUG, "%f, %f, %f", ExpandVc3(pos));
 
     this->blocks.reserve(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
@@ -31,7 +32,7 @@ void Chunk::Draw()
 {
     if (this->meshValid() && this->modelValid())
     {
-        DrawModel(this->model, this->position, 1.0f, WHITE);
+        DrawModel(this->model, Vec3IntToVec3(this->position), 1.0f, WHITE);
     }
 }
 
@@ -59,7 +60,7 @@ void Chunk::gen()
 
     for (int i = 0; i < this->blocksPos.size(); i++)
     {
-        Vector3 currPos = this->blocksPos[i];
+        Vector3Int currPos = this->blocksPos[i];
         Block currBlock = this->getBlock(currPos);
 
         if (currBlock.ID <= 0)
@@ -132,7 +133,7 @@ void Chunk::gen()
 
     this->dirty = false;
 }
-Block Chunk::getBlock(Vector3 pos)
+Block Chunk::getBlock(Vector3Int pos)
 {
     int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
     Block bl = this->blocks[index];
@@ -140,7 +141,7 @@ Block Chunk::getBlock(Vector3 pos)
     return bl;
 }
 
-bool Chunk::setBlock(Vector3 pos, Block block)
+bool Chunk::setBlock(Vector3Int pos, Block block, bool shouldReplace)
 {
     if (
         pos.x >= CHUNK_SIZE || pos.y >= CHUNK_SIZE || pos.z >= CHUNK_SIZE ||
@@ -150,11 +151,8 @@ bool Chunk::setBlock(Vector3 pos, Block block)
         return false;
     }
 
-    pos = {static_cast<float>(static_cast<int>(pos.x)), static_cast<float>(static_cast<int>(pos.y)), static_cast<float>(static_cast<int>(pos.z))};
-    // TraceLog(LOG_DEBUG, "Set Block %i on (%f, %f, %f) in Chunk (%f, %f, %f)", block.ID, ExpandVc3(pos), ExpandVc3(this->position));
-
     this->blocksPos.push_back(pos);
-    int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
+    int index = (pos.z * CHUNK_SIZE * CHUNK_SIZE) + (pos.y * CHUNK_SIZE) + pos.x;
     this->blocks[index] = block;
 
     this->dirty = true;
@@ -182,8 +180,6 @@ void Chunk::meshModelDestroy()
 
 void Chunk::perlin()
 {
-    if (Vector3Compare(this->position, {0, 0, 0}))
-        return;
     if (this->position.y == 0)
     {
 
@@ -194,12 +190,12 @@ void Chunk::perlin()
             {
                 unsigned char height = GetImageColor(noise, i, j).g;
 
-                float x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
+                int x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
 
-                this->setBlock({static_cast<float>(i), x, static_cast<float>(j)}, {3});
+                this->setBlock({i, x, j}, {3}, true);
                 for (int s = x - 1; s >= 0; s--)
                 {
-                    this->setBlock({static_cast<float>(i), static_cast<float>(s), static_cast<float>(j)}, {2});
+                    this->setBlock({i, s, j}, {2}, true);
                 }
             }
         }
@@ -213,7 +209,7 @@ void Chunk::perlin()
             {
                 for (int k = 0; k < CHUNK_SIZE; k++)
                 {
-                    this->setBlock({static_cast<float>(i), static_cast<float>(j), static_cast<float>(k)}, {2});
+                    this->setBlock({i, j, k}, {2}, true);
                 }
             }
         }
