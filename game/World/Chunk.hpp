@@ -8,31 +8,33 @@
 class Chunk
 {
 public:
-    bool dirty;
-
+    // data
     Vector3Int position;
-
     std::vector<Block> blocks;
     std::vector<Vector3Int> blocksPos;
 
+    // meta
+    bool dirty;
+    Mesh mesh;
+    Model model;
+
+    //
+
     void Init(Vector3Int pos);
-
-    void Update();
-    void Draw();
-
     void Destroy();
 
-    void gen();
+    void UpdateBlocks();
+    void UpdateMesh();
+
+    void genMeshModel();
+
+    void Draw();
 
     Block getBlock(Vector3Int pos);
     bool setBlock(Vector3Int pos, Block block, bool shouldReplace);
-    Mesh mesh;
-    Model model;
 
     bool meshValid();
     bool modelValid();
 
     void meshModelDestroy();
-
-    void perlin();
 };

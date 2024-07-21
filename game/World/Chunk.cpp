@@ -5,6 +5,9 @@
 #include "Core/Defines.hpp"
 #include "Core/State.hpp"
 
+
+// Basic
+
 void Chunk::Init(Vector3Int pos)
 {
     this->dirty = true;
@@ -17,14 +20,58 @@ void Chunk::Init(Vector3Int pos)
 
     this->mesh.vertexCount = 0;
     this->model.meshCount = 0;
+
+    this->UpdateBlocks();
 }
 
-void Chunk::Update()
+void Chunk::Destroy()
+{
+    this->meshModelDestroy();
+}
+
+void Chunk::UpdateMesh()
 {
     if (this->dirty && this->blocksPos.size() > 0)
     {
-        // TraceLog(LOG_DEBUG, "Chunk(%f, %f, %f).genMesh & genModel", ExpandVc3(this->position));
-        this->gen();
+        this->genMeshModel();
+    }
+}
+
+void Chunk::UpdateBlocks()
+{
+    if (this->position.y == 0)
+    {
+
+        Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, this->position.x, this->position.z, 1);
+        for (int i = 0; i < CHUNK_SIZE; i++)
+        {
+            for (int j = 0; j < CHUNK_SIZE; j++)
+            {
+                unsigned char height = GetImageColor(noise, i, j).g;
+
+                int x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
+
+                this->setBlock({i, x, j}, {3}, true);
+                for (int s = x - 1; s >= 0; s--)
+                {
+                    this->setBlock({i, s, j}, {2}, true);
+                }
+            }
+        }
+        UnloadImage(noise);
+    }
+    else if (this->position.y < 0)
+    {
+        for (int i = 0; i < CHUNK_SIZE; i++)
+        {
+            for (int j = 0; j < CHUNK_SIZE; j++)
+            {
+                for (int k = 0; k < CHUNK_SIZE; k++)
+                {
+                    this->setBlock({i, j, k}, {2}, true);
+                }
+            }
+        }
     }
 }
 
@@ -36,12 +83,10 @@ void Chunk::Draw()
     }
 }
 
-void Chunk::Destroy()
-{
-    this->meshModelDestroy();
-}
 
-void Chunk::gen()
+// Mesh
+
+void Chunk::genMeshModel()
 {
 
     this->meshModelDestroy();
@@ -133,6 +178,30 @@ void Chunk::gen()
 
     this->dirty = false;
 }
+
+
+bool Chunk::meshValid()
+{
+    return this->mesh.vertexCount > 0;
+}
+bool Chunk::modelValid()
+{
+    return this->model.meshCount > 0;
+}
+
+void Chunk::meshModelDestroy()
+{
+    if (this->modelValid() && this->meshValid())
+    {
+        UnloadModel(this->model);
+        this->model = {0};
+        this->mesh = {0};
+    }
+}
+
+
+// Chunk Interface
+
 Block Chunk::getBlock(Vector3Int pos)
 {
     int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
@@ -159,59 +228,3 @@ bool Chunk::setBlock(Vector3Int pos, Block block, bool shouldReplace)
     return true;
 }
 
-bool Chunk::meshValid()
-{
-    return this->mesh.vertexCount > 0;
-}
-bool Chunk::modelValid()
-{
-    return this->model.meshCount > 0;
-}
-
-void Chunk::meshModelDestroy()
-{
-    if (this->modelValid() && this->meshValid())
-    {
-        UnloadModel(this->model);
-        this->model = {0};
-        this->mesh = {0};
-    }
-}
-
-void Chunk::perlin()
-{
-    if (this->position.y == 0)
-    {
-
-        Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, this->position.x, this->position.z, 1);
-        for (int i = 0; i < CHUNK_SIZE; i++)
-        {
-            for (int j = 0; j < CHUNK_SIZE; j++)
-            {
-                unsigned char height = GetImageColor(noise, i, j).g;
-
-                int x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-
-                this->setBlock({i, x, j}, {3}, true);
-                for (int s = x - 1; s >= 0; s--)
-                {
-                    this->setBlock({i, s, j}, {2}, true);
-                }
-            }
-        }
-        UnloadImage(noise);
-    }
-    else if (this->position.y < 0)
-    {
-        for (int i = 0; i < CHUNK_SIZE; i++)
-        {
-            for (int j = 0; j < CHUNK_SIZE; j++)
-            {
-                for (int k = 0; k < CHUNK_SIZE; k++)
-                {
-                    this->setBlock({i, j, k}, {2}, true);
-                }
-            }
-        }
-    }
-}

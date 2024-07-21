@@ -18,13 +18,15 @@ void setup()
     State::get();
 
     player.Init();
-    world.Init();
+
+    world.Init(player.position);
 }
 
 void update()
 {
     player.Update();
-    world.Update(player.position);
+
+    world.Update(player.position, world);
 
     world.Draw();
 }

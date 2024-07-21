@@ -11,14 +11,14 @@ class World
 
 public:
     std::vector<Chunk *> loadedChunks;
-    void Init();
 
-    void Update(Vector3 playerPos);
+    void Init(Vector3 playerPos);
+
+    void Update(Vector3 playerPos, World &world);
     void Draw();
 
-    void place(Vector3Int pos, Block &block);
-
     void updateLoadedChunks(Vector3 playerPos);
+    void updateMeshLoadedChunks(Vector3 playerPos, World &world);
     int findChunkByPos(Vector3Int pos);
     void calculateChunksToLoad(Vector3 playerPos, std::vector<Vector3Int> &chunksToLoad);
 };

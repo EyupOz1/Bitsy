@@ -6,13 +6,16 @@
 #include "Core/State.hpp"
 #include "Core/Defines.hpp"
 
-void World::Init() {
-    // this->loadedChunks.reserve(State::get().renderDistance);
+void World::Init(Vector3 playerPos) {
 };
 
-void World::Update(Vector3 playerPos)
+void World::Update(Vector3 playerPos, World &world)
 {
+
     this->updateLoadedChunks(playerPos);
+    
+    
+    this->updateMeshLoadedChunks(playerPos, world);
 }
 
 void World::Draw()
@@ -30,24 +33,6 @@ void World::Draw()
         this->loadedChunks[i]->Draw();
     }
 };
-/*
-void World::place(Vector3Int pos, Block &block)
-{
-    Vector3Int res = pos;
-
-    int x = this->findChunkByPos(res);
-    if (x == -1)
-    {
-        TraceLog(LOG_DEBUG, "WorldPlace Chunk doesnt exist");
-        return;
-    }
-
-    Chunk *ch = this->loadedChunks[x];
-
-    Vector3 chpos = Vector3Subtract(pos.toVec3(), res.toVec3());
-    ch->setBlock(Vector3Int::Vec3ToVec3Int(chpos), block, true);
-}
-*/
 
 void World::updateLoadedChunks(Vector3 playerPos)
 {
@@ -62,7 +47,7 @@ void World::updateLoadedChunks(Vector3 playerPos)
 
         if (chunkIndex >= 0)
         {
-            this->loadedChunks[chunkIndex]->Update();
+            //this->loadedChunks[chunkIndex]->UpdateBlocks();
             continue;
         }
 
@@ -71,11 +56,13 @@ void World::updateLoadedChunks(Vector3 playerPos)
         Chunk *newChunk = new Chunk();
         newChunk->Init(chunksToLoad[i]);
 
-        newChunk->perlin();
-        newChunk->Update();
+        newChunk->UpdateBlocks();
 
         this->loadedChunks.push_back(newChunk);
     }
+
+
+
 
     if (chunkAdded)
     {
@@ -93,6 +80,15 @@ void World::updateLoadedChunks(Vector3 playerPos)
             delete this->loadedChunks.back();
             this->loadedChunks.pop_back();
         }
+    }
+}
+
+void World::updateMeshLoadedChunks(Vector3 playerPos, World &world)
+{
+
+    for (int i = 0; i < world.loadedChunks.size(); i++)
+    {
+        world.loadedChunks[i]->UpdateMesh();
     }
 }
 

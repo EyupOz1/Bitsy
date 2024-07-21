@@ -15,9 +15,8 @@
 --
 --  3. This notice may not be removed or altered from any source distribution.
 
-baseName = path.getbasename(os.getcwd());
 
-project (workspaceName)
+project (project_name)
     kind "ConsoleApp"
     location (path.join(out_path, "int"))
     targetdir (out_path)
