@@ -1,21 +1,7 @@
-#include "cmath"
-#include "State.hpp"
-#include "Utils.hpp"
-#include "Defines.hpp"
-
-float roundToChunk(float pos)
-{
-    float res = pos;
-    if (fmod(pos, CHUNK_SIZE) != 0)
-    {
-        res = (int)(pos / CHUNK_SIZE) * CHUNK_SIZE;
-        if (pos < 0)
-        {
-            res -= CHUNK_SIZE;
-        }
-    }
-    return res;
-}
+#include "Core/Utils.hpp"
+#include "Core/Defines.hpp"
+#include "Core/Math/Vector3Int.hpp"
+#include "World/Block.hpp"
 
 int map(int input, int in_min, int in_max, int out_min, int out_max)
 {
@@ -98,41 +84,50 @@ void calculateVertices(float *inpt, Vector3Int currPos)
     }
 }
 
-unsigned char Vector3Compare(Vector3 a, Vector3 b)
+void getTexcoords(Block block, float (&buf)[48])
 {
-    if (a.x == b.x && a.y == b.y && a.z == b.z)
+    Vector2 m_posZ = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
+    Vector2 m_negZ = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
+    Vector2 m_posY = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
+    Vector2 m_negY = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
+    Vector2 m_posX = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
+    Vector2 m_negX = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
+
+    float baseTexcoords[] = {
+        m_posZ.x, m_posZ.y + ATLAS_Y_STEP_SIZE,
+        m_posZ.x + ATLAS_X_STEP_SIZE, m_posZ.y + ATLAS_Y_STEP_SIZE,
+        m_posZ.x + ATLAS_X_STEP_SIZE, m_posZ.y,
+        m_posZ.x, m_posZ.y,
+
+        m_negZ.x + ATLAS_X_STEP_SIZE, m_negZ.y + ATLAS_Y_STEP_SIZE,
+        m_negZ.x + ATLAS_X_STEP_SIZE, m_negZ.y,
+        m_negZ.x, m_negZ.y,
+        m_negZ.x, m_negZ.y + ATLAS_Y_STEP_SIZE,
+
+        m_posY.x, m_posY.y,
+        m_posY.x, m_posY.y + ATLAS_Y_STEP_SIZE,
+        m_posY.x + ATLAS_X_STEP_SIZE, m_posY.y + ATLAS_Y_STEP_SIZE,
+        m_posY.x + ATLAS_X_STEP_SIZE, m_posY.y,
+
+        m_negY.x + ATLAS_X_STEP_SIZE, m_negY.y,
+        m_negY.x, m_negY.y,
+        m_negY.x, m_negY.y + ATLAS_Y_STEP_SIZE,
+        m_negY.x + ATLAS_X_STEP_SIZE, m_negY.y + ATLAS_Y_STEP_SIZE,
+
+        m_posX.x + ATLAS_X_STEP_SIZE, m_posX.y + ATLAS_Y_STEP_SIZE,
+        m_posX.x + ATLAS_X_STEP_SIZE, m_posX.y,
+        m_posX.x, m_posX.y,
+        m_posX.x, m_posX.y + ATLAS_Y_STEP_SIZE,
+
+        m_negX.x, m_negX.y + ATLAS_Y_STEP_SIZE,
+        m_negX.x + ATLAS_X_STEP_SIZE, m_negX.y + ATLAS_Y_STEP_SIZE,
+        m_negX.x + ATLAS_X_STEP_SIZE, m_negX.y,
+        m_negX.x, m_negX.y
+
+    };
+
+    for (int i = 0; i < 48; i++)
     {
-        return 1;
+        buf[i] = baseTexcoords[i];
     }
-
-    return 0;
-}
-
-Vector3 Vec3IntToVec3(Vector3Int vec)
-{
-    return Vector3{static_cast<float>(vec.x), static_cast<float>(vec.y), static_cast<float>(vec.z)};
-}
-
-Vector3Int Vec3ToVec3Int(Vector3 vec)
-{
-    return Vector3Int{static_cast<int>(vec.x), static_cast<int>(vec.y), static_cast<int>(vec.z)};
-}
-
-Vector3Int Vector3IntAdd(Vector3Int vec1, Vector3Int vec2)
-{
-    return {vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z};
-}
-Vector3Int Vector3IntSubstract(Vector3Int vec1, Vector3Int vec2)
-{
-    return {vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z};
-}
-
-unsigned char Vector3IntCompare(Vector3Int a, Vector3Int b)
-{
-    if (a.x == b.x && a.y == b.y && a.z == b.z)
-    {
-        return 1;
-    }
-
-    return 0;
-}
+};

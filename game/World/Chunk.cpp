@@ -1,40 +1,29 @@
 #include "Chunk.hpp"
 #include "raylib.h"
 #include <iostream>
-#include "Core/Utils.hpp"
 #include "Core/Defines.hpp"
-#include "Core/State.hpp"
-
+#include "Core/Math/Vector3Int.hpp"
+#include "Core/Utils.hpp"
 
 // Basic
 
 void Chunk::Init(Vector3Int pos)
 {
-    this->dirty = true;
+    TraceLog(LOG_DEBUG, "New Chunk: %f, %f, %f", ExpandVc3(pos));
 
     this->position = pos;
-
-    TraceLog(LOG_DEBUG, "%f, %f, %f", ExpandVc3(pos));
-
     this->blocks.reserve(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 
     this->mesh.vertexCount = 0;
     this->model.meshCount = 0;
 
     this->UpdateBlocks();
+    this->status = CHUNK_CreateMesh;
+    this->generateMesh();
 }
 
 void Chunk::Destroy()
 {
-    this->meshModelDestroy();
-}
-
-void Chunk::UpdateMesh()
-{
-    if (this->dirty && this->blocksPos.size() > 0)
-    {
-        this->genMeshModel();
-    }
 }
 
 void Chunk::UpdateBlocks()
@@ -52,6 +41,7 @@ void Chunk::UpdateBlocks()
                 int x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
 
                 this->setBlock({i, x, j}, {3}, true);
+                TraceLog(LOG_DEBUG, "%i %i %i", i, x, j);
                 for (int s = x - 1; s >= 0; s--)
                 {
                     this->setBlock({i, s, j}, {2}, true);
@@ -75,21 +65,40 @@ void Chunk::UpdateBlocks()
     }
 }
 
-void Chunk::Draw()
+// Chunk Interface
+
+Block Chunk::getBlock(Vector3Int pos)
 {
-    if (this->meshValid() && this->modelValid())
-    {
-        DrawModel(this->model, Vec3IntToVec3(this->position), 1.0f, WHITE);
-    }
+    int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
+    Block bl = this->blocks[index];
+
+    return bl;
 }
 
-
-// Mesh
-
-void Chunk::genMeshModel()
+bool Chunk::setBlock(Vector3Int pos, Block block, bool shouldReplace)
 {
+    if (
+        pos.x >= CHUNK_SIZE || pos.y >= CHUNK_SIZE || pos.z >= CHUNK_SIZE ||
+        pos.x < 0 || pos.y < 0 || pos.z < 0)
+    {
+        TraceLog(LOG_DEBUG, "On Chunk (%f, %f, %f) cannot set Block %i on (%f, %f, %f)", ExpandVc3(this->position), block.ID, ExpandVc3(pos));
+        return false;
+    }
 
-    this->meshModelDestroy();
+    this->blocksPos.push_back(pos);
+    int index = (pos.z * CHUNK_SIZE * CHUNK_SIZE) + (pos.y * CHUNK_SIZE) + pos.x;
+    this->blocks[index] = block;
+
+    return true;
+}
+
+void Chunk::generateMesh()
+{
+    if (this->status.load() != CHUNK_CreateMesh)
+    {
+        return;
+    }
+    this->status = CHUNK_CreatingMesh;
 
     Mesh mesh = {0};
     mesh.triangleCount = 0;
@@ -118,7 +127,7 @@ void Chunk::genMeshModel()
 
         // Tex
         float baseTexcoords[48];
-        BlockData::getTexcoords(currBlock, baseTexcoords);
+        getTexcoords(currBlock, baseTexcoords);
 
         unsigned char sideCount = 0;
         unsigned char sidesToDraw[] = {
@@ -169,62 +178,7 @@ void Chunk::genMeshModel()
     std::copy(indices.begin(), indices.end(), mesh.indices);
     std::copy(texcoords.begin(), texcoords.end(), mesh.texcoords);
 
-    UploadMesh(&mesh, false);
     this->mesh = mesh;
 
-    this->model = LoadModelFromMesh(mesh);
-    this->model.materials[0].maps[0].texture = State::get().atlas;
-    this->model.materials[0].shader = State::get().shader;
-
-    this->dirty = false;
+    this->status = CHUNK_CreateModel;
 }
-
-
-bool Chunk::meshValid()
-{
-    return this->mesh.vertexCount > 0;
-}
-bool Chunk::modelValid()
-{
-    return this->model.meshCount > 0;
-}
-
-void Chunk::meshModelDestroy()
-{
-    if (this->modelValid() && this->meshValid())
-    {
-        UnloadModel(this->model);
-        this->model = {0};
-        this->mesh = {0};
-    }
-}
-
-
-// Chunk Interface
-
-Block Chunk::getBlock(Vector3Int pos)
-{
-    int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
-    Block bl = this->blocks[index];
-
-    return bl;
-}
-
-bool Chunk::setBlock(Vector3Int pos, Block block, bool shouldReplace)
-{
-    if (
-        pos.x >= CHUNK_SIZE || pos.y >= CHUNK_SIZE || pos.z >= CHUNK_SIZE ||
-        pos.x < 0 || pos.y < 0 || pos.z < 0)
-    {
-        TraceLog(LOG_DEBUG, "On Chunk (%f, %f, %f) cannot set Block %i on (%f, %f, %f)", ExpandVc3(this->position), block.ID, ExpandVc3(pos));
-        return false;
-    }
-
-    this->blocksPos.push_back(pos);
-    int index = (pos.z * CHUNK_SIZE * CHUNK_SIZE) + (pos.y * CHUNK_SIZE) + pos.x;
-    this->blocks[index] = block;
-
-    this->dirty = true;
-    return true;
-}
-

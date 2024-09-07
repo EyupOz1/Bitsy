@@ -84,6 +84,24 @@
 		"xlocnum": "cpp",
 		"xloctime": "cpp",
 		"*.rh": "cpp",
-		"ss": "c"
+		"ss": "c",
+		"variant": "cpp",
+		"*.tcc": "cpp",
+		"thread": "cpp",
+		"cstdarg": "cpp",
+		"cwctype": "cpp",
+		"deque": "cpp",
+		"functional": "cpp",
+		"memory_resource": "cpp",
+		"numeric": "cpp",
+		"random": "cpp",
+		"ratio": "cpp",
+		"string_view": "cpp",
+		"numbers": "cpp",
+		"semaphore": "cpp",
+		"span": "cpp",
+		"stop_token": "cpp",
+		"text_encoding": "cpp",
+		"cinttypes": "cpp"
 	}
 }

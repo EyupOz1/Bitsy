@@ -2,8 +2,9 @@
 
 #include "raylib.h"
 #include <vector>
-#include "Block.hpp"
-#include "core/Utils.hpp"
+#include "World/Block.hpp"
+#include "Core/Math/Vector3Int.hpp"
+#include "atomic"
 
 class Chunk
 {
@@ -14,27 +15,18 @@ public:
     std::vector<Vector3Int> blocksPos;
 
     // meta
-    bool dirty;
     Mesh mesh;
     Model model;
 
-    //
+    std::atomic<unsigned char> status; // CHUNK_...
 
     void Init(Vector3Int pos);
     void Destroy();
 
     void UpdateBlocks();
-    void UpdateMesh();
-
-    void genMeshModel();
-
-    void Draw();
+    void generateMesh();
 
     Block getBlock(Vector3Int pos);
     bool setBlock(Vector3Int pos, Block block, bool shouldReplace);
 
-    bool meshValid();
-    bool modelValid();
-
-    void meshModelDestroy();
 };

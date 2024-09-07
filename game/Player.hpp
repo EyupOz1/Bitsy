@@ -1,7 +1,7 @@
 #pragma once
 
 #include "raylib.h"
-#include "Lighting/Light.hpp"
+#include "Core/Math/Vector3Int.hpp"
 
 class Player
 {
@@ -12,7 +12,8 @@ public:
 
     Camera camera;
     Vector3 position;
-    Light light;
+    Vector3Int currentChunkPos;
+
 
     void Init();
     void Update();

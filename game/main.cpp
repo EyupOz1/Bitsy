@@ -1,44 +1,67 @@
 #include "raylib.h"
 #include "rcamera.h"
 #include "raymath.h"
-#include "Player.hpp"
-#include "World/Chunk.hpp"
 #include <vector>
+#include "Player.hpp"
+#include "Core/Math/Vector3Int.hpp"
+#include <thread>
 #include "World/World.hpp"
-#include "Core/Utils.hpp"
-#include "World/BlockData.hpp"
 #include "Core/Defines.hpp"
-#include "Core/State.hpp"
 
+std::thread ChunkGenThread;
+bool killThread = 0;
 Player player;
 World world;
+Texture atlas;
+// Chunk *newChunk = new Chunk();
+
+void chunkGenThreadFunction()
+{
+    // newChunk->Init({0, 0, 0});
+    // newChunk->generateMesh();
+    while (!killThread)
+    {
+        world.Update(player.currentChunkPos);
+    }
+}
 
 void setup()
 {
-    State::get();
-
     player.Init();
+    atlas = LoadTexture(PATH_TEXTURES_ATLAS);
 
-    world.Init(player.position);
+    ChunkGenThread = std::thread(chunkGenThreadFunction);
 }
 
 void update()
 {
     player.Update();
-
-    world.Update(player.position, world);
-
-    world.Draw();
+    for (int i = 0; i < world.loadedChunks.size(); i++)
+    {
+        if (world.loadedChunks[i]->status.load() == CHUNK_CreateModel)
+        {
+            world.loadedChunks[i]->status = CHUNK_CreatingModel;
+            UploadMesh(&world.loadedChunks[i]->mesh, false);
+            world.loadedChunks[i]->model = LoadModelFromMesh(world.loadedChunks[i]->mesh);
+            world.loadedChunks[i]->status = CHUNK_Render;
+            world.loadedChunks[i]->model.materials[0].maps[0].texture = atlas;
+            // world.loadedChunks[i]->model.materials[0].shader = State::get().shader;
+        }
+        if (world.loadedChunks[i]->status.load() == CHUNK_Render)
+        {
+            DrawModel(world.loadedChunks[i]->model, Vec3IntToVec3(world.loadedChunks[i]->position), 1.0f, RAYWHITE);
+        }
+    }
 }
+
 void ui()
 {
     int y = -20;
     int step = 20;
     DrawText(TextFormat("%i", GetFPS()), 0, y += step, 20, BLACK);
     DrawText(TextFormat("playerPos: (%f, %f, %f)", ExpandVc3(player.position)), 0, y += step, 20, BLACK);
-    DrawTexture(State::get().atlas, 0, y += step, WHITE);
-    DrawText(TextFormat("%i", world.loadedChunks.size()), 0, y += step, 20, BLACK);
-
+    DrawText(TextFormat("playerChunkPos: (%i, %i, %i)", ExpandVc3(player.currentChunkPos)), 0, y += step, 20, BLACK);
+    DrawText(TextFormat("loadedChunksSize: (%i)", world.loadedChunks.size()), 0, y += step, 20, BLACK);
 }
 
 int main(void)
@@ -63,6 +86,8 @@ int main(void)
 
         EndDrawing();
     }
+    killThread = 1;
+    ChunkGenThread.join();
 
     CloseWindow();
 
