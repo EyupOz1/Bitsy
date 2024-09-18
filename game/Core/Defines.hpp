@@ -27,3 +27,6 @@
 #define CHUNK_CreateModel 2
 #define CHUNK_CreatingModel 3
 #define CHUNK_Render 4
+#define CHUNK_DeleteChunk 5
+#define CHUNK_DeletingChunk 6
+#define CHUNK_DeletedChunk 7

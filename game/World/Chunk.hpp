@@ -9,15 +9,12 @@
 class Chunk
 {
 public:
-    // data
     Vector3Int position;
     std::vector<Block> blocks;
     std::vector<Vector3Int> blocksPos;
 
-    // meta
     Mesh mesh;
     Model model;
-
     std::atomic<unsigned char> status; // CHUNK_...
 
     void Init(Vector3Int pos);

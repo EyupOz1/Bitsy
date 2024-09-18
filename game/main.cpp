@@ -8,17 +8,17 @@
 #include "World/World.hpp"
 #include "Core/Defines.hpp"
 
-std::thread ChunkGenThread;
 bool killThread = 0;
+std::thread ChunkGenThread;
+
 Player player;
 World world;
+
 Texture atlas;
-// Chunk *newChunk = new Chunk();
+
 
 void chunkGenThreadFunction()
 {
-    // newChunk->Init({0, 0, 0});
-    // newChunk->generateMesh();
     while (!killThread)
     {
         world.Update(player.currentChunkPos);
@@ -38,19 +38,31 @@ void update()
     player.Update();
     for (int i = 0; i < world.loadedChunks.size(); i++)
     {
+
         if (world.loadedChunks[i]->status.load() == CHUNK_CreateModel)
         {
             world.loadedChunks[i]->status = CHUNK_CreatingModel;
+
             UploadMesh(&world.loadedChunks[i]->mesh, false);
             world.loadedChunks[i]->model = LoadModelFromMesh(world.loadedChunks[i]->mesh);
-            world.loadedChunks[i]->status = CHUNK_Render;
             world.loadedChunks[i]->model.materials[0].maps[0].texture = atlas;
-            // world.loadedChunks[i]->model.materials[0].shader = State::get().shader;
+
+            world.loadedChunks[i]->status = CHUNK_Render;
         }
         if (world.loadedChunks[i]->status.load() == CHUNK_Render)
         {
             DrawModel(world.loadedChunks[i]->model, Vec3IntToVec3(world.loadedChunks[i]->position), 1.0f, RAYWHITE);
         }
+
+        if (world.loadedChunks[i]->status.load() == CHUNK_DeleteChunk)
+        {
+            world.loadedChunks[i]->status = CHUNK_DeletingChunk;
+            world.unloaded++;
+            world.loadedChunks[i]->Destroy();
+
+        }
+
+        
     }
 }
 
@@ -62,6 +74,7 @@ void ui()
     DrawText(TextFormat("playerPos: (%f, %f, %f)", ExpandVc3(player.position)), 0, y += step, 20, BLACK);
     DrawText(TextFormat("playerChunkPos: (%i, %i, %i)", ExpandVc3(player.currentChunkPos)), 0, y += step, 20, BLACK);
     DrawText(TextFormat("loadedChunksSize: (%i)", world.loadedChunks.size()), 0, y += step, 20, BLACK);
+    DrawText(TextFormat("Created: %i, Unloaded: %i, Destroyed: %i", world.created, world.unloaded, world.destroyed), 0, y += step, 20, BLACK);
 }
 
 int main(void)
@@ -70,7 +83,7 @@ int main(void)
     InitWindow(1080, 720, "Bitsy");
     DisableCursor();
     SetTargetFPS(144);
-    SetTraceLogLevel(LOG_ALL);
+    SetTraceLogLevel(LOG_NONE);
 
     setup();
 

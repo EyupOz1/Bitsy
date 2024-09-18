@@ -11,8 +11,13 @@ class World
 
 public:
     std::vector<Chunk *> loadedChunks;
-    std::vector<Chunk *> chunksToDestroy;
-
-
+void Init();
     void Update(Vector3Int playerChunkPos);
+
+    int destroyed;
+    int unloaded;
+    int created;
+
+private:
+    void chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chunksToLoad);
 };

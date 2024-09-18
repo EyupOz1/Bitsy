@@ -19,11 +19,19 @@ void Chunk::Init(Vector3Int pos)
 
     this->UpdateBlocks();
     this->status = CHUNK_CreateMesh;
-    this->generateMesh();
 }
 
 void Chunk::Destroy()
 {
+    unsigned char x = CHUNK_DeleteChunk;
+    unsigned char y = CHUNK_DeletingChunk;
+    if (this->status.compare_exchange_strong(x, y))
+    {
+        TraceLog(LOG_DEBUG, "Destroyed: %i, %i, %i", ExpandVc3(this->position));
+        UnloadModel(this->model);
+
+        this->status = CHUNK_DeletedChunk;
+    }
 }
 
 void Chunk::UpdateBlocks()
@@ -65,8 +73,6 @@ void Chunk::UpdateBlocks()
     }
 }
 
-// Chunk Interface
-
 Block Chunk::getBlock(Vector3Int pos)
 {
     int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
@@ -94,10 +100,6 @@ bool Chunk::setBlock(Vector3Int pos, Block block, bool shouldReplace)
 
 void Chunk::generateMesh()
 {
-    if (this->status.load() != CHUNK_CreateMesh)
-    {
-        return;
-    }
     this->status = CHUNK_CreatingMesh;
 
     Mesh mesh = {0};
