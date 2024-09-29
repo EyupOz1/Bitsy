@@ -3,8 +3,3 @@ _build
 _bin
 .vs
 /bin
-/build
-Makefile
-obj
-/temp
-/game/Makefile

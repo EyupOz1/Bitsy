@@ -13,5 +13,5 @@ https://github.com/skeeto/w64devkit // Set the bin folder to the path
 ### building
 ```
 .\premake5.exe gmake2
-mingw32-make.exe SHELL=cmd
+mingw32-make.exe SHELL=cmd -C bin
 ```

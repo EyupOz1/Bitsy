@@ -8,7 +8,7 @@
             "name": "Debug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}.exe",
+            "program": "${workspaceFolder}/bin/Bitsy.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -30,7 +30,7 @@
               "MIMode": "lldb"
             },
             "linux": {
-              "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}",
+              "program": "${workspaceFolder}/bin/Bitsy",
               "miDebuggerPath": "/usr/bin/gdb",
             },
             "preLaunchTask": "build debug"
@@ -44,17 +44,17 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}.exe",
+            "program": "${workspaceFolder}/bin/Bitsy.exe",
             "MIMode": "gdb",
             "windows": {
-              "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}.exe",
+              "program": "${workspaceFolder}/bin/Bitsy.exe",
               "miDebuggerPath": "gdb.exe"
             },
             "osx": {
               "MIMode": "lldb"
             },
             "linux": {
-              "program": "${workspaceFolder}/bin/Debug/${workspaceFolderBasename}",
+              "program": "${workspaceFolder}/bin/Bitsy",
               "miDebuggerPath": "/usr/bin/gdb"
             },
             "preLaunchTask": "build release",

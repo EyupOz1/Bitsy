@@ -103,5 +103,6 @@
 		"stop_token": "cpp",
 		"text_encoding": "cpp",
 		"cinttypes": "cpp"
-	}
+	},
+	"makefile.configureOnOpen": true
 }

@@ -16,14 +16,13 @@
 --  3. This notice may not be removed or altered from any source distribution. 
 
 project_name = "Bitsy"
-
 game_dir = "game"
-
 libraries = {}
 
+
 raylib_path = path.join(_MAIN_SCRIPT_DIR, "lib/raylib-master")
-lib_path = path.join(_MAIN_SCRIPT_DIR, "3rd")
-out_path = path.join(_MAIN_SCRIPT_DIR, "bin/Debug")
+lib_path = path.join(_MAIN_SCRIPT_DIR, "lib")
+out_path = path.join(_MAIN_SCRIPT_DIR, "bin")
 
 -- Include helper functions
 include(path.join(path.join(_MAIN_SCRIPT_DIR, "res"), "scripts"))
@@ -47,16 +46,24 @@ newoption {
 workspace(project_name)
 configurations {"Debug", "Release"}
 platforms {"x64", "x86", "ARM64"}
-
 defaultplatform("x64")
+startproject(project_name)
+toolset "gcc"
+
+location (out_path)
+targetdir(out_path)
+
+
 
 filter "configurations:Debug"
 defines {"DEBUG"}
 symbols "On"
 
+
 filter "configurations:Release"
 defines {"NDEBUG"}
 optimize "On"
+
 
 filter {"platforms:x64"}
 architecture "x86_64"
@@ -66,9 +73,7 @@ architecture "ARM64"
 
 filter {}
 
-targetdir (out_path)
 
-startproject(project_name)
 
 cdialect "C99"
 cppdialect "C++17"
@@ -79,9 +84,7 @@ kind "StaticLib"
 
 platform_defines()
 
-location(raylib_path)
 language "C"
-targetdir (out_path)
 
 filter "action:vs*"
 defines {"_WINSOCK_DEPRECATED_NO_WARNINGS", "_CRT_SECURE_NO_WARNINGS"}
@@ -111,4 +114,6 @@ for k,v in pairs(libraries) do
     print("LIBRARY: " .. lib)
     include(lib)
     
-  end
+end
+
+

@@ -10,7 +10,9 @@
             "windows": {
                 "command": "mingw32-make.exe",
                 "args": [
-                    "SHELL=cmd"
+                    "SHELL=cmd",
+                    "-C",
+                    "bin"
                 ],
             },
             "group": {
@@ -20,7 +22,9 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn":["UpdateMake"]
+            "dependsOn": [
+                "UpdateMake"
+            ]
         },
         {
             "label": "build release",
@@ -30,7 +34,9 @@
                 "command": "mingw32-make.exe",
                 "args": [
                     "SHELL=cmd",
-                    "config=release_x64"
+                    "config=release_x64",
+                    "-C",
+                    "bin"
                 ],
             },
             "linux": {
@@ -47,7 +53,9 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "dependsOn":["UpdateMake"]
+            "dependsOn": [
+                "UpdateMake"
+            ]
         },
         {
             "label": "UpdateMake",

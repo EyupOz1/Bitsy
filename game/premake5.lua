@@ -18,8 +18,7 @@
 
 project (project_name)
     kind "ConsoleApp"
-    location (path.join(out_path, "int"))
-    targetdir (out_path)
+
 
     filter "configurations:Release"
         kind "WindowedApp"

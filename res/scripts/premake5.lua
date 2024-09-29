@@ -8,7 +8,6 @@ end
 
 
 
-
 function check_raylib()
     print ("Checking for raylib in " .. raylib_path)
 
