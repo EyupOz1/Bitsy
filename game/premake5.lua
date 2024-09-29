@@ -19,6 +19,7 @@
 project (project_name)
     kind "ConsoleApp"
 
+    targetdir(out_path)
 
     filter "configurations:Release"
         kind "WindowedApp"

@@ -30,7 +30,7 @@ void setup()
     player.Init();
     atlas = LoadTexture(PATH_TEXTURES_ATLAS);
 
-    //ChunkGenThread = std::thread(chunkGenThreadFunction);
+    ChunkGenThread = std::thread(chunkGenThreadFunction);
 }
 
 void update()

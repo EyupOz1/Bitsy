@@ -51,7 +51,7 @@ startproject(project_name)
 toolset "gcc"
 
 location (out_path)
-targetdir(out_path)
+targetdir(_MAIN_SCRIPT_DIR)
 
 
 
@@ -81,6 +81,7 @@ check_raylib()
 
 project "raylib"
 kind "StaticLib"
+targetdir(out_path)
 
 platform_defines()
 
