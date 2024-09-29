@@ -18,9 +18,9 @@
 #define ATLAS_X_STEP_SIZE (1.0f / ATLAS_WIDTH)
 #define ATLAS_Y_STEP_SIZE (1.0f / ATLAS_HEIGHT)
 
-#define PATH_TEXTURES_ATLAS "res/textures/Atlas.png"
-#define PATH_SHADERS_FRAGMENT "res/shaders/lighting.fs"
-#define PATH_SHADERS_VERTEX "res/shaders/lighting.vs"
+#define PATH_TEXTURES_ATLAS "../res/textures/Atlas.png"
+#define PATH_SHADERS_FRAGMENT "../res/shaders/lighting.fs"
+#define PATH_SHADERS_VERTEX "../res/shaders/lighting.vs"
 
 #define CHUNK_CreateMesh 0
 #define CHUNK_CreatingMesh 1

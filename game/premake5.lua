@@ -33,16 +33,16 @@ project (project_name)
             entrypoint "mainCRTStartup"
     filter {}
 
+--[[     
     vpaths 
     {
         ["Header Files/*"] = { "include/**.h",  "include/**.hpp", "src/**.h", "src/**.hpp", "**.h", "**.hpp"},
         ["Source Files/*"] = {"src/**.c", "src/**.cpp","**.c", "**.cpp"},
-    }
+    } 
+        ]]
     files {"**.c", "**.cpp", "**.h", "**.hpp"}
 
-    includedirs { "./" }
-    includedirs { "src" }
-    includedirs { "include" }
+    includedirs { "." }
 
     link_raylib()
     link_to()

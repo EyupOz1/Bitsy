@@ -6,12 +6,9 @@
 #include "Core/Math/Vector3Int.hpp"
 void World::Init()
 {
-    this->destroyed = 0;
-    this->created = 0;
-    this->unloaded = 0;
 }
 
-void World::Update(Vector3Int playerChunkPos)
+void World::calcChunks(Vector3Int playerChunkPos)
 {
     std::vector<Vector3Int> chunksToLoad;
     this->chunksToLoad(playerChunkPos, chunksToLoad);
@@ -38,7 +35,6 @@ void World::Update(Vector3Int playerChunkPos)
             Chunk *newChunk = new Chunk();
             newChunk->Init(chunksToLoad[i]);
             this->loadedChunks.push_back(newChunk);
-            this->created++;
         }
     }
 
@@ -48,7 +44,6 @@ void World::Update(Vector3Int playerChunkPos)
         if (this->loadedChunks[i]->status.load() == CHUNK_DeletedChunk)
         {
             this->loadedChunks.erase(this->loadedChunks.begin() + i);
-            this->destroyed++;
             continue;
         }
         // chunks.update()

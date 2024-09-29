@@ -12,7 +12,7 @@ void Chunk::Init(Vector3Int pos)
     TraceLog(LOG_DEBUG, "New Chunk: %f, %f, %f", ExpandVc3(pos));
 
     this->position = pos;
-    this->blocks.reserve(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+    this->blocks.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 
     this->mesh.vertexCount = 0;
     this->model.meshCount = 0;
