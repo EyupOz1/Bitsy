@@ -7,6 +7,7 @@
 #include <thread>
 #include "World/World.hpp"
 #include "Core/Defines.hpp"
+#include <atomic>
 
 bool killThread = 0;
 std::thread ChunkGenThread;
@@ -43,10 +44,9 @@ void update()
 	player.Update();
 	for (int i = 0; i < world.loadedChunks.size(); i++)
 	{
-
 		if (world.loadedChunks[i]->status.load() == CHUNK_CreateModel)
 		{
-			world.loadedChunks[i]->status = CHUNK_CreatingModel;
+			world.loadedChunks[i]->status = CHUNK_CreatingModel; 
 
 			UploadMesh(&world.loadedChunks[i]->mesh, false);
 			world.loadedChunks[i]->model = LoadModelFromMesh(world.loadedChunks[i]->mesh);
@@ -59,15 +59,8 @@ void update()
 			DrawModel(world.loadedChunks[i]->model, Vec3IntToVec3(world.loadedChunks[i]->position), 1.0f, RAYWHITE);
 		}
 
-		if (world.loadedChunks[i]->status.load() == CHUNK_DeleteChunk)
-		{
-			world.loadedChunks[i]->status = CHUNK_DeletingChunk;
-			world.loadedChunks[i]->Destroy();
-
-		}
-
-
 	}
+
 }
 
 void ui()

@@ -17,6 +17,10 @@ public:
 	void Init();
 	void calcChunks(Vector3Int playerChunkPos);
 
+
+
+	std::vector<Chunk*> chunksToDelete;
+
 private:
 	void chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int>& chunksToLoad);
 };
