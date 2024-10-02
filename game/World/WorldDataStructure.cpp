@@ -11,6 +11,7 @@ Chunk* World::getChunk(Vector3Int pos)
 			return this->loadedChunks[i];
 		}
 	}
+	return nullptr;
 }
 void World::addChunk(Chunk* chunk)
 {

@@ -1,7 +1,9 @@
-#include "Core/Utils.hpp"
 #include "Core/Defines.hpp"
 #include "Core/Math/Vector3Int.hpp"
 #include "World/Block.hpp"
+#include "World/Chunk.hpp"
+#include "Core/Utils.hpp"
+#include <array>
 
 int map(int input, int in_min, int in_max, int out_min, int out_max)
 {
@@ -48,35 +50,35 @@ void calculateVertices(float *inpt, Vector3Int currPos)
 
     float localVertices[] = {
 
-        1 + pos.x, 0 + pos.y, 0 + pos.z,
-        1 + pos.x, 0 + pos.y, 1 + pos.z,
-        1 + pos.x, 1 + pos.y, 1 + pos.z,
-        1 + pos.x, 1 + pos.y, 0 + pos.z,
+        0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
+        0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
+        0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
+        0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
 
-        0 + pos.x, 0 + pos.y, 0 + pos.z,
-        0 + pos.x, 1 + pos.y, 0 + pos.z,
-        0 + pos.x, 1 + pos.y, 1 + pos.z,
-        0 + pos.x, 0 + pos.y, 1 + pos.z,
+        -0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
+        -0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
+        -0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
+        -0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
 
-        0 + pos.x, 1 + pos.y, 0 + pos.z,
-        1 + pos.x, 1 + pos.y, 0 + pos.z,
-        1 + pos.x, 1 + pos.y, 1 + pos.z,
-        0 + pos.x, 1 + pos.y, 1 + pos.z,
+        -0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
+        0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
+        0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
+        -0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
 
-        0 + pos.x, 0 + pos.y, 0 + pos.z,
-        0 + pos.x, 0 + pos.y, 1 + pos.z,
-        1 + pos.x, 0 + pos.y, 1 + pos.z,
-        1 + pos.x, 0 + pos.y, 0 + pos.z,
+        -0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
+        -0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
+        0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
+        0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
 
-        0 + pos.x, 0 + pos.y, 1 + pos.z,
-        0 + pos.x, 1 + pos.y, 1 + pos.z,
-        1 + pos.x, 1 + pos.y, 1 + pos.z,
-        1 + pos.x, 0 + pos.y, 1 + pos.z,
+        -0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
+        -0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
+        0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
+        0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
 
-        0 + pos.x, 0 + pos.y, 0 + pos.z,
-        1 + pos.x, 0 + pos.y, 0 + pos.z,
-        1 + pos.x, 1 + pos.y, 0 + pos.z,
-        0 + pos.x, 1 + pos.y, 0 + pos.z};
+        -0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
+        0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
+        0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
+        -0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z};
 
     for (int i = 0; i < 72; ++i)
     {
@@ -84,50 +86,84 @@ void calculateVertices(float *inpt, Vector3Int currPos)
     }
 }
 
-void getTexcoords(Block block, float (&buf)[48])
+
+
+void generateChunkMesh(std::array<Chunk*, 6> neighbourChunks, Chunk* chunk)
 {
-    Vector2 m_posZ = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
-    Vector2 m_negZ = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
-    Vector2 m_posY = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
-    Vector2 m_negY = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
-    Vector2 m_posX = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
-    Vector2 m_negX = {0 * ATLAS_X_STEP_SIZE, 0 * ATLAS_Y_STEP_SIZE};
 
-    float baseTexcoords[] = {
-        m_posZ.x, m_posZ.y + ATLAS_Y_STEP_SIZE,
-        m_posZ.x + ATLAS_X_STEP_SIZE, m_posZ.y + ATLAS_Y_STEP_SIZE,
-        m_posZ.x + ATLAS_X_STEP_SIZE, m_posZ.y,
-        m_posZ.x, m_posZ.y,
+	Mesh mesh = { 0 };
+	mesh.triangleCount = 0;
+	mesh.vertexCount = 0;
 
-        m_negZ.x + ATLAS_X_STEP_SIZE, m_negZ.y + ATLAS_Y_STEP_SIZE,
-        m_negZ.x + ATLAS_X_STEP_SIZE, m_negZ.y,
-        m_negZ.x, m_negZ.y,
-        m_negZ.x, m_negZ.y + ATLAS_Y_STEP_SIZE,
+	std::vector<float> vertices;
+	std::vector<float> normals;
+	std::vector<unsigned short> indices;
+	std::vector<float> texcoords;
 
-        m_posY.x, m_posY.y,
-        m_posY.x, m_posY.y + ATLAS_Y_STEP_SIZE,
-        m_posY.x + ATLAS_X_STEP_SIZE, m_posY.y + ATLAS_Y_STEP_SIZE,
-        m_posY.x + ATLAS_X_STEP_SIZE, m_posY.y,
+	float baseNormals[72];
+	getBaseNormals(baseNormals);
 
-        m_negY.x + ATLAS_X_STEP_SIZE, m_negY.y,
-        m_negY.x, m_negY.y,
-        m_negY.x, m_negY.y + ATLAS_Y_STEP_SIZE,
-        m_negY.x + ATLAS_X_STEP_SIZE, m_negY.y + ATLAS_Y_STEP_SIZE,
+	for (int i = 0; i < chunk->blocksPos.size(); i++)
+	{
+		Vector3Int currPos = chunk->blocksPos[i];
+		BlockState currBlock = chunk->getBlock(currPos);
 
-        m_posX.x + ATLAS_X_STEP_SIZE, m_posX.y + ATLAS_Y_STEP_SIZE,
-        m_posX.x + ATLAS_X_STEP_SIZE, m_posX.y,
-        m_posX.x, m_posX.y,
-        m_posX.x, m_posX.y + ATLAS_Y_STEP_SIZE,
+		if (currBlock.ID <= 0) { continue; }
 
-        m_negX.x, m_negX.y + ATLAS_Y_STEP_SIZE,
-        m_negX.x + ATLAS_X_STEP_SIZE, m_negX.y + ATLAS_Y_STEP_SIZE,
-        m_negX.x + ATLAS_X_STEP_SIZE, m_negX.y,
-        m_negX.x, m_negX.y
+		float localVertices[72];
+		calculateVertices(localVertices, currPos);
 
-    };
+		float baseTexcoords[48];
+		getTexCoords(currBlock.ID, baseTexcoords);
 
-    for (int i = 0; i < 48; i++)
-    {
-        buf[i] = baseTexcoords[i];
-    }
-};
+		unsigned char sideCount = 0;
+		unsigned char sidesToDraw[] = {
+			currPos.x + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x + 1, currPos.y, currPos.z}).ID <= 0,
+			currPos.x - 1 < 0 || chunk->getBlock({currPos.x - 1, currPos.y, currPos.z}).ID <= 0,
+			currPos.y + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x, currPos.y + 1, currPos.z}).ID <= 0,
+			currPos.y - 1 < 0 || chunk->getBlock({currPos.x, currPos.y - 1, currPos.z}).ID <= 0,
+			currPos.z + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x, currPos.y, currPos.z + 1}).ID <= 0,
+			currPos.z - 1 < 0 || chunk->getBlock({currPos.x, currPos.y, currPos.z - 1}).ID <= 0 };
+
+
+		for (int j = 0; j < 6; j++)
+		{
+			if (sidesToDraw[j])
+			{
+				for (int k = 12 * j; k < 12 * (j + 1); k++)
+				{
+					vertices.push_back(localVertices[k]);
+					normals.push_back(baseNormals[k]);
+				}
+				for (int k = 8 * j; k < 8 * (j + 1); k++)
+				{
+					texcoords.push_back(baseTexcoords[k]);
+				}
+
+				indices.push_back(mesh.vertexCount + (4 * sideCount + 3));
+				indices.push_back(mesh.vertexCount + (4 * sideCount + 2));
+				indices.push_back(mesh.vertexCount + (4 * sideCount));
+				indices.push_back(mesh.vertexCount + (4 * sideCount + 2));
+				indices.push_back(mesh.vertexCount + (4 * sideCount + 1));
+				indices.push_back(mesh.vertexCount + (4 * sideCount));
+
+				mesh.triangleCount += 2;
+				sideCount++;
+			}
+		}
+
+		mesh.vertexCount += sideCount * 4;
+	}
+
+	mesh.vertices = new float[vertices.size()];
+	mesh.normals = new float[normals.size()];
+	mesh.indices = new unsigned short[indices.size()];
+	mesh.texcoords = new float[texcoords.size()];
+
+	std::copy(vertices.begin(), vertices.end(), mesh.vertices);
+	std::copy(normals.begin(), normals.end(), mesh.normals);
+	std::copy(indices.begin(), indices.end(), mesh.indices);
+	std::copy(texcoords.begin(), texcoords.end(), mesh.texcoords);
+
+	chunk->mesh = mesh;
+}

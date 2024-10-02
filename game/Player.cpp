@@ -11,6 +11,9 @@ void Player::Init()
     this->camera.up = {0.0f, 1.0f, 0.0f};
     this->camera.fovy = PLAYER_FOV;
     this->camera.projection = CAMERA_PERSPECTIVE;
+
+    this->currentChunkPos = roundToChunk(this->position);
+
 }
 
 void Player::Update()

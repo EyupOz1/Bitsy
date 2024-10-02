@@ -7,27 +7,27 @@
 #include <thread>
 #include "World/World.hpp"
 #include "Core/Defines.hpp"
-#include <atomic>
+
+Player player;
+Texture atlas;
+World world;
 
 bool killThread = 0;
 std::thread ChunkGenThread;
 
-Player player;
-World world;
-
-Texture atlas;
+int playerChunkUpdates = 0;
 
 
 void chunkGenThreadFunction()
 {
-	Vector3Int lastChunk = player.currentChunkPos;
+	Vector3Int lastUpdatedChunk = { -1, -1, -1 }; // only calcChunks if player.currentChunk changed
 	while (!killThread)
 	{
-		if (Vector3IntCompare(player.currentChunkPos, lastChunk))
+		if (!Vector3IntCompare(player.currentChunkPos, lastUpdatedChunk))
 		{
 			world.calcChunks(player.currentChunkPos);
+			lastUpdatedChunk = player.currentChunkPos;
 		}
-		lastChunk = player.currentChunkPos;
 	}
 }
 
@@ -35,31 +35,31 @@ void setup()
 {
 	player.Init();
 	atlas = LoadTexture(PATH_TEXTURES_ATLAS);
-
 	ChunkGenThread = std::thread(chunkGenThreadFunction);
+	
 }
 
 void update()
 {
 	player.Update();
+	world.loadedChunksMutex.lock();
 	for (int i = 0; i < world.loadedChunks.size(); i++)
 	{
-		if (world.loadedChunks[i]->status.load() == CHUNK_CreateModel)
+		Chunk* curr = world.loadedChunks[i];
+		if (curr->status == CHUNK_STATUS_GEN_MODEL)
 		{
-			world.loadedChunks[i]->status = CHUNK_CreatingModel; 
-
-			UploadMesh(&world.loadedChunks[i]->mesh, false);
-			world.loadedChunks[i]->model = LoadModelFromMesh(world.loadedChunks[i]->mesh);
-			world.loadedChunks[i]->model.materials[0].maps[0].texture = atlas;
-
-			world.loadedChunks[i]->status = CHUNK_Render;
+			UploadMesh(&curr->mesh, false);
+			curr->model = LoadModelFromMesh(curr->mesh);
+			curr->model.materials[0].maps[0].texture = atlas;
+			curr->status = CHUNK_STATUS_RENDER;
 		}
-		if (world.loadedChunks[i]->status.load() == CHUNK_Render)
+		if (curr->status == CHUNK_STATUS_RENDER)
 		{
-			DrawModel(world.loadedChunks[i]->model, Vec3IntToVec3(world.loadedChunks[i]->position), 1.0f, RAYWHITE);
+			DrawModel(curr->model, Vec3IntToVec3(curr->position), 1.0f, RAYWHITE);
 		}
-
 	}
+	world.loadedChunksMutex.unlock();
+
 
 }
 
@@ -79,7 +79,7 @@ int main(void)
 	InitWindow(1080, 720, "Bitsy");
 	DisableCursor();
 	SetTargetFPS(144);
-	SetTraceLogLevel(LOG_ALL);
+	SetTraceLogLevel(LOG_ERROR);
 
 	setup();
 
@@ -97,7 +97,6 @@ int main(void)
 	}
 	killThread = 1;
 	ChunkGenThread.join();
-
 	CloseWindow();
 
 	return 0;

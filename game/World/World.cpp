@@ -4,12 +4,19 @@
 #include "raymath.h"
 #include "Core/Defines.hpp"
 #include "Core/Math/Vector3Int.hpp"
+#include <array>
+#include <future>
+#include <chrono>
 void World::Init()
 {
+
 }
 
 void World::calcChunks(Vector3Int playerChunkPos)
 {
+	this->loadedChunksMutex.lock();
+
+
 	std::vector<Vector3Int> chunksToLoad;
 	this->chunksToLoad(playerChunkPos, chunksToLoad);
 
@@ -26,41 +33,74 @@ void World::calcChunks(Vector3Int playerChunkPos)
 		}
 		if (!alreadyExists)
 		{
-			// Chunk.create()
-
-
-			Chunk* newChunk = new Chunk();
-			newChunk->Init(chunksToLoad[i]);
+			Chunk* newChunk = new Chunk(chunksToLoad[i]);
 			this->addChunk(newChunk);
 		}
 	}
 
+
+
 	for (int i = 0; i < this->loadedChunks.size(); i++)
 	{
-
-		if (this->loadedChunks[i]->status.load() == CHUNK_CreateMesh)
+		Vector3Int curr = this->loadedChunks[i]->position;
+		if (Vector3IntDistance(playerChunkPos, curr) > RENDER_DISTANCE * CHUNK_SIZE)
 		{
-			this->loadedChunks[i]->status = CHUNK_CreatingMesh;
-			this->loadedChunks[i]->generateMesh();
-			this->loadedChunks[i]->status = CHUNK_CreateModel;
-		}
-
-		bool exists = false;
-		for (int j = 0; j < chunksToLoad.size(); j++)
-		{
-			if (Vector3IntCompare(chunksToLoad[j], this->loadedChunks[i]->position))
-			{
-				exists = true;
-				break;
-			}
-		}
-		if (!exists)
-		{
-			//this->chunksToDelete.push_back(this->loadedChunks[i]);
-			//this->loadedChunks.erase(this->loadedChunks.begin() + i);
+			this->loadedChunks.erase(this->loadedChunks.begin() + i);
 		}
 	}
+
+
+	this->loadedChunksMutex.unlock();
+	this->buildMeshes();
 }
+
+void World::buildMeshes()
+{
+
+	this->loadedChunksMutex.lock();
+	auto t1 = std::chrono::high_resolution_clock::now();
+
+
+	std::vector<std::future<void>> futures;
+
+	for (int i = 0; i < this->loadedChunks.size(); i++)
+	{
+		Chunk* curr = this->loadedChunks[i];
+		if (curr->status != CHUNK_STATUS_GEN_MESH)
+		{
+			continue;
+		}
+		std::array<Chunk*, 6> neighbourChunks{
+			this->getChunk(Vector3IntAdd(curr->position, {+CHUNK_SIZE, 0, 0})),
+			this->getChunk(Vector3IntAdd(curr->position, {-CHUNK_SIZE, 0, 0})),
+			this->getChunk(Vector3IntAdd(curr->position, {0, +CHUNK_SIZE, 0})),
+			this->getChunk(Vector3IntAdd(curr->position, {0, -CHUNK_SIZE, 0})),
+			this->getChunk(Vector3IntAdd(curr->position, {0, 0, +CHUNK_SIZE})),
+			this->getChunk(Vector3IntAdd(curr->position, {0, 0, -CHUNK_SIZE})),
+		};
+
+		// async
+		futures.push_back(std::async(std::launch::async, generateChunkMesh, neighbourChunks, curr));
+		
+		// sync
+		//curr->genMesh(neighbourChunks);
+
+
+		curr->status = CHUNK_STATUS_GEN_MODEL;
+	}
+
+	for (int i = 0; i < futures.size(); i++)
+	{
+		futures[i].get();
+	}
+
+
+	auto t2 = std::chrono::high_resolution_clock::now();
+	auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+	TraceLog(LOG_ERROR, "%lld", ms_int.count());
+	this->loadedChunksMutex.unlock();
+}
+
 
 void World::chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int>& chunksToLoad)
 {

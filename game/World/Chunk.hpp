@@ -4,26 +4,25 @@
 #include <vector>
 #include "World/Block.hpp"
 #include "Core/Math/Vector3Int.hpp"
-#include "atomic"
 
 class Chunk
 {
 public:
     Vector3Int position;
-    std::vector<Block> blocks;
+    std::vector<BlockState> blocks;
     std::vector<Vector3Int> blocksPos;
+
+    Chunk(Vector3Int pos);
+    ~Chunk();
+
+    void genTerrain();
+    void genMesh(std::array<Chunk*, 6> neighbourChunks);
+
+    BlockState getBlock(Vector3Int pos);
+    bool setBlock(Vector3Int pos, BlockState block, bool shouldReplace);
 
     Mesh mesh;
     Model model;
-    std::atomic<unsigned char> status; // CHUNK_...
 
-    void Init(Vector3Int pos);
-    void Destroy();
-
-    void UpdateBlocks();
-    void generateMesh();
-
-    Block getBlock(Vector3Int pos);
-    bool setBlock(Vector3Int pos, Block block, bool shouldReplace);
-
+    unsigned char status;
 };
