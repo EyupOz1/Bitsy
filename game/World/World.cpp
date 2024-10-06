@@ -98,6 +98,7 @@ void World::buildMeshes()
 	auto t2 = std::chrono::high_resolution_clock::now();
 	auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
 	TraceLog(LOG_ERROR, "%lld", ms_int.count());
+	
 	this->loadedChunksMutex.unlock();
 }
 

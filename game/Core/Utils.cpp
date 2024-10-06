@@ -86,84 +86,120 @@ void calculateVertices(float *inpt, Vector3Int currPos)
     }
 }
 
-
-
-void generateChunkMesh(std::array<Chunk*, 6> neighbourChunks, Chunk* chunk)
+void generateChunkMesh(std::array<Chunk *, 6> neighbourChunks, Chunk *chunk)
 {
 
-	Mesh mesh = { 0 };
-	mesh.triangleCount = 0;
-	mesh.vertexCount = 0;
+    Mesh mesh = {0};
+    mesh.triangleCount = 0;
+    mesh.vertexCount = 0;
 
-	std::vector<float> vertices;
-	std::vector<float> normals;
-	std::vector<unsigned short> indices;
-	std::vector<float> texcoords;
+    std::vector<float> vertices;
+    std::vector<float> normals;
+    std::vector<unsigned short> indices;
+    std::vector<float> texcoords;
 
-	float baseNormals[72];
-	getBaseNormals(baseNormals);
+    float baseNormals[72];
+    getBaseNormals(baseNormals);
 
-	for (int i = 0; i < chunk->blocksPos.size(); i++)
-	{
-		Vector3Int currPos = chunk->blocksPos[i];
-		BlockState currBlock = chunk->getBlock(currPos);
+    for (int i = 0; i < chunk->blocksPos.size(); i++)
+    {
+        Vector3Int currPos = chunk->blocksPos[i];
+        BlockState currBlock = chunk->getBlock(currPos);
 
-		if (currBlock.ID <= 0) { continue; }
+        if (currBlock.ID <= 0)
+        {
+            continue;
+        }
 
-		float localVertices[72];
-		calculateVertices(localVertices, currPos);
+        float localVertices[72];
+        calculateVertices(localVertices, currPos);
 
-		float baseTexcoords[48];
-		getTexCoords(currBlock.ID, baseTexcoords);
+        float baseTexcoords[48];
+        getTexCoords(currBlock.ID, baseTexcoords);
 
-		unsigned char sideCount = 0;
-		unsigned char sidesToDraw[] = {
-			currPos.x + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x + 1, currPos.y, currPos.z}).ID <= 0,
-			currPos.x - 1 < 0 || chunk->getBlock({currPos.x - 1, currPos.y, currPos.z}).ID <= 0,
-			currPos.y + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x, currPos.y + 1, currPos.z}).ID <= 0,
-			currPos.y - 1 < 0 || chunk->getBlock({currPos.x, currPos.y - 1, currPos.z}).ID <= 0,
-			currPos.z + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x, currPos.y, currPos.z + 1}).ID <= 0,
-			currPos.z - 1 < 0 || chunk->getBlock({currPos.x, currPos.y, currPos.z - 1}).ID <= 0 };
+        unsigned char sideCount = 0;
+        unsigned char sidesToDraw[] = {
+            9,
+            currPos.x - 1 < 0 || chunk->getBlock({currPos.x - 1, currPos.y, currPos.z}).ID <= 0,
+            9,
+            currPos.y - 1 < 0 || chunk->getBlock({currPos.x, currPos.y - 1, currPos.z}).ID <= 0,
+            9,
+            currPos.z - 1 < 0 || chunk->getBlock({currPos.x, currPos.y, currPos.z - 1}).ID <= 0};
+        ;
+
+        if (neighbourChunks[0] != nullptr && currPos.x + 1 >= CHUNK_SIZE)
+            sidesToDraw[0] = neighbourChunks[0]->getBlock({0, currPos.y, currPos.z}).ID <= 0;
+        else
+            sidesToDraw[0] = chunk->getBlock({currPos.x + 1, currPos.y, currPos.z}).ID <= 0;
+
+        if (neighbourChunks[2] != nullptr && currPos.y + 1 >= CHUNK_SIZE)
+            sidesToDraw[2] = neighbourChunks[2]->getBlock({currPos.x, 0, currPos.z}).ID <= 0;
+        else
+            sidesToDraw[2] = chunk->getBlock({currPos.x, currPos.y + 1, currPos.z}).ID <= 0;
+
+        if (neighbourChunks[4] != nullptr && currPos.z + 1 >= CHUNK_SIZE)
+            sidesToDraw[4] = neighbourChunks[4]->getBlock({currPos.x, currPos.y, 0}).ID <= 0;
+        else
+            sidesToDraw[4] = chunk->getBlock({currPos.x, currPos.y, currPos.z + 1}).ID <= 0;
+
+        if (neighbourChunks[1] != nullptr && currPos.x - 1 < 0)
+            sidesToDraw[1] = neighbourChunks[1]->getBlock({7, currPos.y, currPos.z}).ID <= 0;
+        else
+            sidesToDraw[1] = chunk->getBlock({currPos.x - 1, currPos.y, currPos.z}).ID <= 0;
 
 
-		for (int j = 0; j < 6; j++)
-		{
-			if (sidesToDraw[j])
-			{
-				for (int k = 12 * j; k < 12 * (j + 1); k++)
-				{
-					vertices.push_back(localVertices[k]);
-					normals.push_back(baseNormals[k]);
-				}
-				for (int k = 8 * j; k < 8 * (j + 1); k++)
-				{
-					texcoords.push_back(baseTexcoords[k]);
-				}
+        if (neighbourChunks[3] != nullptr && currPos.y - 1 < 0)
+            sidesToDraw[3] = neighbourChunks[3]->getBlock({currPos.x, 7, currPos.z}).ID <= 0;
+        else
+            sidesToDraw[3] = chunk->getBlock({currPos.x, currPos.y - 1, currPos.z}).ID <= 0;
 
-				indices.push_back(mesh.vertexCount + (4 * sideCount + 3));
-				indices.push_back(mesh.vertexCount + (4 * sideCount + 2));
-				indices.push_back(mesh.vertexCount + (4 * sideCount));
-				indices.push_back(mesh.vertexCount + (4 * sideCount + 2));
-				indices.push_back(mesh.vertexCount + (4 * sideCount + 1));
-				indices.push_back(mesh.vertexCount + (4 * sideCount));
+        if (neighbourChunks[5] != nullptr && currPos.z - 1 < 0)
+            sidesToDraw[5] = neighbourChunks[5]->getBlock({currPos.x, currPos.y, 7}).ID <= 0;
+        else
+            sidesToDraw[5] = chunk->getBlock({currPos.x, currPos.y, currPos.z - 1}).ID <= 0;
 
-				mesh.triangleCount += 2;
-				sideCount++;
-			}
-		}
 
-		mesh.vertexCount += sideCount * 4;
-	}
 
-	mesh.vertices = new float[vertices.size()];
-	mesh.normals = new float[normals.size()];
-	mesh.indices = new unsigned short[indices.size()];
-	mesh.texcoords = new float[texcoords.size()];
+            
 
-	std::copy(vertices.begin(), vertices.end(), mesh.vertices);
-	std::copy(normals.begin(), normals.end(), mesh.normals);
-	std::copy(indices.begin(), indices.end(), mesh.indices);
-	std::copy(texcoords.begin(), texcoords.end(), mesh.texcoords);
+        for (int j = 0; j < 6; j++)
+        {
+            if (sidesToDraw[j])
+            {
+                for (int k = 12 * j; k < 12 * (j + 1); k++)
+                {
+                    vertices.push_back(localVertices[k]);
+                    normals.push_back(baseNormals[k]);
+                }
+                for (int k = 8 * j; k < 8 * (j + 1); k++)
+                {
+                    texcoords.push_back(baseTexcoords[k]);
+                }
 
-	chunk->mesh = mesh;
+                indices.push_back(mesh.vertexCount + (4 * sideCount + 3));
+                indices.push_back(mesh.vertexCount + (4 * sideCount + 2));
+                indices.push_back(mesh.vertexCount + (4 * sideCount));
+                indices.push_back(mesh.vertexCount + (4 * sideCount + 2));
+                indices.push_back(mesh.vertexCount + (4 * sideCount + 1));
+                indices.push_back(mesh.vertexCount + (4 * sideCount));
+
+                mesh.triangleCount += 2;
+                sideCount++;
+            }
+        }
+
+        mesh.vertexCount += sideCount * 4;
+    }
+
+    mesh.vertices = new float[vertices.size()];
+    mesh.normals = new float[normals.size()];
+    mesh.indices = new unsigned short[indices.size()];
+    mesh.texcoords = new float[texcoords.size()];
+
+    std::copy(vertices.begin(), vertices.end(), mesh.vertices);
+    std::copy(normals.begin(), normals.end(), mesh.normals);
+    std::copy(indices.begin(), indices.end(), mesh.indices);
+    std::copy(texcoords.begin(), texcoords.end(), mesh.texcoords);
+
+    chunk->mesh = mesh;
 }
