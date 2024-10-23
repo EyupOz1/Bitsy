@@ -6,26 +6,25 @@
 #include "Chunk.hpp"
 #include "core/Utils.hpp"
 #include <mutex>
+#include "Core/Math/ThreadSafeQueue.hpp"
+#include "World/ChunkSystem.hpp"
 
 class World
 {
-
 public:
-	std::mutex loadedChunksMutex;
-	std::vector<Chunk*> loadedChunks;
 
-
-	Chunk* getChunk(Vector3Int pos);
-	void addChunk(Chunk* chunk);
-
-	void Init();
+	void Init(Texture blockAtlas);
+	void Update();
+	
 	void calcChunks(Vector3Int playerChunkPos);
-	void buildMeshes();
 
-
-
-	std::vector<Chunk*> chunksToDelete;
+	ChunkSystem loadedChunks;
+	std::vector<Chunk *> calculatingChunks;
+	ThreadSafeQueue<Chunk *> finishedChunks;
+	std::vector<Chunk *> chunksToDelete;
 
 private:
-	void chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int>& chunksToLoad);
+	void chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chunksToLoad);
+	
+	Texture atlas;
 };

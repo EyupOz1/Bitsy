@@ -6,8 +6,8 @@
 #define PLAYER_MOUSE_SENSITIVITY_SPEED 0.008f
 
 // World
-#define CHUNK_SIZE 16
-#define RENDER_DISTANCE 8 // Needs to be odd number  
+#define CHUNK_SIZE 8
+#define RENDER_DISTANCE 7 // Needs to be odd number  
 
 // System
 #define PATH_TEXTURES_ATLAS "res/textures/Atlas.png"
@@ -23,5 +23,4 @@
 #define PATH_SHADERS_VERTEX "res/shaders/lighting.vs"
 
 #define CHUNK_STATUS_RENDER 0
-#define CHUNK_STATUS_GEN_MESH 1
-#define CHUNK_STATUS_GEN_MODEL 2
+#define CHUNK_STATUS_GEN_MODEL 1

@@ -14,7 +14,6 @@ Chunk::Chunk(Vector3Int pos)
 	this->position = pos;
 	this->blocks.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 	this->genTerrain();
-	status = CHUNK_STATUS_GEN_MESH;
 }
 Chunk::~Chunk() {}
 
@@ -86,4 +85,5 @@ bool Chunk::setBlock(Vector3Int pos, BlockState block, bool shouldReplace)
 void Chunk::genMesh(std::array<Chunk*, 6> neighbourChunks)
 {
 	generateChunkMesh(neighbourChunks, this);
+	this->status = CHUNK_STATUS_GEN_MODEL;
 }

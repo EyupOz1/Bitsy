@@ -17,10 +17,9 @@ std::thread ChunkGenThread;
 
 int playerChunkUpdates = 0;
 
-
 void chunkGenThreadFunction()
 {
-	Vector3Int lastUpdatedChunk = { -1, -1, -1 }; // only calcChunks if player.currentChunk changed
+	Vector3Int lastUpdatedChunk = {-1, -1, -1}; // only calcChunks if player.currentChunk changed
 	while (!killThread)
 	{
 		if (!Vector3IntCompare(player.currentChunkPos, lastUpdatedChunk))
@@ -28,38 +27,39 @@ void chunkGenThreadFunction()
 			world.calcChunks(player.currentChunkPos);
 			lastUpdatedChunk = player.currentChunkPos;
 		}
+
+		if (!world.calculatingChunks.empty())
+		{
+
+			Chunk *curr = world.calculatingChunks.back();
+			std::array<Vector3Int, 6> neighbourChunksPos{
+				Vector3IntAdd(curr->position, {+CHUNK_SIZE, 0, 0}),
+				Vector3IntAdd(curr->position, {-CHUNK_SIZE, 0, 0}),
+				Vector3IntAdd(curr->position, {0, +CHUNK_SIZE, 0}),
+				Vector3IntAdd(curr->position, {0, -CHUNK_SIZE, 0}),
+				Vector3IntAdd(curr->position, {0, 0, +CHUNK_SIZE}),
+				Vector3IntAdd(curr->position, {0, 0, -CHUNK_SIZE}),
+			};
+			std::array<Chunk *, 6> neighbourChunks = world.loadedChunks.getChunks(neighbourChunksPos);
+			curr->genMesh(neighbourChunks);
+
+			world.finishedChunks.push(curr);
+			world.calculatingChunks.pop_back();
+		}
 	}
 }
 
 void setup()
 {
 	player.Init();
-	atlas = LoadTexture(PATH_TEXTURES_ATLAS);
+	world.Init(LoadTexture(PATH_TEXTURES_ATLAS));
 	ChunkGenThread = std::thread(chunkGenThreadFunction);
-	
 }
 
 void update()
 {
 	player.Update();
-	world.loadedChunksMutex.lock();
-	for (int i = 0; i < world.loadedChunks.size(); i++)
-	{
-		Chunk* curr = world.loadedChunks[i];
-		if (curr->status == CHUNK_STATUS_GEN_MODEL)
-		{
-			UploadMesh(&curr->mesh, false);
-			curr->model = LoadModelFromMesh(curr->mesh);
-			curr->model.materials[0].maps[0].texture = atlas;
-			curr->status = CHUNK_STATUS_RENDER;
-		}
-		if (curr->status == CHUNK_STATUS_RENDER)
-		{
-			DrawModel(curr->model, Vec3IntToVec3(curr->position), 1.0f, RAYWHITE);
-		}
-	}
-	world.loadedChunksMutex.unlock();
-
+	world.Update();
 
 }
 
@@ -71,12 +71,14 @@ void ui()
 	DrawText(TextFormat("playerPos: (%f, %f, %f)", ExpandVc3(player.position)), 0, y += step, 20, BLACK);
 	DrawText(TextFormat("playerChunkPos: (%i, %i, %i)", ExpandVc3(player.currentChunkPos)), 0, y += step, 20, BLACK);
 	DrawText(TextFormat("loadedChunksSize: (%i)", world.loadedChunks.size()), 0, y += step, 20, BLACK);
+	DrawText(TextFormat("bufferChunksSize: (%i)", world.calculatingChunks.size()), 0, y += step, 20, BLACK);
 }
 
 int main(void)
 {
 	SetConfigFlags(FLAG_MSAA_4X_HINT);
-	InitWindow(1080, 720, "Bitsy");
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+	InitWindow(1280, 720, "Bitsy");
 	DisableCursor();
 	SetTargetFPS(144);
 	SetTraceLogLevel(LOG_ERROR);
