@@ -9,13 +9,16 @@
 
 Chunk::Chunk(Vector3Int pos)
 {
-	TraceLog(LOG_DEBUG, "New Chunk: %i, %i, %i", ExpandVc3(pos));
-
 	this->position = pos;
-	this->blocks.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
-	this->genTerrain();
 }
-Chunk::~Chunk() {}
+
+void Chunk::Init()
+{
+	TraceLog(LOG_DEBUG, "New Chunk: %i, %i, %i", ExpandVc3(this->position));
+
+	this->blocks.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+}
+
 
 void Chunk::genTerrain()
 {
@@ -31,10 +34,10 @@ void Chunk::genTerrain()
 
 				int x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
 
-				this->setBlock({ i, x, j }, { 2 }, true);
+				this->setBlock({i, x, j}, {2}, true);
 				for (int s = x - 1; s >= 0; s--)
 				{
-					this->setBlock({ i, s, j }, { 1 }, true);
+					this->setBlock({i, s, j}, {1}, true);
 				}
 			}
 		}
@@ -48,18 +51,26 @@ void Chunk::genTerrain()
 			{
 				for (int k = 0; k < CHUNK_SIZE; k++)
 				{
-					this->setBlock({ i, j, k }, { 3 }, true);
+					this->setBlock({i, j, k}, {3}, true);
 				}
 			}
 		}
 	}
 }
 
-
+void Chunk::genMesh()
+{
+	this->mesh = generateChunkMesh(this);
+}
 
 BlockState Chunk::getBlock(Vector3Int pos)
 {
 	int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
+	if (index < 0 && index >= CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)
+	{
+		TraceLog(LOG_DEBUG, "Chunk cant get Block in Chunk %i %i %i", ExpandVc3(pos));
+	}
+
 	BlockState bl = this->blocks[index];
 
 	return bl;
@@ -80,10 +91,4 @@ bool Chunk::setBlock(Vector3Int pos, BlockState block, bool shouldReplace)
 	this->blocks[index] = block;
 
 	return true;
-}
-
-void Chunk::genMesh(std::array<Chunk*, 6> neighbourChunks)
-{
-	generateChunkMesh(neighbourChunks, this);
-	this->status = CHUNK_STATUS_GEN_MODEL;
 }

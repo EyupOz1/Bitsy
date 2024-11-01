@@ -12,14 +12,18 @@ void Player::Init()
     this->camera.fovy = PLAYER_FOV;
     this->camera.projection = CAMERA_PERSPECTIVE;
 
-    this->currentChunkPos = roundToChunk(this->position);
-
+    this->currentChunkPos = {-1, -1, -1};
 }
 
-void Player::Update()
+void Player::Update(bool *playerMovedToNewChunk)
 {
     this->move();
-    this->currentChunkPos = roundToChunk(this->position);
+    this->currentChunkPos = roundToChunkVec(this->position);
+    if (!(this->lastChunkPos == this->currentChunkPos))
+    {
+        *playerMovedToNewChunk = true;
+        this->lastChunkPos = this->currentChunkPos;
+    }
 }
 
 void Player::move()

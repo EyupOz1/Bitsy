@@ -4,7 +4,6 @@
 #include <cmath>
 
 // Vector3Int Class implementation down below
-
 Vector3Int Vector3IntAdd(Vector3Int vec1, Vector3Int vec2)
 {
     return {vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z};
@@ -94,12 +93,6 @@ bool Vector3Int::operator==(const Vector3Int &other) const
 }
 
 // Chunk
-Vector3Int roundToChunkVec(Vector3 pos)
-{
-    Vector3Int posx = {roundCHNK(pos.x), roundCHNK(pos.y), roundCHNK(pos.z)};
-    return {posx};
-}
-
 int roundToChunkInt(float pos)
 {
 
@@ -110,4 +103,10 @@ int roundToChunkInt(float pos)
     }
 
     return x;
+}
+
+Vector3Int roundToChunkVec(Vector3 pos)
+{
+    Vector3Int posx = {roundToChunkInt(pos.x), roundToChunkInt(pos.y), roundToChunkInt(pos.z)};
+    return {posx};
 }

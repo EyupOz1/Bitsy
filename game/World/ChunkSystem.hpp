@@ -4,23 +4,23 @@
 #include <vector>
 #include <array>
 #include "Core/Math/Vector3Int.hpp"
+#include <unordered_map>
 
 class ChunkSystem
 {
 private:
-    std::vector<Chunk *> chunks;
+    std::unordered_map<Vector3Int, Chunk *, Vector3Int::ChunkHash> chunks;
 
 public:
-
     Chunk *getChunk(Vector3Int pos);
-    std::array<Chunk *, 6> getChunks(std::array<Vector3Int, 6> &positions);
     void addChunk(Chunk *newChunk);
+    void removeChunk(Vector3Int pos);
 
     int size();
 
-    std::vector<Chunk *>::const_iterator begin() const { return chunks.cbegin(); }
-    std::vector<Chunk *>::const_iterator end() const { return chunks.cend(); }
+    std::unordered_map<Vector3Int, Chunk *, Vector3Int::ChunkHash>::const_iterator begin() const { return chunks.cbegin(); }
+    std::unordered_map<Vector3Int, Chunk *, Vector3Int::ChunkHash>::const_iterator end() const { return chunks.cend(); }
 
-    std::vector<Chunk *>::iterator begin() { return chunks.begin(); }
-    std::vector<Chunk *>::iterator end() { return chunks.end(); }
+    std::unordered_map<Vector3Int, Chunk *, Vector3Int::ChunkHash>::iterator begin() { return chunks.begin(); }
+    std::unordered_map<Vector3Int, Chunk *, Vector3Int::ChunkHash>::iterator end() { return chunks.end(); }
 };

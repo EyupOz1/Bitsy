@@ -5,7 +5,6 @@
 #include "raylib.h"
 #include "Core/Defines.hpp"
 
-// TexCoords etc...
 class BlockData {
 public:
 	std::string m_name;

@@ -13,9 +13,10 @@ public:
     Camera camera;
     Vector3 position;
     Vector3Int currentChunkPos;
+    Vector3Int lastChunkPos;
 
 
     void Init();
-    void Update();
+    void Update(bool* playerMovedToNewChunk);
 
 };

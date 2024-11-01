@@ -11,18 +11,18 @@ public:
     Vector3Int position;
     std::vector<BlockState> blocks;
     std::vector<Vector3Int> blocksPos;
+    
+    unsigned char status;
 
     Chunk(Vector3Int pos);
-    ~Chunk();
+    void Init();
 
     void genTerrain();
-    void genMesh(std::array<Chunk*, 6> neighbourChunks);
+    void genMesh();
 
     BlockState getBlock(Vector3Int pos);
     bool setBlock(Vector3Int pos, BlockState block, bool shouldReplace);
 
     Mesh mesh;
     Model model;
-
-    unsigned char status;
 };

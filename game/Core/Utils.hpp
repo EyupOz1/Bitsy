@@ -9,4 +9,4 @@
 int map(int input, int in_min, int in_max, int out_min, int out_max);
 void getBaseNormals(float *inpt);
 void calculateVertices(float *inpt, Vector3Int currPos);
-void generateChunkMesh(std::array<Chunk*, 6> neighbourChunks, Chunk* chunk);
+Mesh generateChunkMesh(Chunk* chunk);

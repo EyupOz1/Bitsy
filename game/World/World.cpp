@@ -15,7 +15,7 @@ void World::Init(Texture blockAtlas)
 
 void World::calcChunks(Vector3Int playerChunkPos)
 {
-
+	/*
 	std::vector<Vector3Int> chunksToLoad;
 	this->chunksToLoad(playerChunkPos, chunksToLoad);
 
@@ -51,12 +51,14 @@ void World::calcChunks(Vector3Int playerChunkPos)
 			this->calculatingChunks.push_back(newChunk);
 		}
 	}
+	*/
 }
 
 void World::chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chunksToLoad)
 {
 
 	int renderRadius = (RENDER_DISTANCE - 1) / 2;
+	chunksToLoad.resize(RENDER_DISTANCE * RENDER_DISTANCE * RENDER_DISTANCE);
 	for (int i = -renderRadius; i <= renderRadius; i++)
 	{
 		for (int j = -renderRadius; j <= renderRadius; j++)
@@ -71,6 +73,7 @@ void World::chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chu
 
 void World::Update()
 {
+	/*
 	for (Chunk *loadedChunk : this->loadedChunks)
 	{
 		Chunk *curr = loadedChunk;
@@ -98,4 +101,5 @@ void World::Update()
 		}
 
 	} while (success);
+	*/
 }
