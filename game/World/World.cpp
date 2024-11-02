@@ -13,45 +13,69 @@ void World::Init(Texture blockAtlas)
 	this->atlas = blockAtlas;
 }
 
-void World::calcChunks(Vector3Int playerChunkPos)
+// playerChunkCurrent-, LastPos at max. one Chunk difference
+// TODO: Handle case where Chunk velo is 2 chunks away
+void World::updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChunkLastPos)
 {
-	/*
-	std::vector<Vector3Int> chunksToLoad;
-	this->chunksToLoad(playerChunkPos, chunksToLoad);
+	int renderRadius = (RENDER_DISTANCE - 1) / 2;
+	int renderRadiusChunks = renderRadius * CHUNK_SIZE;
 
-	for (int i = 0; i < chunksToLoad.size(); i++)
-	{
-		bool alreadyExists = false;
-		for (int j = 0; j < this->calculatingChunks.size(); j++)
+	Vector3Int newChunksMiddleDir = playerChunkCurrentPos.substract(playerChunkLastPos);
+	Vector3Int newChunksMiddleDist = newChunksMiddleDir.scale(renderRadius);
+
+	Vector3Int unsignedMask = {newChunksMiddleDir.x != 0, newChunksMiddleDir.y != 0, newChunksMiddleDir.z != 0}; // 1 = new Chunks in that direction
+	Vector3Int unsignedInvertedMask = {!unsignedMask.x, !unsignedMask.y, !unsignedMask.z};
+
+	Vector3Int newChunkMiddleToCornerDir = unsignedInvertedMask.scale(renderRadiusChunks);
+	Vector3Int NewChunkMiddlePos = playerChunkCurrentPos.add(newChunksMiddleDist);
+
+	Vector3Int playerNewChunkCorner1Pos = NewChunkMiddlePos.add(newChunkMiddleToCornerDir);
+	Vector3Int playerNewChunkCorner2Pos = NewChunkMiddlePos.substract(newChunkMiddleToCornerDir);
+
+	TraceLog(LOG_DEBUG, "updateChunks");
+	TraceLog(LOG_DEBUG, "currentChunkPos: %i, %i, %i, lastChunkPos: %i, %i, %i", ExpandVc3(playerChunkCurrentPos), ExpandVc3(playerChunkLastPos));
+	TraceLog(LOG_DEBUG, "newChunksMiddleDir: %i, %i, %i, newChunksMiddleDist: %i, %i, %i", ExpandVc3(newChunksMiddleDir), ExpandVc3(newChunksMiddleDist));
+	TraceLog(LOG_DEBUG, "unsignedMask: %i, %i, %i, unsignedInvertedMask: %i, %i, %i", ExpandVc3(unsignedMask), ExpandVc3(unsignedInvertedMask));
+	TraceLog(LOG_DEBUG, "newChunkMiddleToCornerDir: %i, %i, %i, NewChunkMiddlePos: %i, %i, %i", ExpandVc3(newChunkMiddleToCornerDir), ExpandVc3(NewChunkMiddlePos));
+	TraceLog(LOG_DEBUG, "playerNewChunkCorner1Pos: %i, %i, %i, playerNewChunkCorner2Pos: %i, %i, %i", ExpandVc3(playerNewChunkCorner1Pos), ExpandVc3(playerNewChunkCorner2Pos));
+
+	// To get the other to values to know what to iterate over
+	Vector2 iterator1 = filterNonZeroComponent(playerNewChunkCorner1Pos.multiply(unsignedInvertedMask));
+	Vector2 iterator2 = filterNonZeroComponent(playerNewChunkCorner2Pos.multiply(unsignedInvertedMask));
+
+	for (int i = iterator2.x; i <= iterator1.x; i += CHUNK_SIZE)
+		for (int j = iterator2.y; j <= iterator1.y; j += CHUNK_SIZE)
 		{
-			if (Vector3IntCompare(chunksToLoad[i], this->calculatingChunks[j]->position))
+			Vector3Int currPos = {0, 0, 0};
+			if (unsignedInvertedMask.x == 0)
 			{
-				alreadyExists = true;
-				break;
+				currPos = currPos.add({NewChunkMiddlePos.x, i, j});
+			}
+			else if (unsignedInvertedMask.y == 0)
+			{
+				currPos = currPos.add({i, NewChunkMiddlePos.y, j});
+			}
+			else if (unsignedInvertedMask.z == 0)
+			{
+				currPos = currPos.add({i, j, NewChunkMiddlePos.z});
+			}
+			else
+			{
+				throw std::invalid_argument("Exactly one component must be zero.");
+			}
+			TraceLog(LOG_DEBUG, "curr: %i, %i, %i", ExpandVc3(currPos));
+
+			Chunk *currChunk = this->activeChunks.getChunk(currPos);
+			if (currChunk == nullptr)
+			{
+				Chunk *newChunk = new Chunk(currPos);
+				newChunk->status = CHUNK_STATUS_GEN_BLOCKS;
+				this->activeChunks.addChunk(newChunk);
+				this->chunksToCalculate.enqueue(*newChunk);
 			}
 		}
 
-		if (!alreadyExists)
-		{
-			for (Chunk *loadedChunk : this->loadedChunks)
-			{
-				if (Vector3IntCompare(chunksToLoad[i], loadedChunk->position))
-				{
-					alreadyExists = true;
-					break;
-				}
-			}
-		}
 
-
-
-		if (!alreadyExists)
-		{
-			Chunk *newChunk = new Chunk(chunksToLoad[i]);
-			this->calculatingChunks.push_back(newChunk);
-		}
-	}
-	*/
 }
 
 void World::chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chunksToLoad)

@@ -10,3 +10,4 @@ int map(int input, int in_min, int in_max, int out_min, int out_max);
 void getBaseNormals(float *inpt);
 void calculateVertices(float *inpt, Vector3Int currPos);
 Mesh generateChunkMesh(Chunk* chunk);
+Vector2 filterNonZeroComponent(Vector3Int vec);

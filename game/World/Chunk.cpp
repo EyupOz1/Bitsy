@@ -14,7 +14,7 @@ Chunk::Chunk(Vector3Int pos)
 
 void Chunk::Init()
 {
-	TraceLog(LOG_DEBUG, "New Chunk: %i, %i, %i", ExpandVc3(this->position));
+	//TraceLog(LOG_DEBUG, "New Chunk: %i, %i, %i", ExpandVc3(this->position));
 
 	this->blocks.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
 }

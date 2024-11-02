@@ -7,7 +7,7 @@
 
 // World
 #define CHUNK_SIZE 8
-#define RENDER_DISTANCE 3 // Needs to be odd number
+#define RENDER_DISTANCE 5 // Needs to be odd number
 
 // System
 #define PATH_TEXTURES_ATLAS "res/textures/Atlas.png"

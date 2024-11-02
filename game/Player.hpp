@@ -17,6 +17,6 @@ public:
 
 
     void Init();
-    void Update(bool* playerMovedToNewChunk);
+    void Update();
 
 };

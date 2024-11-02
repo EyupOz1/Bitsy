@@ -17,15 +17,14 @@ public:
 	void Update();
 	
 	ChunkSystem activeChunks;
+	
 	ThreadSafeQueue<Chunk> chunksToCalculate;
-
 	ThreadSafeQueue<Chunk> finishedChunks;
 
-	void calcChunks(Vector3Int playerChunkPos);
+	void updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChunkLastPos);
 
 
 	static void chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chunksToLoad);
 	
 	Texture atlas;
-private:
 };

@@ -4,6 +4,7 @@
 #include "World/Chunk.hpp"
 #include "Core/Utils.hpp"
 #include <array>
+#include <stdexcept>
 
 int map(int input, int in_min, int in_max, int out_min, int out_max)
 {
@@ -166,4 +167,25 @@ Mesh generateChunkMesh(Chunk *chunk)
     std::copy(texcoords.begin(), texcoords.end(), mesh.texcoords);
 
     return mesh;
+}
+
+Vector2 filterNonZeroComponent(Vector3Int vec)
+{
+    Vector3 temp = {vec.x, vec.y, vec.z};
+    if (temp.x == 0)
+    {
+        return {temp.y, temp.z};
+    }
+    else if (temp.y == 0)
+    {
+        return {temp.x, temp.z};
+    }
+    else if (temp.z == 0)
+    {
+        return {temp.x, temp.y};
+    }
+    else
+    {
+        throw std::invalid_argument("Exactly one component must be zero.");
+    }
 }

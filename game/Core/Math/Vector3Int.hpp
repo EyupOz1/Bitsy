@@ -11,12 +11,16 @@ struct Vector3Int
 {
     int x, y, z;
 
-    Vector3Int add(const Vector3Int& vec);
-    Vector3Int substract(const Vector3Int& vec);
-    bool compare(const Vector3Int& vec);
+    Vector3Int add(const Vector3Int &vec);
+    Vector3Int substract(const Vector3Int &vec);
+    Vector3Int multiply(const Vector3Int &vec);
+    Vector3Int scale(int scale);
+    bool compare(const Vector3Int &vec);
 
-    float distance(const Vector3Int& vec);
-    float distanceSqr(const Vector3Int& vec);
+    float distance(const Vector3Int &vec);
+    float distanceSqr(const Vector3Int &vec);
+
+    int sumOfXYZ();
 
     Vector3 toVector3();
 
@@ -25,12 +29,12 @@ struct Vector3Int
     // if Vec3Int is chunk Coords -> use this hash function
     struct ChunkHash
     {
-        std::size_t operator()(const Vector3Int& vec) const
+        std::size_t operator()(const Vector3Int &vec) const
         {
             int normX = vec.x / CHUNK_SIZE;
             int normY = vec.y / CHUNK_SIZE;
             int normZ = vec.z / CHUNK_SIZE;
-            
+
             std::size_t hash = 17;
             hash = hash * 31 + std::hash<int>()(normX);
             hash = hash * 31 + std::hash<int>()(normY);
@@ -42,9 +46,12 @@ struct Vector3Int
 
 Vector3Int Vector3IntAdd(Vector3Int vec1, Vector3Int vec2);
 Vector3Int Vector3IntSubstract(Vector3Int vec1, Vector3Int vec2);
+Vector3Int Vector3IntMultiply(Vector3Int vec1, Vector3Int vec2);
+Vector3Int Vector3IntScale(Vector3Int vec, int scale);
 unsigned char Vector3IntCompare(Vector3Int vec1, Vector3Int vec2);
 float Vector3IntDistance(Vector3Int v1, Vector3Int v2);
 float Vector3IntDistanceSqr(Vector3Int v1, Vector3Int v2);
+int Vector3IntSumOfXYZ(Vector3Int vec);
 Vector3 Vector3IntToVector3(Vector3Int vec);
 
 // Vector3
