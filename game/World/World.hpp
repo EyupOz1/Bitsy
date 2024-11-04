@@ -12,19 +12,20 @@
 class World
 {
 public:
-
 	void Init(Texture blockAtlas);
 	void Update();
-	
+	void updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChunkLastPos);
+
+	void processChunkCalc();
+
 	ChunkSystem activeChunks;
-	
+
 	ThreadSafeQueue<Chunk> chunksToCalculate;
 	ThreadSafeQueue<Chunk> finishedChunks;
 
-	void updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChunkLastPos);
+	ThreadSafeQueue<Chunk*> chunksToDelete;
 
 
-	static void chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chunksToLoad);
-	
+
 	Texture atlas;
 };

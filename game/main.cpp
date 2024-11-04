@@ -24,28 +24,7 @@ void chunkGenThreadFunction()
 {
 	while (!killThread)
 	{
-		if (!world.chunksToCalculate.empty())
-		{
-			std::optional<Chunk> item = world.chunksToCalculate.tryDequeue();
-			if (item)
-			{
-				Chunk chunk = item.value();
-				if (chunk.status == CHUNK_STATUS_GEN_BLOCKS)
-				{
-					chunk.Init();
-					chunk.genTerrain();
-					chunk.status = CHUNK_STATUS_GEN_MESH;
-				}
-
-				if (chunk.status == CHUNK_STATUS_GEN_MESH)
-				{
-					chunk.genMesh();
-					chunk.status = CHUNK_STATUS_GEN_MODEL;
-				}
-
-				world.finishedChunks.enqueue(chunk);
-			}
-		}
+		world.processChunkCalc();
 	}
 }
 
@@ -79,7 +58,6 @@ void setup()
 Vector3Int lastUpdatedChunk = {0, 0, 0}; // TODO: Dont forget to make Player Spawn a variable
 void update()
 {
-	bool playerMovedToNewChunk = false;
 	player.Update();
 
 	if (!(player.currentChunkPos == lastUpdatedChunk))
@@ -105,6 +83,8 @@ void update()
 	for (auto it = world.activeChunks.begin(); it != world.activeChunks.end(); ++it)
 	{
 		Chunk *curr = it->second;
+		if (curr == nullptr)
+			continue;
 		if (curr->status == CHUNK_STATUS_GEN_MODEL)
 		{
 			UploadMesh(&curr->mesh, false);
@@ -139,7 +119,7 @@ int main(void)
 	InitWindow(1280, 720, "Bitsy");
 	DisableCursor();
 	SetTargetFPS(144);
-	SetTraceLogLevel(LOG_ALL);
+	SetTraceLogLevel(LOG_NONE);
 
 	setup();
 

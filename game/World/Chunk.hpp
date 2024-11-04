@@ -25,4 +25,5 @@ public:
 
     Mesh mesh;
     Model model;
+    bool validModel;
 };

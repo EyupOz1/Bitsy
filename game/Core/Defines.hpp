@@ -2,12 +2,12 @@
 
 // Player
 #define PLAYER_FOV 95
-#define PLAYER_MOVEMENT_SPEED 0.1f
+#define PLAYER_MOVEMENT_SPEED 10.0f
 #define PLAYER_MOUSE_SENSITIVITY_SPEED 0.008f
 
 // World
 #define CHUNK_SIZE 8
-#define RENDER_DISTANCE 5 // Needs to be odd number
+#define RENDER_DISTANCE 7 // Needs to be odd number
 
 // System
 #define PATH_TEXTURES_ATLAS "res/textures/Atlas.png"

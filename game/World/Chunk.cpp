@@ -10,6 +10,7 @@
 Chunk::Chunk(Vector3Int pos)
 {
 	this->position = pos;
+	this->validModel = 0;
 }
 
 void Chunk::Init()

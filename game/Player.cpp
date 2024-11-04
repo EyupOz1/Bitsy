@@ -26,7 +26,7 @@ void Player::Update()
 void Player::move()
 {
     this->camera.position = this->position;
-    float movementSpeed = PLAYER_MOVEMENT_SPEED;
+    float movementSpeed = PLAYER_MOVEMENT_SPEED * GetFrameTime();
     if (IsKeyDown(KEY_LEFT_SHIFT))
         movementSpeed *= 4;
 

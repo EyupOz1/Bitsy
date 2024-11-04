@@ -189,3 +189,13 @@ Vector2 filterNonZeroComponent(Vector3Int vec)
         throw std::invalid_argument("Exactly one component must be zero.");
     }
 }
+
+float abs(float x)
+{
+    if (x < 0)
+    {
+        return x * -1;
+    }
+
+    return x;
+}

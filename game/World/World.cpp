@@ -13,15 +13,47 @@ void World::Init(Texture blockAtlas)
 	this->atlas = blockAtlas;
 }
 
+void World::processChunkCalc()
+{
+	if (!this->chunksToCalculate.empty())
+	{
+		std::optional<Chunk> item = this->chunksToCalculate.tryDequeue();
+		if (item)
+		{
+			Chunk chunk = item.value();
+			if (chunk.status == CHUNK_STATUS_GEN_BLOCKS)
+			{
+				chunk.Init();
+				chunk.genTerrain();
+				chunk.status = CHUNK_STATUS_GEN_MESH;
+			}
+
+			if (chunk.status == CHUNK_STATUS_GEN_MESH)
+			{
+				chunk.genMesh();
+				chunk.status = CHUNK_STATUS_GEN_MODEL;
+			}
+
+			this->finishedChunks.enqueue(chunk);
+		}
+	}
+}
+
 // playerChunkCurrent-, LastPos at max. one Chunk difference
 // TODO: Handle case where Chunk velo is 2 chunks away
 void World::updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChunkLastPos)
 {
+
 	int renderRadius = (RENDER_DISTANCE - 1) / 2;
 	int renderRadiusChunks = renderRadius * CHUNK_SIZE;
 
 	Vector3Int newChunksMiddleDir = playerChunkCurrentPos.substract(playerChunkLastPos);
 	Vector3Int newChunksMiddleDist = newChunksMiddleDir.scale(renderRadius);
+
+	if (abs(newChunksMiddleDir.x + newChunksMiddleDir.y + newChunksMiddleDir.z) == CHUNK_SIZE)
+	{
+		TraceLog(LOG_DEBUG, "Unexpected Chunk Movement");
+	}
 
 	Vector3Int unsignedMask = {newChunksMiddleDir.x != 0, newChunksMiddleDir.y != 0, newChunksMiddleDir.z != 0}; // 1 = new Chunks in that direction
 	Vector3Int unsignedInvertedMask = {!unsignedMask.x, !unsignedMask.y, !unsignedMask.z};
@@ -63,7 +95,7 @@ void World::updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChun
 			{
 				throw std::invalid_argument("Exactly one component must be zero.");
 			}
-			TraceLog(LOG_DEBUG, "curr: %i, %i, %i", ExpandVc3(currPos));
+			// TraceLog(LOG_DEBUG, "curr: %i, %i, %i", ExpandVc3(currPos));
 
 			Chunk *currChunk = this->activeChunks.getChunk(currPos);
 			if (currChunk == nullptr)
@@ -75,55 +107,47 @@ void World::updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChun
 			}
 		}
 
+	// Chunks to delete
 
-}
+	Vector3Int oldChunksMiddleDir = playerChunkLastPos.substract(playerChunkCurrentPos);
+	Vector3Int oldChunksMiddleDist = oldChunksMiddleDir.scale(renderRadius);
 
-void World::chunksToLoad(Vector3Int playerChunkPos, std::vector<Vector3Int> &chunksToLoad)
-{
+	Vector3Int oldChunkMiddleToCornerDir = unsignedInvertedMask.scale(renderRadiusChunks);
+	Vector3Int oldChunkMiddlePos = playerChunkLastPos.add(oldChunksMiddleDist);
 
-	int renderRadius = (RENDER_DISTANCE - 1) / 2;
-	chunksToLoad.resize(RENDER_DISTANCE * RENDER_DISTANCE * RENDER_DISTANCE);
-	for (int i = -renderRadius; i <= renderRadius; i++)
-	{
-		for (int j = -renderRadius; j <= renderRadius; j++)
+	Vector3Int playerOldChunkCorner1Pos = oldChunkMiddlePos.add(oldChunkMiddleToCornerDir);
+	Vector3Int playerOldChunkCorner2Pos = oldChunkMiddlePos.substract(oldChunkMiddleToCornerDir);
+
+	Vector2 olditerator1 = filterNonZeroComponent(playerOldChunkCorner1Pos.multiply(unsignedInvertedMask));
+	Vector2 olditerator2 = filterNonZeroComponent(playerOldChunkCorner2Pos.multiply(unsignedInvertedMask));
+
+	for (int i = olditerator2.x; i <= olditerator1.x; i += CHUNK_SIZE)
+		for (int j = olditerator2.y; j <= olditerator1.y; j += CHUNK_SIZE)
 		{
-			for (int k = -renderRadius; k <= renderRadius; k++)
+			Vector3Int currPos = {0, 0, 0};
+			if (unsignedInvertedMask.x == 0)
 			{
-				chunksToLoad.push_back(Vector3IntAdd(playerChunkPos, {i * CHUNK_SIZE, j * CHUNK_SIZE, k * CHUNK_SIZE}));
+				currPos = currPos.add({oldChunkMiddlePos.x, i, j});
 			}
+			else if (unsignedInvertedMask.y == 0)
+			{
+				currPos = currPos.add({i, oldChunkMiddlePos.y, j});
+			}
+			else if (unsignedInvertedMask.z == 0)
+			{
+				currPos = currPos.add({i, j, oldChunkMiddlePos.z});
+			}
+			else
+			{
+				throw std::invalid_argument("Exactly one component must be zero.");
+			}
+			TraceLog(LOG_DEBUG, "curr: %i, %i, %i", ExpandVc3(currPos));
+			Chunk *currChunk = this->activeChunks.getChunk(currPos);
+			this->chunksToDelete.enqueue(currChunk);
+			this->activeChunks.removeChunk(currPos);
 		}
-	}
 }
 
 void World::Update()
 {
-	/*
-	for (Chunk *loadedChunk : this->loadedChunks)
-	{
-		Chunk *curr = loadedChunk;
-		if (curr->status == CHUNK_STATUS_GEN_MODEL)
-		{
-			UploadMesh(&curr->mesh, false);
-			curr->model = LoadModelFromMesh(curr->mesh);
-			curr->model.materials[0].maps[0].texture = this->atlas;
-			curr->status = CHUNK_STATUS_RENDER;
-		}
-		if (curr->status == CHUNK_STATUS_RENDER)
-		{
-			DrawModel(curr->model, Vec3IntToVec3(curr->position), 1.0f, RAYWHITE);
-		}
-	}
-
-	bool success = false;
-	do
-	{
-		Chunk *ch;
-		success = this->finishedChunks.tryPop(ch);
-		if (success)
-		{
-			this->loadedChunks.addChunk(ch);
-		}
-
-	} while (success);
-	*/
 }
