@@ -1,5 +1,7 @@
 # Bitsy
 
+![til](./res/repo/Animation.gif)
+
 This is just a toy project to play around with Graphics C and C++
 If you go through the commits you`ll find a C version which works slightly better
 
