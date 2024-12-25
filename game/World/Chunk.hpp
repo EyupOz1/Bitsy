@@ -1,20 +1,19 @@
 #pragma once
 
-#include "raylib.h"
-#include <vector>
-#include "World/Block.hpp"
+#include "Core/Math/Vector2Int.hpp"
 #include "Core/Math/Vector3Int.hpp"
+#include "raylib.h"
+#include "World/Block.hpp"
+#include <vector>
 
 class Chunk
 {
 public:
-    Vector3Int position;
+    Vector2Int position;
     std::vector<BlockState> blocks;
     std::vector<Vector3Int> blocksPos;
     
-    unsigned char status;
-
-    Chunk(Vector3Int pos);
+    Chunk(Vector2Int pos);
     void Init();
 
     void genTerrain();

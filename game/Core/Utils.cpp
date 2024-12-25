@@ -2,8 +2,6 @@
 #include "Core/Math/Vector3Int.hpp"
 #include "World/Block.hpp"
 #include "World/Chunk.hpp"
-#include "Core/Utils.hpp"
-#include <array>
 #include <stdexcept>
 
 int map(int input, int in_min, int in_max, int out_min, int out_max)
@@ -51,35 +49,35 @@ void calculateVertices(float *inpt, Vector3Int currPos)
 
     float localVertices[] = {
 
-        0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
-        0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
-        0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
-        0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
+        0.5f + pos.x, -0.5f + pos.y, -0.5f + pos.z,
+        0.5f + pos.x, -0.5f + pos.y, 0.5f + pos.z,
+        0.5f + pos.x, 0.5f + pos.y, 0.5f + pos.z,
+        0.5f + pos.x, 0.5f + pos.y, -0.5f + pos.z,
 
-        -0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
-        -0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
-        -0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
-        -0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
+        -0.5f + pos.x, -0.5f + pos.y, -0.5f + pos.z,
+        -0.5f + pos.x, 0.5f + pos.y, -0.5f + pos.z,
+        -0.5f + pos.x, 0.5f + pos.y, 0.5f + pos.z,
+        -0.5f + pos.x, -0.5f + pos.y, 0.5f + pos.z,
 
-        -0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
-        0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
-        0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
-        -0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
+        -0.5f + pos.x, 0.5f + pos.y, -0.5f + pos.z,
+        0.5f + pos.x, 0.5f + pos.y, -0.5f + pos.z,
+        0.5f + pos.x, 0.5f + pos.y, 0.5f + pos.z,
+        -0.5f + pos.x, 0.5f + pos.y, 0.5f + pos.z,
 
-        -0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
-        -0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
-        0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
-        0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
+        -0.5f + pos.x, -0.5f + pos.y, -0.5f + pos.z,
+        -0.5f + pos.x, -0.5f + pos.y, 0.5f + pos.z,
+        0.5f + pos.x, -0.5f + pos.y, 0.5f + pos.z,
+        0.5f + pos.x, -0.5f + pos.y, -0.5f + pos.z,
 
-        -0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
-        -0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
-        0.5 + pos.x, 0.5 + pos.y, 0.5 + pos.z,
-        0.5 + pos.x, -0.5 + pos.y, 0.5 + pos.z,
+        -0.5f + pos.x, -0.5f + pos.y, 0.5f + pos.z,
+        -0.5f + pos.x, 0.5f + pos.y, 0.5f + pos.z,
+        0.5f + pos.x, 0.5f + pos.y, 0.5f + pos.z,
+        0.5f + pos.x, -0.5f + pos.y, 0.5f + pos.z,
 
-        -0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
-        0.5 + pos.x, -0.5 + pos.y, -0.5 + pos.z,
-        0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z,
-        -0.5 + pos.x, 0.5 + pos.y, -0.5 + pos.z};
+        -0.5f + pos.x, -0.5f + pos.y, -0.5f + pos.z,
+        0.5f + pos.x, -0.5f + pos.y, -0.5f + pos.z,
+        0.5f + pos.x, 0.5f + pos.y, -0.5f + pos.z,
+        -0.5f + pos.x, 0.5f + pos.y, -0.5f + pos.z};
 
     for (int i = 0; i < 72; ++i)
     {
@@ -120,11 +118,11 @@ Mesh generateChunkMesh(Chunk *chunk)
 
         unsigned char sideCount = 0;
         unsigned char sidesToDraw[] = {
-            currPos.x + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x + 1, currPos.y, currPos.z}).ID <= 0,
+            currPos.x + 1 >= CHUNK_SIZE_XZ || chunk->getBlock({currPos.x + 1, currPos.y, currPos.z}).ID <= 0,
             currPos.x - 1 < 0 || chunk->getBlock({currPos.x - 1, currPos.y, currPos.z}).ID <= 0,
-            currPos.y + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x, currPos.y + 1, currPos.z}).ID <= 0,
+            currPos.y + 1 >= CHUNK_SIZE_Y || chunk->getBlock({currPos.x, currPos.y + 1, currPos.z}).ID <= 0,
             currPos.y - 1 < 0 || chunk->getBlock({currPos.x, currPos.y - 1, currPos.z}).ID <= 0,
-            currPos.z + 1 >= CHUNK_SIZE || chunk->getBlock({currPos.x, currPos.y, currPos.z + 1}).ID <= 0,
+            currPos.z + 1 >= CHUNK_SIZE_XZ || chunk->getBlock({currPos.x, currPos.y, currPos.z + 1}).ID <= 0,
             currPos.z - 1 < 0 || chunk->getBlock({currPos.x, currPos.y, currPos.z - 1}).ID <= 0};
 
         for (int j = 0; j < 6; j++)
@@ -171,7 +169,7 @@ Mesh generateChunkMesh(Chunk *chunk)
 
 Vector2 filterNonZeroComponent(Vector3Int vec)
 {
-    Vector3 temp = {vec.x, vec.y, vec.z};
+    Vector3 temp = {(float)vec.x, (float)vec.y, (float)vec.z};
     if (temp.x == 0)
     {
         return {temp.y, temp.z};
@@ -190,12 +188,27 @@ Vector2 filterNonZeroComponent(Vector3Int vec)
     }
 }
 
-float abs(float x)
+
+int roundToChunkInt(float pos)
 {
-    if (x < 0)
+
+    int x = ((int)pos / CHUNK_SIZE_XZ) * CHUNK_SIZE_XZ;
+    if (pos < 0)
     {
-        return x * -1;
+        x -= CHUNK_SIZE_XZ;
     }
 
     return x;
+}
+
+Vector3Int roundToChunkVec(Vector3 pos)
+{
+    Vector3Int posx = {roundToChunkInt(pos.x), roundToChunkInt(pos.y), roundToChunkInt(pos.z)};
+    return {posx};
+}
+
+Vector2Int roundToChunkVec(Vector2 pos)
+{
+    Vector2Int posx = {roundToChunkInt(pos.x), roundToChunkInt(pos.y)};
+    return {posx};
 }

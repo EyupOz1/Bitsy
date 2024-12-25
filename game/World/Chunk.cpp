@@ -1,13 +1,11 @@
 #include "Chunk.hpp"
-#include "raylib.h"
-#include <iostream>
 #include "Core/Defines.hpp"
 #include "Core/Math/Vector3Int.hpp"
 #include "Core/Utils.hpp"
+#include "raylib.h"
 #include "World/Block.hpp"
-#include <array>
 
-Chunk::Chunk(Vector3Int pos)
+Chunk::Chunk(Vector2Int pos)
 {
 	this->position = pos;
 	this->validModel = 0;
@@ -15,48 +13,29 @@ Chunk::Chunk(Vector3Int pos)
 
 void Chunk::Init()
 {
-	//TraceLog(LOG_DEBUG, "New Chunk: %i, %i, %i", ExpandVc3(this->position));
+	// TraceLog(LOG_DEBUG, "New Chunk: %i, %i, %i", ExpandVc3(this->position));
 
-	this->blocks.resize(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE);
+	this->blocks.resize(CHUNK_SIZE_XZ * CHUNK_SIZE_Y * CHUNK_SIZE_XZ);
 }
-
 
 void Chunk::genTerrain()
 {
-	if (this->position.y == 0)
+	Image noise = GenImagePerlinNoise(CHUNK_SIZE_XZ, CHUNK_SIZE_XZ, this->position.x, this->position.y, 1);
+	for (int i = 0; i < CHUNK_SIZE_XZ; i++)
 	{
-
-		Image noise = GenImagePerlinNoise(CHUNK_SIZE, CHUNK_SIZE, this->position.x, this->position.z, 1);
-		for (int i = 0; i < CHUNK_SIZE; i++)
+		for (int j = 0; j < CHUNK_SIZE_XZ; j++)
 		{
-			for (int j = 0; j < CHUNK_SIZE; j++)
-			{
-				unsigned char height = GetImageColor(noise, i, j).g;
+			unsigned char height = GetImageColor(noise, i, j).g / 2;
+			int x = map(height, 0, 255, 0, CHUNK_SIZE_Y - 1);
 
-				int x = map(height, 0, 255, 0, CHUNK_SIZE - 1);
-
-				this->setBlock({i, x, j}, {2}, true);
-				for (int s = x - 1; s >= 0; s--)
-				{
-					this->setBlock({i, s, j}, {1}, true);
-				}
-			}
-		}
-		UnloadImage(noise);
-	}
-	else if (this->position.y < 0)
-	{
-		for (int i = 0; i < CHUNK_SIZE; i++)
-		{
-			for (int j = 0; j < CHUNK_SIZE; j++)
+			this->setBlock({i, x, j}, {2}, true);
+			for (int s = x - 1; s >= 0; s--)
 			{
-				for (int k = 0; k < CHUNK_SIZE; k++)
-				{
-					this->setBlock({i, j, k}, {3}, true);
-				}
+				this->setBlock({i, s, j}, {1}, true);
 			}
 		}
 	}
+	UnloadImage(noise);
 }
 
 void Chunk::genMesh()
@@ -66,8 +45,8 @@ void Chunk::genMesh()
 
 BlockState Chunk::getBlock(Vector3Int pos)
 {
-	int index = (static_cast<int>(pos.z) * CHUNK_SIZE * CHUNK_SIZE) + (static_cast<int>(pos.y) * CHUNK_SIZE) + static_cast<int>(pos.x);
-	if (index < 0 && index >= CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE)
+	int index = pos.x * CHUNK_SIZE_XZ * CHUNK_SIZE_Y + pos.y * CHUNK_SIZE_XZ + pos.z;
+	if (index < 0 && index >= CHUNK_SIZE_XZ * CHUNK_SIZE_Y * CHUNK_SIZE_XZ)
 	{
 		TraceLog(LOG_DEBUG, "Chunk cant get Block in Chunk %i %i %i", ExpandVc3(pos));
 	}
@@ -80,15 +59,15 @@ BlockState Chunk::getBlock(Vector3Int pos)
 bool Chunk::setBlock(Vector3Int pos, BlockState block, bool shouldReplace)
 {
 	if (
-		pos.x >= CHUNK_SIZE || pos.y >= CHUNK_SIZE || pos.z >= CHUNK_SIZE ||
+		pos.x >= CHUNK_SIZE_XZ || pos.y >= CHUNK_SIZE_Y || pos.z >= CHUNK_SIZE_XZ ||
 		pos.x < 0 || pos.y < 0 || pos.z < 0)
 	{
-		TraceLog(LOG_DEBUG, "On Chunk (%f, %f, %f) cannot set Block %i on (%f, %f, %f)", ExpandVc3(this->position), block.ID, ExpandVc3(pos));
+		TraceLog(LOG_DEBUG, "On Chunk (%i, %i) cannot set Block %i on (%i, %i, %i)", ExpandVc2(this->position), block.ID, ExpandVc3(pos));
 		return false;
 	}
 
 	this->blocksPos.push_back(pos);
-	int index = (pos.z * CHUNK_SIZE * CHUNK_SIZE) + (pos.y * CHUNK_SIZE) + pos.x;
+	int index = pos.x * CHUNK_SIZE_XZ * CHUNK_SIZE_Y + pos.y * CHUNK_SIZE_XZ + pos.z;
 	this->blocks[index] = block;
 
 	return true;

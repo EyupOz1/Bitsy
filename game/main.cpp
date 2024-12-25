@@ -1,104 +1,70 @@
+#include "Core/Defines.hpp"
+#include "Core/Math/Vector3Int.hpp"
+#include "Player.hpp"
 #include "raylib.h"
-#include "rcamera.h"
 #include "raymath.h"
 #include <vector>
-#include "Player.hpp"
-#include "Core/Math/Vector3Int.hpp"
-#include <thread>
-#include "World/World.hpp"
-#include "Core/Defines.hpp"
-#include <Core/Math/ThreadSafeQueue.hpp>
-#include <optional>
-#include <iostream>
+#include <World/Chunk.hpp>
+#include <World/World.hpp>
 
 Player player;
 Texture atlas;
 World world;
 
-bool killThread = 0;
-std::thread ChunkGenThread;
-
-int playerChunkUpdates = 0;
-
-void chunkGenThreadFunction()
-{
-	while (!killThread)
-	{
-		world.processChunkCalc();
-	}
-}
-
 void setup()
 {
 	player.Init();
 	world.Init(LoadTexture(PATH_TEXTURES_ATLAS));
-	int renderRadius = (RENDER_DISTANCE - 1) / 2;
-	for (int i = -renderRadius; i <= renderRadius; i++)
-	{
-		for (int j = -renderRadius; j <= renderRadius; j++)
-		{
-			for (int k = -renderRadius; k <= renderRadius; k++)
-			{
-				Vector3Int currPos = {i * CHUNK_SIZE, j * CHUNK_SIZE, k * CHUNK_SIZE};
-				currPos = currPos.add(player.currentChunkPos);
-				Chunk *currChunk = world.activeChunks.getChunk(currPos);
-				if (currChunk == nullptr)
-				{
-					Chunk *newChunk = new Chunk(currPos);
-					newChunk->status = CHUNK_STATUS_GEN_BLOCKS;
-					world.activeChunks.addChunk(newChunk);
-					world.chunksToCalculate.enqueue(*newChunk);
-				}
-			}
-		}
-	}
-	ChunkGenThread = std::thread(chunkGenThreadFunction);
 }
 
-Vector3Int lastUpdatedChunk = {0, 0, 0}; // TODO: Dont forget to make Player Spawn a variable
+Vector2Int lastUpdatedChunk = { -CHUNK_SIZE_Y, 0 };
 void update()
 {
-	player.Update();
+	player.Update(&world);
 
 	if (!(player.currentChunkPos == lastUpdatedChunk))
 	{
-		world.updateChunks(player.currentChunkPos, lastUpdatedChunk);
+		world.Update(player.currentChunkPos);
 		lastUpdatedChunk = player.currentChunkPos;
 	}
 
-	for (int i = 0; i < 3; i++)
+	world.processCalculatedChunks();
+
+
+	std::vector<Chunk*> chunksToDelete;
+
+	for (Chunk* ch : world.activeChunks)
 	{
-		std::optional<Chunk> item = world.finishedChunks.tryDequeue();
-		if (item)
+
+
+		if (ch->position.distanceSqr(player.currentChunkPos) > CHUNK_DELETE_DIST)
 		{
-			Chunk chunk = item.value();
-			Chunk *curr = world.activeChunks.getChunk(chunk.position);
-			if (curr != nullptr)
+			if (ch->validModel)
 			{
-				*curr = chunk;
+				UnloadModel(ch->model);
+				chunksToDelete.push_back(ch);
+				continue;
 			}
 		}
+		if (ch->validModel == 0)
+		{
+			UploadMesh(&ch->mesh, false);
+			ch->model = LoadModelFromMesh(ch->mesh);
+			ch->validModel = 1;
+			ch->model.materials->maps->texture = world.atlas;
+
+
+		}
+
+		DrawModel(ch->model, { (float)ch->position.x, 0, (float)ch->position.y }, 1.0, WHITE);
 	}
 
-	for (auto it = world.activeChunks.begin(); it != world.activeChunks.end(); ++it)
+	for (Chunk* ch : chunksToDelete)
 	{
-		Chunk *curr = it->second;
-		if (curr == nullptr)
-			continue;
-		if (curr->status == CHUNK_STATUS_GEN_MODEL)
-		{
-			UploadMesh(&curr->mesh, false);
-			curr->model = LoadModelFromMesh(curr->mesh);
-			curr->model.materials[0].maps[0].texture = world.atlas;
-			curr->status = CHUNK_STATUS_RENDER;
-		}
-		if (curr->status == CHUNK_STATUS_RENDER)
-		{
-			DrawModel(curr->model, curr->position.toVector3(), 1.0f, RAYWHITE);
-		}
-
-		DrawSphere({0, 0, 0}, 5.0f, BLACK);
+		world.activeChunks.deleteChunk(ch->position);
+		delete ch;
 	}
+
 }
 void ui()
 {
@@ -106,10 +72,7 @@ void ui()
 	int step = 20;
 	DrawText(TextFormat("%i", GetFPS()), 0, y += step, 20, BLACK);
 	DrawText(TextFormat("playerPos: (%f, %f, %f)", ExpandVc3(player.position)), 0, y += step, 20, BLACK);
-	DrawText(TextFormat("playerChunkPos: (%i, %i, %i)", ExpandVc3(player.currentChunkPos)), 0, y += step, 20, BLACK);
-	DrawText(TextFormat("activeChunksSize: (%i)", world.activeChunks.size()), 0, y += step, 20, BLACK);
-	DrawText(TextFormat("chunksToCalculateSize: (%i)", world.chunksToCalculate.size()), 0, y += step, 20, BLACK);
-	DrawText(TextFormat("finishedChunksSize: (%i)", world.finishedChunks.size()), 0, y += step, 20, BLACK);
+	DrawText(TextFormat("playerChunkPos: (%i, %i)", ExpandVc2(player.currentChunkPos)), 0, y += step, 20, BLACK);
 }
 
 int main(void)
@@ -119,7 +82,7 @@ int main(void)
 	InitWindow(1280, 720, "Bitsy");
 	DisableCursor();
 	SetTargetFPS(144);
-	SetTraceLogLevel(LOG_NONE);
+	SetTraceLogLevel(LOG_ALL);
 
 	setup();
 
@@ -135,8 +98,7 @@ int main(void)
 
 		EndDrawing();
 	}
-	killThread = 1;
-	ChunkGenThread.join();
+
 	CloseWindow();
 
 	return 0;

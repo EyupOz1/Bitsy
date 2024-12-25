@@ -1,31 +1,26 @@
 #pragma once
 
-#include "raylib.h"
-#include <vector>
-#include "Block.hpp"
 #include "Chunk.hpp"
-#include "core/Utils.hpp"
-#include <mutex>
+#include "raylib.h"
 #include "World/ChunkSystem.hpp"
-#include <Core/Math/ThreadSafeQueue.hpp>
+#include <future>
+#include <vector>
 
 class World
 {
 public:
+	std::vector<std::future<Chunk*>> futures;
+
+
 	void Init(Texture blockAtlas);
-	void Update();
-	void updateChunks(Vector3Int playerChunkCurrentPos, Vector3Int playerChunkLastPos);
-
-	void processChunkCalc();
-
-	ChunkSystem activeChunks;
-
-	ThreadSafeQueue<Chunk> chunksToCalculate;
-	ThreadSafeQueue<Chunk> finishedChunks;
-
-	ThreadSafeQueue<Chunk*> chunksToDelete;
+	void Update(Vector2Int playerChunkPos);
+	void processCalculatedChunks();
 
 
-
+	ChunkSystem chunksToCreate;
+	ChunkSystem calculatingChunks;
+    ChunkSystem activeChunks;
+    ChunkSystem chunksToDelete;
 	Texture atlas;
+
 };

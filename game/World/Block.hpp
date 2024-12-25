@@ -1,9 +1,9 @@
 #pragma once
 
-#include <vector>
-#include "string"
-#include "raylib.h"
 #include "Core/Defines.hpp"
+#include "raylib.h"
+#include "string"
+#include <vector>
 
 class BlockData {
 public:

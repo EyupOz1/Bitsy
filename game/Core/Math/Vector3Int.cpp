@@ -1,6 +1,5 @@
-#include "raylib.h"
 #include "Core/Math/Vector3Int.hpp"
-#include "Core/Defines.hpp"
+#include "raylib.h"
 #include <cmath>
 
 // Vector3Int Class implementation down below
@@ -28,9 +27,9 @@ float Vector3IntDistance(Vector3Int v1, Vector3Int v2)
 {
     float result = 0.0f;
 
-    float dx = v2.x - v1.x;
-    float dy = v2.y - v1.y;
-    float dz = v2.z - v1.z;
+    float dx = (float)v2.x - (float)v1.x;
+    float dy = (float)v2.y - (float)v1.y;
+    float dz = (float)v2.z - (float)v1.z;
     result = sqrtf(dx * dx + dy * dy + dz * dz);
 
     return result;
@@ -39,9 +38,9 @@ float Vector3IntDistanceSqr(Vector3Int v1, Vector3Int v2)
 {
     float result = 0.0f;
 
-    float dx = v2.x - v1.x;
-    float dy = v2.y - v1.y;
-    float dz = v2.z - v1.z;
+    float dx = (float)v2.x - (float)v1.x;
+    float dy = (float)v2.y - (float)v1.y;
+    float dz = (float)v2.z - (float)v1.z;
     result = dx * dx + dy * dy + dz * dz;
 
     return result;
@@ -115,21 +114,3 @@ bool Vector3Int::operator==(const Vector3Int &other) const
     return x == other.x && y == other.y && z == other.z;
 }
 
-// Chunk
-int roundToChunkInt(float pos)
-{
-
-    int x = ((int)pos / CHUNK_SIZE) * CHUNK_SIZE;
-    if (pos < 0)
-    {
-        x -= CHUNK_SIZE;
-    }
-
-    return x;
-}
-
-Vector3Int roundToChunkVec(Vector3 pos)
-{
-    Vector3Int posx = {roundToChunkInt(pos.x), roundToChunkInt(pos.y), roundToChunkInt(pos.z)};
-    return {posx};
-}
