@@ -5,6 +5,7 @@
 #include "raymath.h"
 #include <vector>
 #include <World/Chunk.hpp>
+#include"Core/DebugMenu.hpp"
 #include <World/World.hpp>
 
 Player player;
@@ -68,11 +69,17 @@ void update()
 }
 void ui()
 {
+	DebugMenu::getInstance().render();
+	DebugMenu::getInstance().setEntry(0, []() { return TextFormat("%i FPS", GetFPS()); });
+	/*
 	int y = -20;
 	int step = 20;
 	DrawText(TextFormat("%i", GetFPS()), 0, y += step, 20, BLACK);
 	DrawText(TextFormat("playerPos: (%f, %f, %f)", ExpandVc3(player.position)), 0, y += step, 20, BLACK);
 	DrawText(TextFormat("playerChunkPos: (%i, %i)", ExpandVc2(player.currentChunkPos)), 0, y += step, 20, BLACK);
+	*/
+
+	
 }
 
 int main(void)

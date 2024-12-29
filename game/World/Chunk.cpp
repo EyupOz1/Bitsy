@@ -20,6 +20,7 @@ void Chunk::Init()
 
 void Chunk::genTerrain()
 {
+	/*
 	Image noise = GenImagePerlinNoise(CHUNK_SIZE_XZ, CHUNK_SIZE_XZ, this->position.x, this->position.y, 1);
 	for (int i = 0; i < CHUNK_SIZE_XZ; i++)
 	{
@@ -36,6 +37,15 @@ void Chunk::genTerrain()
 		}
 	}
 	UnloadImage(noise);
+	*/
+	for (int i = 0; i < CHUNK_SIZE_XZ; i++)
+	{
+		for (int j = 0; j < CHUNK_SIZE_XZ; j++)
+		{
+
+			this->setBlock({ i, 0, j }, { 2 }, true);
+		}
+	}
 }
 
 void Chunk::genMesh()

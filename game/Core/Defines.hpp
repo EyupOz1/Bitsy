@@ -6,7 +6,7 @@
 #define PLAYER_MOUSE_SENSITIVITY_SPEED 0.008f
 
 // World
-#define CHUNK_SIZE_XZ 32
+#define CHUNK_SIZE_XZ 4
 #define RENDER_DISTANCE 5 // Needs to be odd number
 #define CHUNK_SIZE_Y 128
 
